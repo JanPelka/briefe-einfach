@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Briefe einfach erklärt</title>
+
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+
+  <style>
+    :root{
+      --blue:#2563eb; --blueD:#1d4ed8;
+      --green:#16a34a; --greenD:#15803d;
+      --bg:#f3f4f6; --card:#ffffff;
+      --text:#0f172a; --muted:#475569; --gray:#94a3b8;
+      --shadow:0 10px 25px rgba(0,0,0,.08);
+      --r:16px;
+      --docx:#7c3aed; --docxD:#6d28d9;
+      --docxShare:#a855f7; --docxShareD:#9333ea;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:900px;margin:0 auto;padding:18px}
+
+    .header{
+      background:linear-gradient(90deg,var(--blue),#4f46e5);
+      color:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px
+    }
+    .header h1{margin:0;font-size:22px}
+    .header p{margin:6px 0 0;font-size:14px;opacity:.9}
+
+    .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+    .step{font-size:13px;color:var(--muted);margin-bottom:8px}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
+
+    .pickLabel, .btn{
+      display:block;width:100%;
+      padding:14px 16px;border:0;border-radius:12px;color:#fff;font-weight:900;
+      font-size:15px;cursor:pointer;text-align:center;
+      user-select:none;-webkit-user-select:none;
+      transition:background .15s ease, transform .05s ease;
+      position:relative; overflow:hidden;
+    }
+    .pickLabel:active, .btn:active{transform:scale(.99)}
+    .photo{background:var(--green)} .photo:hover{background:var(--greenD)}
+    .file{background:var(--blue)} .file:hover{background:var(--blueD)}
+    .explain{background:var(--blue);margin-top:10px}
+    .explain:disabled{background:var(--gray);cursor:not-allowed}
+
+    .pickLabel input[type="file"]{ position:absolute; inset:0; opacity:0.001; cursor:pointer; }
+
+    textarea{
+      width:100%;
+      padding:12px;border-radius:12px;border:1px solid #e2e8f0;
+      font-size:15px;line-height:1.35;resize:vertical;
+      -webkit-user-select:text;user-select:text;pointer-events:auto;
+    }
+    pre{
+      margin:0;padding:12px;border-radius:12px;background:#0b1020;color:#e5e7eb;
+      white-space:pre-wrap;line-height:1.4;font-size:14px;overflow:auto
+    }
+
+    .status{margin-top:10px;font-size:13px;color:var(--muted);min-height:18px}
+    .topRow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .row{display:flex;gap:8px;align-items:center;justify-content:flex-start;flex-wrap:wrap}
+
+    .btnSmall{
+      padding:10px 12px;border-radius:10px;font-weight:900;font-size:13px;color:#fff;border:0;cursor:pointer;
+    }
+    .btnCopy{background:#0b1020;}
+    .btnPdf{background:#334155;}
+    .btnShare{background:#0f766e;}
+    .btnDocx{background:var(--docx);}
+    .btnDocx:hover{background:var(--docxD);}
+    .btnDocxShare{background:var(--docxShare);}
+    .btnDocxShare:hover{background:var(--docxShareD);}
+
+    .toast{
+      padding:6px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:900;
+      opacity:0;transform:translateY(-2px);transition:opacity .2s ease, transform .2s ease;white-space:nowrap;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    .small{font-size:12px;color:var(--muted);margin-top:8px}
+
+    .pill{ display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:900;margin-top:10px }
+
+    .fileCard{
+      margin-top:10px;border:1px solid #e5e7eb;border-radius:14px;padding:10px 12px;
+      display:none;gap:10px;align-items:flex-start;
+    }
+    .fileMeta{font-size:13px;color:#334155}
+    .fileName{font-weight:900;color:#0f172a;margin-bottom:4px}
+    .fileInfo{color:#64748b;font-size:12px}
+    .thumb{ width:86px;height:86px;border-radius:12px;object-fit:cover;display:none;border:1px solid #e5e7eb;background:#f8fafc; }
+    .badge{ display:inline-block;font-size:11px;font-weight:900;color:#3730a3;background:#eef2ff;padding:4px 8px;border-radius:999px;margin-top:6px; }
+
+    .mutedBox{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:10px 12px}
+    .formGrid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+    @media(min-width:720px){ .formGrid{grid-template-columns:repeat(2,1fr)} }
+    .field label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px;font-weight:800}
+    .field input, .field select{
+      width:100%;padding:10px 12px;border-radius:12px;border:1px solid #e2e8f0;font-size:14px;background:#fff;
+    }
+    .field textarea{border-radius:12px;border:1px solid #e2e8f0;font-size:14px;background:#fff}
+    .checkRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .check{
+      display:flex;gap:8px;align-items:center;
+      padding:8px 10px;border:1px solid #e5e7eb;border-radius:999px;background:#fff;font-size:13px;font-weight:800;color:#334155;
+    }
+    .check input{width:16px;height:16px}
+
+    .actionsUnderText{margin-top:10px}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>Briefe einfach erklärt</h1>
+      <p>Foto • Dateien/PDF • Text • Erklärung • Antwort • Teilen • PDF • Word</p>
+    </div>
+
+    <div class="card">
+      <div class="step">1) Quelle wählen</div>
+
+      <div class="grid">
+        <label class="pickLabel photo">
+          📷 Foto machen
+          <input id="cameraInput" type="file" accept="image/*" capture="environment">
+        </label>
+
+        <label class="pickLabel file">
+          📎 Dateien / PDF
+          <input id="fileInput" type="file" accept="image/*,application/pdf">
+        </label>
+
+        <button class="btn file" id="btnPaste" type="button">✍️ Text einfügen</button>
+      </div>
+
+      <div id="modePill" class="pill" style="display:none;"></div>
+
+      <div id="fileCard" class="fileCard">
+        <img id="thumb" class="thumb" alt="Vorschau">
+        <div class="fileMeta">
+          <div id="fileName" class="fileName"></div>
+          <div id="fileInfo" class="fileInfo"></div>
+          <div id="fileBadge" class="badge" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div id="pasteBox" style="display:none; margin-top:10px;">
+        <textarea id="textInput" rows="8" placeholder="Text hier einfügen (z.B. aus PDF/Email kopiert)…"></textarea>
+        <div class="small">Erklären wird aktiv ab 15 Zeichen oder wenn eine Datei gewählt ist.</div>
+      </div>
+
+      <button id="explainBtn" class="btn explain" type="button" disabled>Erklären</button>
+      <div id="status" class="status"></div>
+    </div>
+
+    <!-- Ergebnis -->
+    <div class="card">
+      <strong>Ergebnis</strong>
+
+      <pre id="output" style="margin-top:10px;">Noch keine Erklärung.</pre>
+
+      <!-- Buttons JETZT UNTER dem Text -->
+      <div id="exportRow" class="row actionsUnderText" style="display:none;">
+        <button id="resultShareBtn" class="btnSmall btnShare" type="button">📤 PDF teilen</button>
+        <button id="resultPdfBtn" class="btnSmall btnPdf" type="button">📄 PDF</button>
+
+        <button id="resultDocxShareBtn" class="btnSmall btnDocxShare" type="button">📤 WORD teilen</button>
+        <button id="resultDocxBtn" class="btnSmall btnDocx" type="button">🟣 WORD</button>
+
+        <button id="copyBtn" class="btnSmall btnCopy" type="button">📋 Kopieren</button>
+        <span id="copyToast" class="toast">✅ Kopiert</span>
+      </div>
+    </div>
+
+    <!-- Antwort -->
+    <div class="card" id="replyCard" style="display:none;">
+      <strong>Antwort anpassen</strong>
+
+      <div class="mutedBox" style="margin-top:10px;">
+        <div class="small" style="margin:0 0 8px 0;">Wird automatisch aktualisiert, sobald du Felder änderst.</div>
+
+        <div class="formGrid">
+          <div class="field">
+            <label>Dein Name (Unterschrift)</label>
+            <input id="fSenderName" placeholder="z.B. Max Mustermann">
+          </div>
+          <div class="field">
+            <label>Deine Anschrift (optional)</label>
+            <input id="fSenderAddr" placeholder="Straße, PLZ Ort">
+          </div>
+
+          <div class="field">
+            <label>Empfänger (optional)</label>
+            <input id="fRecipient" placeholder="Behörde/Firma, ggf. Abteilung">
+          </div>
+          <div class="field">
+            <label>Ort (optional)</label>
+            <input id="fPlace" placeholder="z.B. Heidenheim">
+          </div>
+
+          <div class="field">
+            <label>Datum</label>
+            <input id="fDate" placeholder="z.B. 14.12.2025">
+          </div>
+          <div class="field">
+            <label>Aktenzeichen / Kundennr. (optional)</label>
+            <input id="fRef" placeholder="z.B. AZ 123/45">
+          </div>
+
+          <div class="field">
+            <label>Bezug: Schreiben vom (optional)</label>
+            <input id="fLetterDate" placeholder="z.B. 10.12.2025">
+          </div>
+          <div class="field">
+            <label>Betreff (optional)</label>
+            <input id="fSubject" placeholder="z.B. Antwort auf Ihr Schreiben">
+          </div>
+
+          <div class="field">
+            <label>Antwort-Art</label>
+            <select id="fType">
+              <option value="klaerung">Bitte um Klärung / Infos</option>
+              <option value="frist">Fristverlängerung erbitten</option>
+              <option value="widerspruch">Widerspruch (neutral)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Ton</label>
+            <select id="fTone">
+              <option value="freundlich">Freundlich</option>
+              <option value="neutral" selected>Neutral</option>
+              <option value="bestimmt">Bestimmt</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Länge</label>
+            <select id="fLen">
+              <option value="kurz">Kurz</option>
+              <option value="normal" selected>Normal</option>
+              <option value="lang">Ausführlich</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Wunschfrist (optional)</label>
+            <input id="fDeadline" placeholder="z.B. 14 Tage / bis 05.01.2026">
+          </div>
+
+          <div class="field" style="grid-column:1/-1">
+            <label>Zusatzinfo (optional)</label>
+            <textarea id="fExtra" rows="3" placeholder="z.B. Unterlagen werden nachgereicht / Rückfrage zu Punkt …"></textarea>
+          </div>
+        </div>
+
+        <div class="checkRow">
+          <label class="check"><input id="cConfirm" type="checkbox" checked> Eingangsbestätigung erbitten</label>
+          <label class="check"><input id="cReceipt" type="checkbox" checked> Eingang bestätigen („Danke, erhalten“)</label>
+          <label class="check"><input id="cDocs" type="checkbox"> Unterlagen nachreichen</label>
+          <label class="check"><input id="cCall" type="checkbox"> Rückruf anbieten</label>
+          <label class="check"><input id="cDeadline" type="checkbox"> Frist nennen (wenn eingetragen)</label>
+        </div>
+      </div>
+
+      <div class="small" style="margin-top:10px;">Antwortvorschlag:</div>
+      <pre id="replyOut"></pre>
+
+      <!-- Buttons JETZT UNTER dem Text -->
+      <div class="row actionsUnderText">
+        <button id="replyShareBtn" class="btnSmall btnShare" type="button">📤 PDF teilen</button>
+        <button id="replyPdfBtn" class="btnSmall btnPdf" type="button">📄 PDF</button>
+
+        <button id="replyDocxShareBtn" class="btnSmall btnDocxShare" type="button">📤 WORD teilen</button>
+        <button id="replyDocxBtn" class="btnSmall btnDocx" type="button">🟣 WORD</button>
+
+        <button id="replyCopyBtn" class="btnSmall btnCopy" type="button">📋 Kopieren</button>
+        <span id="replyCopyToast" class="toast">✅ Kopiert</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const $ = (id) => document.getElementById(id);
+  const safe = (v) => String(v || "").trim();
+
+  const output     = $("output");
+  const statusEl   = $("status");
+  const explainBtn = $("explainBtn");
+
+  const exportRow  = $("exportRow");
+  const copyBtn    = $("copyBtn");
+  const copyToast  = $("copyToast");
+  const resultPdfBtn   = $("resultPdfBtn");
+  const resultShareBtn = $("resultShareBtn");
+  const resultDocxBtn  = $("resultDocxBtn");
+  const resultDocxShareBtn = $("resultDocxShareBtn");
+
+  const replyCard  = $("replyCard");
+  const replyOut   = $("replyOut");
+  const replyCopyBtn   = $("replyCopyBtn");
+  const replyCopyToast = $("replyCopyToast");
+  const replyPdfBtn    = $("replyPdfBtn");
+  const replyShareBtn  = $("replyShareBtn");
+  const replyDocxBtn   = $("replyDocxBtn");
+  const replyDocxShareBtn = $("replyDocxShareBtn");
+
+  const btnPaste   = $("btnPaste");
+  const pasteBox   = $("pasteBox");
+  const textInput  = $("textInput");
+
+  const cameraInput = $("cameraInput");
+  const fileInput   = $("fileInput");
+
+  const modePill  = $("modePill");
+  const fileCard  = $("fileCard");
+  const thumb     = $("thumb");
+  const fileNameEl= $("fileName");
+  const fileInfoEl= $("fileInfo");
+  const fileBadge = $("fileBadge");
+
+  const fSenderName = $("fSenderName");
+  const fSenderAddr = $("fSenderAddr");
+  const fRecipient  = $("fRecipient");
+  const fPlace      = $("fPlace");
+  const fDate       = $("fDate");
+  const fRef        = $("fRef");
+  const fLetterDate = $("fLetterDate");
+  const fSubject    = $("fSubject");
+
+  const fType       = $("fType");
+  const fTone       = $("fTone");
+  const fLen        = $("fLen");
+  const fDeadline   = $("fDeadline");
+  const fExtra      = $("fExtra");
+
+  const cConfirm  = $("cConfirm");
+  const cReceipt  = $("cReceipt");
+  const cDocs     = $("cDocs");
+  const cCall     = $("cCall");
+  const cDeadline = $("cDeadline");
+
+  let selectedFile = null;
+  let replyAutoTimer = null;
+
+  const KEY = "bea_reply_export_v2";
+  function loadPrefs(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return;
+      const d = JSON.parse(raw);
+      if (d.fSenderName) fSenderName.value = d.fSenderName;
+      if (d.fSenderAddr) fSenderAddr.value = d.fSenderAddr;
+      if (d.fRecipient)  fRecipient.value  = d.fRecipient;
+      if (d.fPlace)      fPlace.value      = d.fPlace;
+      if (d.fRef)        fRef.value        = d.fRef;
+      if (d.fTone)       fTone.value       = d.fTone;
+      if (d.fLen)        fLen.value        = d.fLen;
+      if (d.fType)       fType.value       = d.fType;
+      if (d.fSubject)    fSubject.value    = d.fSubject;
+
+      if (d.cConfirm != null)  cConfirm.checked  = !!d.cConfirm;
+      if (d.cReceipt != null)  cReceipt.checked  = !!d.cReceipt;
+      if (d.cDocs != null)     cDocs.checked     = !!d.cDocs;
+      if (d.cCall != null)     cCall.checked     = !!d.cCall;
+      if (d.cDeadline != null) cDeadline.checked = !!d.cDeadline;
+    }catch(e){}
+  }
+  function savePrefs(){
+    try{
+      const d = {
+        fSenderName: safe(fSenderName.value),
+        fSenderAddr: safe(fSenderAddr.value),
+        fRecipient:  safe(fRecipient.value),
+        fPlace:      safe(fPlace.value),
+        fRef:        safe(fRef.value),
+        fTone:       safe(fTone.value),
+        fLen:        safe(fLen.value),
+        fType:       safe(fType.value),
+        fSubject:    safe(fSubject.value),
+        cConfirm:  !!cConfirm.checked,
+        cReceipt:  !!cReceipt.checked,
+        cDocs:     !!cDocs.checked,
+        cCall:     !!cCall.checked,
+        cDeadline: !!cDeadline.checked,
+      };
+      localStorage.setItem(KEY, JSON.stringify(d));
+    }catch(e){}
+  }
+
+  function ensureDate(){
+    if (!safe(fDate.value)) fDate.value = new Date().toLocaleDateString("de-DE");
+  }
+
+  function showToast(el){
+    el.classList.add("show");
+    setTimeout(() => el.classList.remove("show"), 1100);
+  }
+
+  async function copyToClipboard(text, toastEl){
+    const t = safe(text);
+    if (!t) return;
+    try{
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(t);
+        showToast(toastEl);
+        return;
+      }
+    }catch(_){}
+    const ta = document.createElement("textarea");
+    ta.value = t;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showToast(toastEl);
+  }
+
+  function setModePill(text){
+    if (!text) { modePill.style.display="none"; modePill.textContent=""; return; }
+    modePill.style.display="inline-block";
+    modePill.textContent = text;
+  }
+
+  function humanSize(bytes){
+    const b = Number(bytes);
+    if (!isFinite(b) || b <= 0) return "Größe: unbekannt";
+    const mb = b / (1024 * 1024);
+    return "Größe: " + (mb >= 10 ? mb.toFixed(0) : mb.toFixed(1)) + " MB";
+  }
+
+  function isLikelyImage(file){
+    const type = String(file?.type || "");
+    if (type.startsWith("image/")) return true;
+    const name = String(file?.name || "").toLowerCase();
+    return name.endsWith(".jpg")||name.endsWith(".jpeg")||name.endsWith(".png")||name.endsWith(".webp")||name.endsWith(".heic")||name.endsWith(".heif");
+  }
+
+  function isLikelyPdf(file){
+    const type = String(file?.type || "");
+    if (type === "application/pdf") return true;
+    const name = String(file?.name || "").toLowerCase();
+    return name.endsWith(".pdf");
+  }
+
+  function clearPreview(){
+    fileCard.style.display = "none";
+    fileNameEl.textContent = "";
+    fileInfoEl.textContent = "";
+    fileBadge.style.display = "none";
+    fileBadge.textContent = "";
+    thumb.style.display = "none";
+    thumb.removeAttribute("src");
+  }
+
+  function showFileSelected(file){
+    clearPreview();
+    if (!file) return;
+
+    fileCard.style.display = "flex";
+    fileNameEl.textContent = file.name || "Unbekannte Datei";
+    fileInfoEl.textContent = "Typ: " + (file.type || "unbekannt") + " • " + humanSize(file.size);
+
+    fileBadge.style.display = "inline-block";
+    fileBadge.textContent = isLikelyPdf(file) ? "PDF ausgewählt" : (isLikelyImage(file) ? "Bild ausgewählt" : "Datei ausgewählt");
+
+    if (isLikelyImage(file)) {
+      const reader = new FileReader();
+      reader.onload = () => { thumb.src = String(reader.result || ""); thumb.style.display="block"; };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function hasExplainText() {
+    const t = safe(output?.textContent);
+    return t && t !== "Noch keine Erklärung." && t !== "Noch keine Erklaerung.";
+  }
+
+  function updateExportUI() {
+    exportRow.style.display = hasExplainText() ? "flex" : "none";
+  }
+
+  function updateExplainEnabled() {
+    const hasFile = !!selectedFile;
+    const hasText = safe(textInput?.value).length >= 15;
+    explainBtn.disabled = !(hasFile || hasText);
+  }
+
+  function setBusy(busy) {
+    explainBtn.disabled = !!busy || (!selectedFile && safe(textInput?.value).length < 15);
+    explainBtn.textContent = busy ? "Erkläre..." : "Erklären";
+  }
+
+  function buildBody(kind, tone, len, deadline, extra, checks){
+    const blocks = [];
+    if (checks.receipt) blocks.push(tone === "bestimmt" ? "ich bestätige den Eingang Ihres Schreibens.\n\n" : "vielen Dank für Ihr Schreiben.\n\n");
+
+    if (kind === "klaerung") {
+      blocks.push(len === "kurz"
+        ? "Zu den angesprochenen Punkten benötige ich weitere Informationen.\n"
+        : "Zu den angesprochenen Punkten bitte ich um Klärung bzw. um ergänzende Informationen.\n");
+      blocks.push("Bitte teilen Sie mir mit, welche Unterlagen/Angaben Sie konkret noch benötigen.\n");
+    }
+    if (kind === "frist") {
+      blocks.push(len === "kurz"
+        ? "Ich bitte um Fristverlängerung.\n"
+        : "Ich bitte um Fristverlängerung, da die Prüfung bzw. Zusammenstellung der Unterlagen noch andauert.\n");
+    }
+    if (kind === "widerspruch") {
+      blocks.push(len === "kurz"
+        ? "Hiermit lege ich vorsorglich Widerspruch gegen den Inhalt Ihres Schreibens ein.\n"
+        : "Hiermit lege ich vorsorglich Widerspruch gegen den Inhalt Ihres Schreibens ein und bitte um Überprüfung des Sachverhalts.\n");
+    }
+
+    if (checks.docs) blocks.push("Soweit erforderlich, werde ich fehlende Unterlagen kurzfristig nachreichen.\n");
+    if (checks.call) blocks.push("Für Rückfragen stehe ich Ihnen gern zur Verfügung.\n");
+
+    if (checks.deadline && deadline) {
+      blocks.push(tone === "bestimmt"
+        ? ("Ich bitte um Frist bis " + deadline + " bzw. um entsprechende Bestätigung.\n")
+        : ("Ich bitte um eine Frist bis " + deadline + ".\n"));
+    }
+
+    if (checks.confirm) blocks.push("Bitte bestätigen Sie mir den Eingang dieses Schreibens kurz schriftlich.\n");
+    if (extra) blocks.push("\nZusatz: " + extra + "\n");
+    return blocks.join("");
+  }
+
+  function buildReply(){
+    const expl = safe(output?.textContent);
+    if (!expl || expl === "Noch keine Erklärung.") return "";
+
+    const senderName = safe(fSenderName.value);
+    const senderAddr = safe(fSenderAddr.value);
+    const recipient  = safe(fRecipient.value);
+    const place      = safe(fPlace.value);
+    const dateStr    = safe(fDate.value);
+    const ref        = safe(fRef.value);
+    const letterDate = safe(fLetterDate.value);
+    const subjectIn  = safe(fSubject.value);
+
+    const kind = safe(fType.value) || "klaerung";
+    const tone = safe(fTone.value) || "neutral";
+    const len  = safe(fLen.value)  || "normal";
+
+    const deadline = safe(fDeadline.value);
+    const extra    = safe(fExtra.value);
+
+    const checks = {
+      confirm:  !!cConfirm.checked,
+      receipt:  !!cReceipt.checked,
+      docs:     !!cDocs.checked,
+      call:     !!cCall.checked,
+      deadline: !!cDeadline.checked
+    };
+
+    let head = "";
+    if (senderName) head += senderName + "\n";
+    if (senderAddr) head += senderAddr + "\n";
+    if (head.trim()) head += "\n";
+    if (recipient) head += recipient + "\n\n";
+
+    const dateLine = [place, dateStr].filter(Boolean).join(", ");
+    if (dateLine) head += dateLine + "\n\n";
+
+    let subject = subjectIn ? `Betreff: ${subjectIn}` : "Betreff: Antwort auf Ihr Schreiben";
+    if (ref) subject += " – " + ref;
+    if (letterDate) subject += " (vom " + letterDate + ")";
+    subject += "\n\n";
+
+    let body = "Sehr geehrte Damen und Herren,\n\n";
+    body += buildBody(kind, tone, len, deadline, extra, checks);
+    body += "\n";
+    body += (tone === "bestimmt") ? "Ich bitte um zeitnahe Rückmeldung.\n\nMit freundlichen Grüßen\n" : "Mit freundlichen Grüßen\n";
+    body += senderName ? senderName : "(Name)";
+
+    return head + subject + body;
+  }
+
+  function scheduleReplyUpdate(){
+    savePrefs();
+    if (replyAutoTimer) clearTimeout(replyAutoTimer);
+    replyAutoTimer = setTimeout(() => {
+      replyOut.textContent = buildReply();
+    }, 180);
+  }
+
+  async function fetchPdf(endpoint, payload, filenameBase){
+    const resp = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) throw new Error("PDF Fehler: " + resp.status);
+    const blob = await resp.blob();
+    const name = (filenameBase || "export") + ".pdf";
+    return { blob, name };
+  }
+
+  async function fetchDocx(endpoint, payload, filenameBase){
+    const resp = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) throw new Error("WORD Fehler: " + resp.status);
+    const blob = await resp.blob();
+    const name = (filenameBase || "export") + ".docx";
+    return { blob, name };
+  }
+
+  function downloadBlob(blob, name){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  async function shareBlobAsFile(blob, name, mime){
+    const file = new File([blob], name, { type: mime || "application/octet-stream" });
+    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+      await navigator.share({ title: name, files: [file] });
+      return true;
+    }
+    return false;
+  }
+
+  copyBtn.addEventListener("click", () => copyToClipboard(safe(output.textContent), copyToast));
+  replyCopyBtn.addEventListener("click", () => copyToClipboard(safe(replyOut.textContent), replyCopyToast));
+
+  resultPdfBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Erklärung-PDF wird erstellt...";
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value) || new Date().toLocaleDateString("de-DE"),
+        subject:    "Betreff: Erklärung (Zusammenfassung)",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchPdf("/api/result-pdf", { text: safe(output.textContent), meta }, "erklaerung");
+      downloadBlob(blob, name);
+      statusEl.textContent = "Erklärung-PDF bereit.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  resultShareBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Erklärung-PDF teilen...";
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value) || new Date().toLocaleDateString("de-DE"),
+        subject:    "Betreff: Erklärung (Zusammenfassung)",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchPdf("/api/result-pdf", { text: safe(output.textContent), meta }, "erklaerung");
+      const shared = await shareBlobAsFile(blob, name, "application/pdf");
+      if (!shared) downloadBlob(blob, name);
+      statusEl.textContent = "Fertig.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  resultDocxBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Erklärung-WORD wird erstellt...";
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value) || new Date().toLocaleDateString("de-DE"),
+        subject:    "Betreff: Erklärung (Zusammenfassung)",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchDocx("/api/result-docx", { text: safe(output.textContent), meta }, "erklaerung");
+      downloadBlob(blob, name);
+      statusEl.textContent = "Erklärung-WORD bereit.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  resultDocxShareBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Erklärung-WORD teilen...";
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value) || new Date().toLocaleDateString("de-DE"),
+        subject:    "Betreff: Erklärung (Zusammenfassung)",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchDocx("/api/result-docx", { text: safe(output.textContent), meta }, "erklaerung");
+      const shared = await shareBlobAsFile(blob, name, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      if (!shared) downloadBlob(blob, name);
+      statusEl.textContent = "Fertig.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  replyPdfBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Antwort-PDF wird erstellt...";
+      ensureDate();
+      const replyText = safe(replyOut.textContent) || buildReply();
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value),
+        subject:    safe(fSubject.value) ? ("Betreff: " + safe(fSubject.value)) : "Betreff: Antwort",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchPdf("/api/reply-pdf", { text: replyText, meta }, "antwort");
+      downloadBlob(blob, name);
+      statusEl.textContent = "Antwort-PDF bereit.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  replyShareBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Antwort-PDF teilen...";
+      ensureDate();
+      const replyText = safe(replyOut.textContent) || buildReply();
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value),
+        subject:    safe(fSubject.value) ? ("Betreff: " + safe(fSubject.value)) : "Betreff: Antwort",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchPdf("/api/reply-pdf", { text: replyText, meta }, "antwort");
+      const shared = await shareBlobAsFile(blob, name, "application/pdf");
+      if (!shared) downloadBlob(blob, name);
+      statusEl.textContent = "Fertig.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  replyDocxBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Antwort-WORD wird erstellt...";
+      ensureDate();
+      const replyText = safe(replyOut.textContent) || buildReply();
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value),
+        subject:    safe(fSubject.value) ? ("Betreff: " + safe(fSubject.value)) : "Betreff: Antwort",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchDocx("/api/reply-docx", { text: replyText, meta }, "antwort");
+      downloadBlob(blob, name);
+      statusEl.textContent = "Antwort-WORD bereit.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  replyDocxShareBtn.addEventListener("click", async () => {
+    try{
+      statusEl.textContent = "Antwort-WORD teilen...";
+      ensureDate();
+      const replyText = safe(replyOut.textContent) || buildReply();
+      const meta = {
+        senderName: safe(fSenderName.value),
+        senderAddr: safe(fSenderAddr.value),
+        recipient:  safe(fRecipient.value),
+        place:      safe(fPlace.value),
+        dateStr:    safe(fDate.value),
+        subject:    safe(fSubject.value) ? ("Betreff: " + safe(fSubject.value)) : "Betreff: Antwort",
+        ref:        safe(fRef.value),
+        letterDate: safe(fLetterDate.value),
+      };
+      const { blob, name } = await fetchDocx("/api/reply-docx", { text: replyText, meta }, "antwort");
+      const shared = await shareBlobAsFile(blob, name, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      if (!shared) downloadBlob(blob, name);
+      statusEl.textContent = "Fertig.";
+    } catch(e){
+      statusEl.textContent = String(e);
+    }
+  });
+
+  btnPaste.addEventListener("click", () => {
+    pasteBox.style.display = (pasteBox.style.display === "none" || !pasteBox.style.display) ? "block" : "none";
+    if (pasteBox.style.display === "block") {
+      selectedFile = null;
+      cameraInput.value = "";
+      fileInput.value = "";
+      clearPreview();
+      setModePill("Modus: Text");
+      statusEl.textContent = "Textmodus aktiv.";
+      setTimeout(() => textInput.focus(), 50);
+    } else {
+      setModePill("");
+      statusEl.textContent = "";
+    }
+    updateExplainEnabled();
+  });
+
+  cameraInput.addEventListener("change", () => {
+    selectedFile = cameraInput.files?.[0] || null;
+    pasteBox.style.display = "none";
+    if (selectedFile) {
+      setModePill("Modus: Foto");
+      statusEl.textContent = "Foto ausgewählt.";
+      showFileSelected(selectedFile);
+    } else {
+      setModePill("");
+      clearPreview();
+    }
+    updateExplainEnabled();
+  });
+
+  fileInput.addEventListener("change", () => {
+    selectedFile = fileInput.files?.[0] || null;
+    pasteBox.style.display = "none";
+    if (selectedFile) {
+      setModePill(isLikelyPdf(selectedFile) ? "Modus: PDF" : "Modus: Datei");
+      statusEl.textContent = isLikelyPdf(selectedFile) ? "PDF ausgewählt." : "Datei ausgewählt.";
+      showFileSelected(selectedFile);
+    } else {
+      setModePill("");
+      clearPreview();
+    }
+    updateExplainEnabled();
+  });
+
+  textInput.addEventListener("input", updateExplainEnabled);
+
+  [
+    fSenderName,fSenderAddr,fRecipient,fPlace,fDate,fRef,fLetterDate,fSubject,fType,fTone,fLen,fDeadline,fExtra,
+    cConfirm,cReceipt,cDocs,cCall,cDeadline
+  ].forEach(el => {
+    el.addEventListener("input", scheduleReplyUpdate);
+    el.addEventListener("change", scheduleReplyUpdate);
+  });
+
+  explainBtn.addEventListener("click", async () => {
+    const text = safe(textInput.value);
+    const hasText = text.length >= 15;
+    if (!selectedFile && !hasText) return;
+
+    replyCard.style.display = "none";
+    output.textContent = "";
+    updateExportUI();
+    statusEl.textContent = "Sende an Server...";
+    setBusy(true);
+
+    try{
+      let resp, data;
+
+      if (!selectedFile && hasText) {
+        resp = await fetch("/api/explain-text", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ text })
+        });
+        data = await resp.json();
+      } else {
+        const fd = new FormData();
+        fd.append("file", selectedFile);
+        resp = await fetch("/api/explain-file", { method:"POST", body: fd });
+        data = await resp.json();
+      }
+
+      if (!data || !data.ok) {
+        statusEl.textContent = "Fehler: " + (data?.error || "Unbekannt");
+        output.textContent = data?.details || "";
+        updateExportUI();
+        return;
+      }
+
+      statusEl.textContent = "Fertig.";
+      output.textContent = data.text || "";
+      updateExportUI();
+
+      ensureDate();
+      replyOut.textContent = buildReply();
+      replyCard.style.display = "block";
+    } catch(e){
+      statusEl.textContent = "Netzwerkfehler";
+      output.textContent = String(e);
+      updateExportUI();
+    } finally {
+      setBusy(false);
+      updateExplainEnabled();
+    }
+  });
+
+  loadPrefs();
+  ensureDate();
+  updateExplainEnabled();
+  updateExportUI();
+});
+</script>
+</body>
+</html>
