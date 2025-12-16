@@ -1,70 +1,56 @@
-/**
- * server.js
- * Briefe-einfach – Railway kompatibler Server
- */
-
-const express = require("express");
-const path = require("path");
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
-
-/* ==============================
-   KONFIGURATION
-============================== */
-
-// Railway / Cloud Port oder lokal 3000
 const PORT = process.env.PORT || 3000;
 
-// JSON Body erlauben (für spätere API)
+/* ------------------------------
+   Fix für __dirname in ES Modules
+-------------------------------- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/* ------------------------------
+   Middleware
+-------------------------------- */
 app.use(express.json());
+app.use(express.static(__dirname));
 
-// URL-encoded Body
-app.use(express.urlencoded({ extended: true }));
-
-/* ==============================
-   STATISCHE DATEIEN (Frontend)
-============================== */
-
-// Root-Verzeichnis
-const PUBLIC_DIR = __dirname;
-
-// Statische Dateien ausliefern
-app.use(express.static(PUBLIC_DIR));
-
-/* ==============================
-   ROUTES
-============================== */
-
-// Startseite
-app.get("/", (req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "index.html"));
-});
-
-// Health-Check (Railway / Monitoring)
+/* ------------------------------
+   Health Check (Railway wichtig)
+-------------------------------- */
 app.get("/health", (req, res) => {
+  res.json({ status: "ok", uptime: process.uptime() });
+});
+
+/* ------------------------------
+   Hauptseite
+-------------------------------- */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+/* ------------------------------
+   Platzhalter API (später OpenAI)
+-------------------------------- */
+app.post("/api/erklaeren", async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ error: "Kein Text übergeben" });
+  }
+
+  // Platzhalter – hier kommt später OpenAI rein
   res.json({
-    status: "ok",
-    service: "briefe-einfach",
-    timestamp: new Date().toISOString(),
+    original: text,
+    erklaert: "Hier kommt später die KI-Erklärung rein 🙂"
   });
 });
 
-/* ==============================
-   404 FALLBACK
-============================== */
-
-app.use((req, res) => {
-  res.status(404).json({
-    error: "Not Found",
-    path: req.originalUrl,
-  });
-});
-
-/* ==============================
-   SERVER START
-============================== */
-
+/* ------------------------------
+   Server starten
+-------------------------------- */
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("🚀 Server läuft");
-  console.log("📡 Port:", PORT);
+  console.log(`🚀 Server läuft auf Port ${PORT}`);
 });
