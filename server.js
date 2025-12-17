@@ -1,50 +1,36 @@
 // server.js
-import express from "express";
-import path from "path";
-import fetch from "node-fetch";
-import { fileURLToPath } from "url";
+const express = require("express");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// für __dirname in ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // Middleware
 app.use(express.json());
-app.use(express.static(__dirname)); // index.html ausliefern
+app.use(express.static(__dirname));
 
 // Startseite
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// API: Erklärung
-app.post("/erklaeren", async (req, res) => {
+// API-Endpunkt
+app.post("/erklaeren", (req, res) => {
   const { text } = req.body;
 
-  if (!text || text.trim().length === 0) {
+  if (!text) {
     return res.status(400).json({ error: "Kein Text übergeben" });
   }
 
-  try {
-    // MVP: noch ohne OpenAI (damit Railway sicher läuft)
-    const einfacheErklaerung =
-      "🧾 Einfache Erklärung (MVP):\n\n" +
-      text
-        .replace(/\n+/g, " ")
-        .slice(0, 500) +
-      " ...";
+  const explanation =
+    "📄 Einfache Erklärung (MVP):\n\n" +
+    text.substring(0, 500) +
+    (text.length > 500 ? " ..." : "");
 
-    res.json({ explanation: einfacheErklaerung });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Serverfehler" });
-  }
+  res.json({ explanation });
 });
 
 // Server starten
 app.listen(PORT, () => {
-  console.log(`✅ Server läuft auf Port ${PORT}`);
+  console.log("✅ Server läuft auf Port", PORT);
 });
