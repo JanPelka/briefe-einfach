@@ -4,155 +4,67 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>briefe-einfach</title>
-
   <style>
-    :root { color-scheme: light dark; }
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin: 0; padding: 24px;
-      max-width: 980px;
-      margin-inline: auto;
-    }
-    h1 { margin: 0 0 6px 0; }
-    p { margin: 0 0 16px 0; opacity: 0.85; }
-    textarea {
-      width: 100%;
-      min-height: 220px;
-      resize: vertical;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(127,127,127,0.35);
-      font-size: 16px;
-      line-height: 1.35;
-      outline: none;
-      box-sizing: border-box;
-    }
-    .row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin: 12px 0 6px;
-      flex-wrap: wrap;
-    }
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button.primary { font-weight: 700; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .status {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(127,127,127,0.25);
-      font-size: 14px;
-      display: none;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-    .status.ok { display: block; }
-    .status.err { display: block; }
-    .output {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(127,127,127,0.35);
-      min-height: 120px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-    .meta {
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: 0.7;
-    }
-    .small {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-    .hint {
-      margin-top: 8px;
-      font-size: 12px;
-      opacity: 0.75;
-    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:#0b1220; color:#e8eefc;}
+    .wrap{max-width:980px; margin:0 auto; padding:28px 18px;}
+    .card{background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px;}
+    h1{margin:0 0 6px; font-size:28px}
+    .sub{opacity:.8; margin:0 0 18px}
+    textarea{width:100%; min-height:220px; border-radius:12px; border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.25); color:#e8eefc; padding:12px; font-size:15px; outline:none;}
+    .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    button{border:0; border-radius:12px; padding:10px 14px; font-weight:700; cursor:pointer;}
+    .btn{background:#7c5cff; color:white;}
+    .btn2{background:rgba(255,255,255,.10); color:#e8eefc; border:1px solid rgba(255,255,255,.18)}
+    pre{white-space:pre-wrap; word-wrap:break-word; background:rgba(0,0,0,.25); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.12);}
+    .muted{opacity:.75; font-size:12px; margin-top:10px}
   </style>
 </head>
-
 <body>
-  <h1>🧾 briefe-einfach</h1>
-  <p>Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.</p>
+  <div class="wrap">
+    <div class="card">
+      <h1>📝 briefe-einfach</h1>
+      <p class="sub">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.</p>
 
-  <label for="input" class="small">Originaltext</label>
-  <textarea id="input" placeholder="Text hier einfügen..."></textarea>
+      <label for="text"><b>Originaltext</b></label>
+      <textarea id="text" placeholder="Text hier einfügen..."></textarea>
 
-  <div class="row">
-    <button id="btnExplain" class="primary">✨ Erklären</button>
-    <button id="btnClear" type="button">🧹 Leeren</button>
-    <button id="btnCopy" type="button" disabled>📋 Ergebnis kopieren</button>
-  </div>
+      <div class="row">
+        <button class="btn" id="btnExplain">✨ Erklären</button>
+        <button class="btn2" id="btnClear">Leeren</button>
+        <button class="btn2" id="btnCopy">Ergebnis kopieren</button>
+      </div>
 
-  <div id="status" class="status"></div>
+      <h3 style="margin-top:18px">Ergebnis</h3>
+      <pre id="out">Noch nichts erklärt…</pre>
 
-  <div class="meta">
-    <div><b>Ergebnis</b></div>
-    <div id="output" class="output"></div>
-    <div class="hint">Tipp: Wenn du das später öffentlich nutzt, bauen wir als Nächstes Rate-Limit + API-Key Schutz + bessere Formatierung ein.</div>
+      <div class="muted">
+        Tipp: Wenn du später willst, machen wir daraus eine “richtige” UI + echte KI-Antworten.
+      </div>
+    </div>
   </div>
 
   <script>
-    const $ = (id) => document.getElementById(id);
+    const textEl = document.getElementById("text");
+    const outEl  = document.getElementById("out");
 
-    const input = $("input");
-    const output = $("output");
-    const statusBox = $("status");
+    document.getElementById("btnClear").onclick = () => {
+      textEl.value = "";
+      outEl.textContent = "Noch nichts erklärt…";
+    };
 
-    const btnExplain = $("btnExplain");
-    const btnClear = $("btnClear");
-    const btnCopy = $("btnCopy");
+    document.getElementById("btnCopy").onclick = async () => {
+      await navigator.clipboard.writeText(outEl.textContent || "");
+    };
 
-    function setStatus(type, msg) {
-      statusBox.className = "status " + (type || "");
-      statusBox.textContent = msg || "";
-      statusBox.style.display = msg ? "block" : "none";
-    }
-
-    function setLoading(isLoading) {
-      btnExplain.disabled = isLoading;
-      btnExplain.textContent = isLoading ? "⏳ Bitte warten..." : "✨ Erklären";
-    }
-
-    function normalizeApiResult(data) {
-      // Du hast aktuell in der Konsole sowas gesehen wie:
-      // ok explanation
-      // True  🧾 Einfache Erklärung (MVP): ...
-      //
-      // Da wir nicht 100% wissen, wie dein server.js die JSON Keys nennt,
-      // fangen wir mehrere mögliche Felder ab.
-      if (!data || typeof data !== "object") return "";
-
-      return (
-        data.explanation ??
-        data.result ??
-        data.output ??
-        data.text ??
-        data.message ??
-        (typeof data === "string" ? data : "")
-      );
-    }
-
-    async function explain() {
-      const text = input.value.trim();
+    document.getElementById("btnExplain").onclick = async () => {
+      const text = textEl.value.trim();
       if (!text) {
-        setStatus("err", "Bitte erst Text einfügen.");
+        outEl.textContent = "Bitte erst Text einfügen.";
         return;
       }
 
-      setStatus("", "");
-      setLoading(true);
-      output.textContent = "";
+      outEl.textContent = "Erkläre…";
 
       try {
         const res = await fetch("/erklaeren", {
@@ -161,58 +73,12 @@
           body: JSON.stringify({ text })
         });
 
-        let data;
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/json")) {
-          data = await res.json();
-        } else {
-          data = { text: await res.text() };
-        }
-
-        if (!res.ok) {
-          const errMsg = (data && (data.error || data.message)) ? (data.error || data.message) : "Unbekannter Fehler";
-          throw new Error(errMsg);
-        }
-
-        const result = normalizeApiResult(data) || JSON.stringify(data, null, 2);
-
-        output.textContent = result;
-        btnCopy.disabled = !result;
-
-        setStatus("ok", "✅ Erklärung erstellt.");
+        const data = await res.json();
+        outEl.textContent = data.explanation || data.error || "Keine Antwort.";
       } catch (e) {
-        setStatus("err", "❌ Fehler: " + (e?.message || e));
-      } finally {
-        setLoading(false);
+        outEl.textContent = "Fehler: " + (e?.message || e);
       }
-    }
-
-    btnExplain.addEventListener("click", explain);
-
-    btnClear.addEventListener("click", () => {
-      input.value = "";
-      output.textContent = "";
-      btnCopy.disabled = true;
-      setStatus("", "");
-      input.focus();
-    });
-
-    btnCopy.addEventListener("click", async () => {
-      const text = output.textContent.trim();
-      if (!text) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        setStatus("ok", "✅ Ergebnis kopiert.");
-        setTimeout(() => setStatus("", ""), 1200);
-      } catch {
-        setStatus("err", "❌ Kopieren ging nicht (Browser-Rechte). Markiere den Text manuell und kopiere ihn.");
-      }
-    });
-
-    // Optional: CTRL+ENTER zum Senden
-    input.addEventListener("keydown", (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") explain();
-    });
+    };
   </script>
 </body>
 </html>
