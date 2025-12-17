@@ -1,362 +1,632 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>briefe-einfach</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
+  <meta name="description" content="Behörden- & Briefe-Text einfügen → einfache Erklärung + Fristenhilfe" />
   <style>
     :root{
-      --bg1:#020617;
-      --bg2:#0f172a;
-      --card:#111827;
-      --panel:#0b1220;
-      --border:#1f2937;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --primary:#3b82f6;
-      --danger:#ef4444;
-
-      --radius:14px;
-      --radius-sm:12px;
-
-      --pad:24px;
-      --gap:12px;
-
-      --btn-h:44px;
-      --btn-pad:14px;
-      --font: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      --bg:#0b1020;
+      --card:#111a33;
+      --card2:#0f1730;
+      --text:#e9ecff;
+      --muted:#a8b0d6;
+      --line:rgba(255,255,255,.12);
+      --btn:#2f6bff;
+      --btn2:#2a355f;
+      --danger:#ff5a78;
+      --ok:#21d07a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 14px;
     }
-
-    *{ box-sizing:border-box; font-family:var(--font); }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 700px at 20% 20%, rgba(47,107,255,.25), transparent 60%),
+                  radial-gradient(900px 600px at 90% 30%, rgba(255,90,120,.16), transparent 55%),
+                  var(--bg);
       color:var(--text);
-      padding:
-        max(16px, env(safe-area-inset-top))
-        16px
-        max(16px, env(safe-area-inset-bottom))
-        16px;
     }
-
-    /* Container */
-    .container{
-      width:100%;
-      max-width:900px;
+    .wrap{
+      width:min(980px, 100%);
       margin:0 auto;
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:0 20px 60px rgba(0,0,0,.45);
-      overflow:hidden;
+      padding:18px 14px 40px;
     }
-
-    /* Header */
-    .header{
-      padding:var(--pad);
-      border-bottom:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
-    }
-    h1{
-      margin:0 0 6px 0;
-      font-size:26px;
+    header{
       display:flex;
       align-items:center;
-      gap:10px;
-      line-height:1.2;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 2px 18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      font-weight:800; letter-spacing:.2px;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(47,107,255,.95), rgba(33,208,122,.7));
+      box-shadow: var(--shadow);
+      display:grid; place-items:center;
+      font-size:22px;
     }
     .subtitle{
-      margin:0;
+      font-size:13px; color:var(--muted); font-weight:500;
+      margin-top:3px;
+    }
+    .pill{
+      font-size:12px;
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
       color:var(--muted);
-      line-height:1.4;
+      background: rgba(255,255,255,.03);
     }
 
-    /* Content */
-    .content{
-      padding:var(--pad);
-      display:flex;
-      flex-direction:column;
-      gap:16px;
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:14px;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr; }
+      header{flex-direction:column; align-items:flex-start;}
+      .pill{width:100%; text-align:center;}
     }
 
-    label{
-      font-weight:700;
-      margin-bottom:6px;
-      display:block;
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
+    .cardHead{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+    }
+    .cardTitle{
+      font-size:14px; font-weight:800; margin:0;
+      display:flex; align-items:center; gap:8px;
+    }
+    .cardBody{ padding:14px; }
+    .hint{ color:var(--muted); font-size:13px; margin:8px 0 0; }
 
     textarea{
       width:100%;
       min-height:200px;
-      background:var(--panel);
-      color:var(--text);
-      border:1px solid var(--border);
-      border-radius:var(--radius-sm);
-      padding:14px;
-      font-size:16px; /* wichtig: verhindert iOS Zoom */
-      line-height:1.5;
       resize:vertical;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      padding:12px 12px;
+      font-size:14px;
+      line-height:1.35;
       outline:none;
     }
-    textarea:focus{ border-color:var(--primary); }
+    textarea:focus{ border-color: rgba(47,107,255,.55); box-shadow: 0 0 0 4px rgba(47,107,255,.14); }
 
-    .hint{
-      color:var(--danger);
-      font-size:14px;
-      margin-top:6px;
-      min-height:18px;
+    .row{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:10px;
+      align-items:center;
     }
-
-    /* Result */
-    .resultWrap{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .resultTitle{
-      font-weight:800;
-      margin:0;
-    }
-    .result{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:var(--radius-sm);
-      padding:14px;
-      white-space:pre-wrap;
-      line-height:1.6;
-      font-size:16px;
-      min-height:120px;
-    }
-
-    /* Buttons bar (desktop) */
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
     button{
-      border:1px solid var(--border);
-      background:#111c2e;
-      color:var(--text);
-      border-radius:12px;
-      height:var(--btn-h);
-      padding:0 var(--btn-pad);
+      border:0;
+      border-radius: 12px;
+      padding:10px 12px;
       font-weight:800;
-      font-size:15px;
       cursor:pointer;
+      color: white;
+      background: var(--btn);
+      box-shadow: 0 10px 22px rgba(47,107,255,.22);
       display:inline-flex;
       align-items:center;
-      justify-content:center;
-      gap:8px;
-      transition: transform .06s ease, opacity .2s ease, border-color .2s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
+      gap:10px;
     }
-    button:hover{ border-color:#2b3b56; }
-    button:active{ transform: translateY(1px); }
-    button.primary{
-      background:var(--primary);
-      border-color:transparent;
-      color:#fff;
+    button.secondary{
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow:none;
     }
-    button:disabled{ opacity:.6; cursor:not-allowed; }
+    button.ghost{
+      background: transparent;
+      color: var(--muted);
+      border: 1px dashed rgba(255,255,255,.18);
+      box-shadow:none;
+      font-weight:700;
+    }
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:saturate(.8);
+    }
+
+    .msg{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size:13px;
+    }
+    .msg.err{ border-color: rgba(255,90,120,.45); color:#ffd0d8; background: rgba(255,90,120,.08); }
+    .msg.ok{ border-color: rgba(33,208,122,.35); color:#d9ffef; background: rgba(33,208,122,.07); }
+
+    .result{
+      display:grid;
+      gap:10px;
+    }
+    .block{
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(0,0,0,.12);
+      padding:12px;
+    }
+    .block h3{
+      margin:0 0 6px;
+      font-size:13px;
+      font-weight:900;
+      color:#ffffff;
+      display:flex; align-items:center; gap:8px;
+    }
+    .block p, .block ul{
+      margin:0;
+      color: var(--text);
+      font-size:14px;
+      line-height:1.35;
+      white-space:pre-wrap;
+    }
+    .block ul{ padding-left:18px; }
+
+    .small{ font-size:12px; color:var(--muted); }
 
     /* Spinner */
     .spinner{
-      display:none;
-      text-align:center;
-      padding:10px 0 0;
-    }
-    .loader{
-      width:42px;
-      height:42px;
-      border:4px solid #1f2937;
-      border-top:4px solid var(--primary);
+      width:16px;height:16px;
       border-radius:50%;
-      animation: spin 1s linear infinite;
-      margin:0 auto 8px;
+      border:2px solid rgba(255,255,255,.35);
+      border-top-color: rgba(255,255,255,.95);
+      animation: spin .8s linear infinite;
+      display:none;
     }
     @keyframes spin{ to{ transform:rotate(360deg);} }
+    .loading .spinner{ display:inline-block; }
 
-    /* Footer */
-    .footer{
-      padding:14px var(--pad);
-      border-top:1px solid var(--border);
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
+    /* Deadline widget */
+    .deadlineGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 860px){
+      .deadlineGrid{ grid-template-columns:1fr; }
+    }
+    label{
+      font-size:12px;
+      color: var(--muted);
+      display:block;
+      margin:0 0 6px;
+      font-weight:700;
+    }
+    input[type="date"], input[type="number"], select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input:focus, select:focus{ border-color: rgba(47,107,255,.55); box-shadow: 0 0 0 4px rgba(47,107,255,.14); }
+    .deadlineOut{
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      background: rgba(255,255,255,.03);
+      font-size:14px;
+      color: var(--text);
+      white-space:pre-wrap;
     }
 
-    /* --- MOBILE OPTIMIERUNG --- */
-    @media (max-width: 720px){
-      :root{
-        --pad:16px;
-        --btn-h:50px;
-        --btn-pad:16px;
-      }
-      h1{ font-size:22px; }
-      textarea{ min-height:220px; }
-      .actions{ display:none; } /* wir nutzen sticky bar unten */
-      .result{ min-height:140px; }
-    }
-
-    /* Sticky action bar (nur mobile) */
-    .stickyBar{
-      display:none;
-    }
-    @media (max-width: 720px){
-      .stickyBar{
-        display:flex;
-        position:sticky;
-        bottom:0;
-        gap:10px;
-        padding:12px var(--pad) calc(12px + env(safe-area-inset-bottom));
-        background: rgba(17,24,39,.92);
-        backdrop-filter: blur(10px);
-        border-top:1px solid var(--border);
-        z-index:10;
-      }
-      .stickyBar button{
-        flex:1;
-        min-width:0;
-      }
-      .stickyBar button.secondary{
-        background:#0f1a2b;
-      }
+    footer{
+      margin-top:16px;
+      color: var(--muted);
+      font-size:12px;
+      text-align:center;
+      opacity:.9;
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>📄 briefe-einfach</h1>
-      <p class="subtitle">
-        Füge einen Brief / Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
-      </p>
-    </div>
-
-    <div class="content">
-      <div>
-        <label for="text">Originaltext</label>
-        <textarea id="text" placeholder="Text hier einfügen..."></textarea>
-
-        <div class="actions">
-          <button class="primary" id="btnExplain">✨ Erklären</button>
-          <button id="btnClear">Leeren</button>
-          <button id="btnCopy">Ergebnis kopieren</button>
-        </div>
-
-        <div class="hint" id="hint"></div>
-
-        <div class="spinner" id="spinner">
-          <div class="loader"></div>
-          Erklärung wird erstellt …
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">📄</div>
+        <div>
+          <div style="font-size:20px;">briefe-einfach</div>
+          <div class="subtitle">Text rein → Erklärung + Fristenhilfe (MVP)</div>
         </div>
       </div>
+      <div class="pill">Tipp: Später: Rate-Limit + API-Key + bessere Formatierung</div>
+    </header>
 
-      <div class="resultWrap">
-        <div class="resultTitle">Ergebnis</div>
-        <div class="result" id="result"></div>
+    <div class="grid">
+      <!-- LEFT: Input -->
+      <section class="card">
+        <div class="cardHead">
+          <p class="cardTitle">🧾 Originaltext</p>
+          <p class="hint">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>.</p>
+        </div>
+        <div class="cardBody">
+          <textarea id="inputText" placeholder="Text hier einfügen…"></textarea>
+
+          <div class="row" id="actions">
+            <button id="btnExplain">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="btnExplainLabel">Erklären</span>
+            </button>
+            <button class="secondary" id="btnClear">Leeren</button>
+            <button class="ghost" id="btnCopy" disabled>Ergebnis kopieren</button>
+          </div>
+
+          <div id="statusBox" class="msg" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Deadline helper -->
+      <aside class="card">
+        <div class="cardHead">
+          <p class="cardTitle">⏳ Fristenrechner</p>
+          <p class="hint">Hilft dir schnell zu sehen, wann eine Frist endet (MVP, ohne Feiertage).</p>
+        </div>
+        <div class="cardBody">
+          <div class="deadlineGrid">
+            <div>
+              <label for="dateStart">Eingangsdatum (Start)</label>
+              <input type="date" id="dateStart" />
+            </div>
+            <div>
+              <label for="days">Frist in Tagen</label>
+              <input type="number" id="days" value="14" min="1" />
+            </div>
+            <div>
+              <label for="countMode">Zählweise</label>
+              <select id="countMode">
+                <option value="nextDay">Start am nächsten Tag (üblich)</option>
+                <option value="sameDay">Start am selben Tag</option>
+              </select>
+            </div>
+            <div>
+              <label for="weekendMode">Wochenende</label>
+              <select id="weekendMode">
+                <option value="push">Wenn Sa/So → auf Montag schieben</option>
+                <option value="keep">Nicht schieben</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="secondary" id="btnCalc">Frist berechnen</button>
+            <button class="ghost" id="btnToday">Heute einsetzen</button>
+          </div>
+
+          <div class="deadlineOut" id="deadlineOut">Noch nichts berechnet.</div>
+          <div class="small" style="margin-top:8px;">
+            Hinweis: Das ist ein MVP-Rechner. Feiertage & Sonderregeln sind nicht drin.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- RESULT -->
+    <section class="card" style="margin-top:14px;">
+      <div class="cardHead">
+        <p class="cardTitle">✅ Ergebnis</p>
+        <p class="hint">Wir zeigen es in 3 Blöcken: Kurz, Was tun, Fristen/Termine.</p>
       </div>
-    </div>
+      <div class="cardBody">
+        <div class="result" id="resultWrap">
+          <div class="block">
+            <h3>🧠 Kurz erklärt</h3>
+            <p id="rShort">Noch kein Ergebnis.</p>
+          </div>
+          <div class="block">
+            <h3>✅ Was du tun solltest</h3>
+            <ul id="rTodo">
+              <li>Noch kein Ergebnis.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <h3>📅 Fristen / Termine</h3>
+            <p id="rDates">Noch kein Ergebnis.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <!-- Sticky bar nur mobile -->
-    <div class="stickyBar">
-      <button class="primary" id="btnExplainMobile">✨ Erklären</button>
-      <button class="secondary" id="btnClearMobile">Leeren</button>
-      <button class="secondary" id="btnCopyMobile">Kopieren</button>
-    </div>
-
-    <div class="footer">
-      Tipp: Später kannst du Rate-Limit, API-Key-Schutz & bessere Formatierung ergänzen.
-    </div>
+    <footer>
+      MVP – funktioniert ohne API-Key. Wenn du willst, bauen wir als nächstes „Antwortbrief erstellen“ + „Aktenzeichen/Datum automatisch erkennen“.
+    </footer>
   </div>
 
   <script>
-    const textEl = document.getElementById("text");
-    const resultEl = document.getElementById("result");
-    const hintEl = document.getElementById("hint");
-    const spinnerEl = document.getElementById("spinner");
+    // ===== Helpers =====
+    const $ = (id) => document.getElementById(id);
 
-    const btnExplain = document.getElementById("btnExplain");
-    const btnClear = document.getElementById("btnClear");
-    const btnCopy = document.getElementById("btnCopy");
+    const inputText = $("inputText");
+    const btnExplain = $("btnExplain");
+    const btnExplainLabel = $("btnExplainLabel");
+    const btnClear = $("btnClear");
+    const btnCopy = $("btnCopy");
+    const statusBox = $("statusBox");
 
-    const btnExplainMobile = document.getElementById("btnExplainMobile");
-    const btnClearMobile = document.getElementById("btnClearMobile");
-    const btnCopyMobile = document.getElementById("btnCopyMobile");
+    const rShort = $("rShort");
+    const rTodo = $("rTodo");
+    const rDates = $("rDates");
 
-    function setBusy(isBusy){
-      spinnerEl.style.display = isBusy ? "block" : "none";
-      [btnExplain, btnExplainMobile].forEach(b => { if (b) b.disabled = isBusy; });
+    function setStatus(type, text){
+      statusBox.style.display = "block";
+      statusBox.className = "msg " + (type || "");
+      statusBox.textContent = text;
+    }
+    function clearStatus(){
+      statusBox.style.display = "none";
+      statusBox.textContent = "";
+      statusBox.className = "msg";
     }
 
-    async function doExplain(){
-      hintEl.textContent = "";
-      resultEl.textContent = "";
+    function setLoading(isLoading){
+      const actions = $("actions");
+      if(isLoading){
+        actions.classList.add("loading");
+        btnExplain.disabled = true;
+        btnClear.disabled = true;
+        btnCopy.disabled = true;
+        btnExplainLabel.textContent = "Lade…";
+      } else {
+        actions.classList.remove("loading");
+        btnExplain.disabled = false;
+        btnClear.disabled = false;
+        btnExplainLabel.textContent = "Erklären";
+      }
+    }
 
-      const text = textEl.value.trim();
-      if (!text){
-        hintEl.textContent = "Bitte zuerst einen Text eingeben.";
+    function splitIntoBlocks(explanationText){
+      // Wir nehmen das MVP-Textformat und machen 3 sinnvolle Blöcke draus.
+      const t = String(explanationText || "").trim();
+      if(!t){
+        return {
+          short: "Kein Ergebnis.",
+          todo: ["—"],
+          dates: "—"
+        };
+      }
+
+      // Heuristik: suche typische Bereiche
+      // Alles nach "Nächste sinnvolle Schritte:" => todo
+      let shortPart = t;
+      let todoPart = "";
+      let hintPart = "";
+
+      const idxSteps = t.toLowerCase().indexOf("nächste sinnvolle schritte:");
+      if(idxSteps !== -1){
+        shortPart = t.slice(0, idxSteps).trim();
+        todoPart = t.slice(idxSteps).trim();
+      }
+
+      const idxHints = t.toLowerCase().indexOf("hinweise aus deinem text:");
+      if(idxHints !== -1){
+        hintPart = t.slice(idxHints).trim();
+        // Entferne Hinweise aus shortPart falls drin
+        if(idxSteps === -1){
+          shortPart = t.slice(0, idxHints).trim();
+        } else {
+          // todoPart enthält evtl auch hints – ok lassen, wir nutzen hintPart extra
+        }
+      }
+
+      // Todo-Liste extrahieren
+      let todos = [];
+      if(todoPart){
+        const lines = todoPart.split("\n").map(x=>x.trim()).filter(Boolean);
+        // alles nach der Überschrift
+        const cleaned = lines.filter(l => !l.toLowerCase().startsWith("nächste sinnvolle schritte"));
+        // nummerierte Steps -> in bullets
+        todos = cleaned.map(l => l.replace(/^(\d+[\)\.\-])\s*/, ""));
+      }
+
+      if(todos.length === 0){
+        todos = [
+          "Datum des Schreibens + Eingangsdatum notieren",
+          "Frist/Termin im Brief suchen",
+          "Was wird verlangt? (Zahlung / Unterlagen / Rückmeldung)",
+          "Wenn unklar: kurz schriftlich nachfragen"
+        ];
+      }
+
+      // Dates/Fristen Block
+      let dates = "Wenn im Text eine Frist/Termin steht: bitte im Fristenrechner oben testen.";
+      if(hintPart){
+        dates = hintPart.replace(/^Hinweise aus deinem Text:\s*/i, "").trim();
+      }
+
+      return {
+        short: shortPart.replace(/^Das ist eine einfache Erklärung:\s*/i, "").trim() || "—",
+        todo: todos,
+        dates: dates || "—"
+      };
+    }
+
+    function makeCopyText(){
+      const todoItems = Array.from(rTodo.querySelectorAll("li")).map(li => "- " + li.textContent);
+      return [
+        "briefe-einfach – Ergebnis",
+        "",
+        "Kurz erklärt:",
+        rShort.textContent,
+        "",
+        "Was du tun solltest:",
+        ...todoItems,
+        "",
+        "Fristen / Termine:",
+        rDates.textContent
+      ].join("\n");
+    }
+
+    // ===== API Call =====
+    async function explain(){
+      clearStatus();
+
+      const text = inputText.value.trim();
+      if(!text){
+        setStatus("err", "Bitte zuerst einen Text eingeben.");
         return;
       }
 
-      setBusy(true);
-
+      setLoading(true);
       try{
-        const res = await fetch("/erklaeren", {
+        const resp = await fetch("/erklaeren", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text })
         });
 
-        if (!res.ok){
-          throw new Error("Serverfehler: " + res.status);
+        if(!resp.ok){
+          const msg = "Server antwortet mit Fehler: " + resp.status + " " + resp.statusText;
+          setStatus("err", msg);
+          return;
         }
 
-        const data = await res.json();
-        resultEl.textContent = data.explanation || "Keine Erklärung erhalten.";
-      }catch(e){
-        hintEl.textContent = "Fehler: Unbekannter Fehler";
-      }finally{
-        setBusy(false);
+        const data = await resp.json();
+        if(!data?.ok){
+          setStatus("err", data?.error || "Unbekannter Fehler");
+          return;
+        }
+
+        const blocks = splitIntoBlocks(data.explanation);
+
+        rShort.textContent = blocks.short;
+
+        rTodo.innerHTML = "";
+        blocks.todo.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          rTodo.appendChild(li);
+        });
+
+        rDates.textContent = blocks.dates;
+
+        setStatus("ok", "Fertig. Du kannst jetzt das Ergebnis kopieren.");
+        btnCopy.disabled = false;
+      } catch(e){
+        setStatus("err", "Fehler: " + (e?.message || "Unbekannt"));
+      } finally {
+        setLoading(false);
       }
     }
 
-    function doClear(){
-      textEl.value = "";
-      resultEl.textContent = "";
-      hintEl.textContent = "";
+    // ===== Deadline calculator =====
+    const dateStart = $("dateStart");
+    const days = $("days");
+    const countMode = $("countMode");
+    const weekendMode = $("weekendMode");
+    const deadlineOut = $("deadlineOut");
+
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function fmt(d){
+      return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;
     }
 
-    async function doCopy(){
-      if (!resultEl.textContent) return;
+    function calcDeadline(){
+      const v = dateStart.value;
+      const n = parseInt(days.value, 10);
+
+      if(!v){
+        deadlineOut.textContent = "Bitte erst ein Eingangsdatum wählen.";
+        return;
+      }
+      if(!n || n < 1){
+        deadlineOut.textContent = "Bitte eine gültige Anzahl Tage eingeben (mind. 1).";
+        return;
+      }
+
+      // input date is YYYY-MM-DD
+      const start = new Date(v + "T00:00:00");
+
+      // Starttag nach Zählweise
+      let current = new Date(start);
+      if(countMode.value === "nextDay"){
+        current.setDate(current.getDate() + 1);
+      }
+
+      // Jetzt n Tage zählen: Wenn Start am nächsten Tag, dann zählt Tag1 = current
+      // Wir addieren (n-1), weil current bereits Tag1 ist.
+      current.setDate(current.getDate() + (n - 1));
+
+      const original = new Date(current);
+
+      // Wochenende-Regel
+      if(weekendMode.value === "push"){
+        const dow = current.getDay(); // 0 So, 6 Sa
+        if(dow === 6) current.setDate(current.getDate() + 2);
+        if(dow === 0) current.setDate(current.getDate() + 1);
+      }
+
+      const moved = (fmt(original) !== fmt(current));
+
+      deadlineOut.textContent =
+        `Start (Eingang): ${fmt(start)}\n` +
+        `Frist: ${n} Tage\n` +
+        `Roh-Ende: ${fmt(original)}\n` +
+        (moved ? `Wochenende → verschoben auf: ${fmt(current)}\n` : `Ende: ${fmt(current)}\n`) +
+        `\nHinweis: Feiertage/Sonderregeln nicht berücksichtigt.`;
+    }
+
+    $("btnCalc").addEventListener("click", calcDeadline);
+    $("btnToday").addEventListener("click", () => {
+      const now = new Date();
+      dateStart.value = `${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`;
+      calcDeadline();
+    });
+
+    // ===== Events =====
+    btnExplain.addEventListener("click", explain);
+    btnClear.addEventListener("click", () => {
+      inputText.value = "";
+      rShort.textContent = "Noch kein Ergebnis.";
+      rTodo.innerHTML = "<li>Noch kein Ergebnis.</li>";
+      rDates.textContent = "Noch kein Ergebnis.";
+      btnCopy.disabled = true;
+      clearStatus();
+      inputText.focus();
+    });
+
+    btnCopy.addEventListener("click", async () => {
       try{
-        await navigator.clipboard.writeText(resultEl.textContent);
-      }catch(e){
-        // fallback: select + copy
-        const range = document.createRange();
-        range.selectNodeContents(resultEl);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        document.execCommand("copy");
-        sel.removeAllRanges();
+        await navigator.clipboard.writeText(makeCopyText());
+        setStatus("ok", "Kopiert ✅");
+      } catch(e){
+        setStatus("err", "Kopieren ging nicht (Browser blockiert Clipboard). Markiere den Text manuell.");
       }
-    }
+    });
 
-    if (btnExplain) btnExplain.onclick = doExplain;
-    if (btnExplainMobile) btnExplainMobile.onclick = doExplain;
-
-    if (btnClear) btnClear.onclick = doClear;
-    if (btnClearMobile) btnClearMobile.onclick = doClear;
-
-    if (btnCopy) btnCopy.onclick = doCopy;
-    if (btnCopyMobile) btnCopyMobile.onclick = doCopy;
+    // Enter+Ctrl zum erklären
+    inputText.addEventListener("keydown", (e) => {
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        explain();
+      }
+    });
   </script>
 </body>
 </html>
+
