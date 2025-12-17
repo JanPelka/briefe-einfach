@@ -6,166 +6,201 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --border: #1f2933;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #3b82f6;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
       margin: 0;
-      padding: 30px;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
     }
 
     h1 {
-      font-size: 28px;
-      margin-bottom: 8px;
+      margin: 0 0 6px 0;
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .subtitle {
-      color: #9ca3af;
+      color: var(--muted);
       margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 6px;
+      font-weight: 600;
     }
 
     textarea {
       width: 100%;
       min-height: 160px;
       background: #020617;
-      color: #e5e7eb;
-      border: 1px solid #334155;
-      border-radius: 8px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 12px;
-      font-size: 14px;
       resize: vertical;
+      font-size: 15px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
     }
 
     .buttons {
-      margin-top: 12px;
       display: flex;
       gap: 10px;
+      margin-top: 12px;
       flex-wrap: wrap;
     }
 
     button {
-      background: #2563eb;
       border: none;
-      color: white;
       padding: 10px 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 14px;
+      font-weight: 600;
+      background: #1f2937;
+      color: var(--text);
     }
 
-    button.secondary {
-      background: #334155;
+    button.primary {
+      background: var(--primary);
+      color: #fff;
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: .6;
       cursor: not-allowed;
     }
 
-    #loader {
-      display: none;
-      margin-top: 12px;
-      align-items: center;
-      gap: 10px;
-      color: #cbd5f5;
+    .hint {
+      margin-top: 8px;
+      color: var(--danger);
+      font-size: 14px;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 14px;
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
 
     .spinner {
-      width: 18px;
-      height: 18px;
-      border: 3px solid rgba(255,255,255,0.25);
-      border-top-color: white;
+      display: none;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .loader {
+      width: 42px;
+      height: 42px;
+      border: 4px solid #1f2937;
+      border-top: 4px solid var(--primary);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 8px;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    .result {
-      margin-top: 20px;
-      background: #020617;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 14px;
-      white-space: pre-wrap;
-      font-size: 14px;
-    }
-
-    .error {
-      color: #fca5a5;
-      margin-top: 12px;
-    }
-
-    .tip {
+    .footer {
       margin-top: 16px;
-      font-size: 12px;
-      color: #9ca3af;
+      font-size: 13px;
+      color: var(--muted);
     }
   </style>
 </head>
 
 <body>
+  <div class="container">
+    <h1>📄 briefe-einfach</h1>
+    <div class="subtitle">
+      Füge einen Brief / Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
+    </div>
 
-  <h1>📄 briefe-einfach</h1>
-  <div class="subtitle">
-    Füge einen Brief / Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
-  </div>
+    <label for="text">Originaltext</label>
+    <textarea id="text" placeholder="Text hier einfügen..."></textarea>
 
-  <label><b>Originaltext</b></label>
-  <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
+    <div class="buttons">
+      <button class="primary" id="btnExplain">✨ Erklären</button>
+      <button id="btnClear">Leeren</button>
+      <button id="btnCopy">Ergebnis kopieren</button>
+    </div>
 
-  <div class="buttons">
-    <button id="btnExplain">✨ Erklären</button>
-    <button class="secondary" id="btnClear">Leeren</button>
-    <button class="secondary" id="btnCopy">Ergebnis kopieren</button>
-  </div>
+    <div class="hint" id="hint"></div>
 
-  <div id="loader">
-    <div class="spinner"></div>
-    <div>Erklärung wird erstellt…</div>
-  </div>
+    <div class="spinner" id="spinner">
+      <div class="loader"></div>
+      Erklärung wird erstellt …
+    </div>
 
-  <div id="error" class="error"></div>
+    <div class="result" id="result"></div>
 
-  <div id="result" class="result" style="display:none;"></div>
-
-  <div class="tip">
-    Tipp: Später kannst du Rate-Limit, API-Key-Schutz & bessere Formatierung ergänzen.
+    <div class="footer">
+      Tipp: Später kannst du Rate-Limit, API-Key-Schutz & bessere Formatierung ergänzen.
+    </div>
   </div>
 
   <script>
-    const input = document.getElementById("inputText");
-    const result = document.getElementById("result");
-    const errorBox = document.getElementById("error");
-    const loader = document.getElementById("loader");
+    const textEl = document.getElementById("text");
+    const resultEl = document.getElementById("result");
+    const hintEl = document.getElementById("hint");
+    const spinnerEl = document.getElementById("spinner");
 
     const btnExplain = document.getElementById("btnExplain");
     const btnClear = document.getElementById("btnClear");
     const btnCopy = document.getElementById("btnCopy");
 
-    function showLoader() {
-      loader.style.display = "flex";
-      btnExplain.disabled = true;
-    }
+    btnExplain.onclick = async () => {
+      hintEl.textContent = "";
+      resultEl.textContent = "";
 
-    function hideLoader() {
-      loader.style.display = "none";
-      btnExplain.disabled = false;
-    }
-
-    btnExplain.addEventListener("click", async () => {
-      errorBox.textContent = "";
-      result.style.display = "none";
-
-      const text = input.value.trim();
+      const text = textEl.value.trim();
       if (!text) {
-        errorBox.textContent = "Bitte zuerst einen Text eingeben.";
+        hintEl.textContent = "Bitte zuerst einen Text eingeben.";
         return;
       }
 
-      showLoader();
+      spinnerEl.style.display = "block";
+      btnExplain.disabled = true;
 
       try {
         const res = await fetch("/erklaeren", {
@@ -179,27 +214,25 @@
         }
 
         const data = await res.json();
-        result.textContent = data.erklaerung || "Keine Erklärung erhalten.";
-        result.style.display = "block";
-
-      } catch (err) {
-        errorBox.textContent = "Fehler: Erklärung konnte nicht erstellt werden.";
+        resultEl.textContent = data.explanation || "Keine Erklärung erhalten.";
+      } catch (e) {
+        hintEl.textContent = "Fehler: Unbekannter Fehler";
       } finally {
-        hideLoader();
+        spinnerEl.style.display = "none";
+        btnExplain.disabled = false;
       }
-    });
+    };
 
-    btnClear.addEventListener("click", () => {
-      input.value = "";
-      result.style.display = "none";
-      errorBox.textContent = "";
-    });
+    btnClear.onclick = () => {
+      textEl.value = "";
+      resultEl.textContent = "";
+      hintEl.textContent = "";
+    };
 
-    btnCopy.addEventListener("click", () => {
-      if (!result.textContent) return;
-      navigator.clipboard.writeText(result.textContent);
-    });
+    btnCopy.onclick = () => {
+      if (!resultEl.textContent) return;
+      navigator.clipboard.writeText(resultEl.textContent);
+    };
   </script>
-
 </body>
 </html>
