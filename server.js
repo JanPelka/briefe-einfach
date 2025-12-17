@@ -3,44 +3,50 @@ const cors = require("cors");
 
 const app = express();
 
-// ===== Middleware =====
+/* =========================
+   CONFIG
+========================= */
 app.use(cors());
-app.use(express.json({ limit: "2mb" }));
+app.use(express.json({ limit: "1mb" }));
 
-// ===== Health / Root Endpoint (WICHTIG für Railway!) =====
+/* =========================
+   HEALTH / ROOT
+========================= */
 app.get("/", (req, res) => {
   res.status(200).send("🚀 briefe-einfach läuft!");
 });
 
-// ===== API Endpoint =====
-app.post("/erklaeren", async (req, res) => {
-  try {
-    const { text } = req.body;
-
-    if (!text || text.trim().length === 0) {
-      return res.status(400).json({
-        error: "Kein Text übergeben",
-      });
-    }
-
-    // MVP: Platzhalter-Erklärung
-    const explanation = `📄 Einfache Erklärung (MVP):
-    
-Dieser Text ist ein offizielles Schreiben.
-Er enthält wichtige Informationen oder Forderungen.
-Bitte lies ihn aufmerksam und beachte Fristen.`;
-
-    res.json({
-      ok: true,
-      explanation,
-    });
-  } catch (err) {
-    console.error("Fehler:", err);
-    res.status(500).json({ error: "Serverfehler" });
-  }
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
 });
 
-// ===== Railway PORT (ABSOLUT KRITISCH) =====
+/* =========================
+   API
+========================= */
+app.post("/erklaeren", (req, res) => {
+  const { text } = req.body;
+
+  if (!text || text.trim().length === 0) {
+    return res.status(400).json({
+      error: "Kein Text übergeben",
+    });
+  }
+
+  // MVP: Dummy-Erklärung
+  const erklaerung =
+    "📄 Einfache Erklärung (MVP):\n\n" +
+    text.slice(0, 200) +
+    (text.length > 200 ? " …" : "");
+
+  res.json({
+    ok: true,
+    explanation: erklaerung,
+  });
+});
+
+/* =========================
+   START SERVER (RAILWAY FIX)
+========================= */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
