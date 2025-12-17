@@ -3,176 +3,273 @@
 <head>
   <meta charset="UTF-8" />
   <title>briefe-einfach</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --border: #1f2933;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --primary: #3b82f6;
-      --danger: #ef4444;
+    :root{
+      --bg1:#020617;
+      --bg2:#0f172a;
+      --card:#111827;
+      --panel:#0b1220;
+      --border:#1f2937;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --primary:#3b82f6;
+      --danger:#ef4444;
+
+      --radius:14px;
+      --radius-sm:12px;
+
+      --pad:24px;
+      --gap:12px;
+
+      --btn-h:44px;
+      --btn-pad:14px;
+      --font: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    *{ box-sizing:border-box; font-family:var(--font); }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:var(--text);
+      padding:
+        max(16px, env(safe-area-inset-top))
+        16px
+        max(16px, env(safe-area-inset-bottom))
+        16px;
     }
 
-    body {
-      margin: 0;
-      background: linear-gradient(180deg, #020617, #0f172a);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 40px 16px;
+    /* Container */
+    .container{
+      width:100%;
+      max-width:900px;
+      margin:0 auto;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+      overflow:hidden;
     }
 
-    .container {
-      width: 100%;
-      max-width: 900px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    /* Header */
+    .header{
+      padding:var(--pad);
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+    }
+    h1{
+      margin:0 0 6px 0;
+      font-size:26px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      line-height:1.2;
+    }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      line-height:1.4;
     }
 
-    h1 {
-      margin: 0 0 6px 0;
-      font-size: 26px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    /* Content */
+    .content{
+      padding:var(--pad);
+      display:flex;
+      flex-direction:column;
+      gap:16px;
     }
 
-    .subtitle {
-      color: var(--muted);
-      margin-bottom: 20px;
+    label{
+      font-weight:700;
+      margin-bottom:6px;
+      display:block;
     }
 
-    label {
-      display: block;
-      margin: 16px 0 6px;
-      font-weight: 600;
+    textarea{
+      width:100%;
+      min-height:200px;
+      background:var(--panel);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:14px;
+      font-size:16px; /* wichtig: verhindert iOS Zoom */
+      line-height:1.5;
+      resize:vertical;
+      outline:none;
+    }
+    textarea:focus{ border-color:var(--primary); }
+
+    .hint{
+      color:var(--danger);
+      font-size:14px;
+      margin-top:6px;
+      min-height:18px;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 160px;
-      background: #020617;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      resize: vertical;
-      font-size: 15px;
+    /* Result */
+    .resultWrap{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .resultTitle{
+      font-weight:800;
+      margin:0;
+    }
+    .result{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:14px;
+      white-space:pre-wrap;
+      line-height:1.6;
+      font-size:16px;
+      min-height:120px;
     }
 
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
+    /* Buttons bar (desktop) */
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-      flex-wrap: wrap;
+    button{
+      border:1px solid var(--border);
+      background:#111c2e;
+      color:var(--text);
+      border-radius:12px;
+      height:var(--btn-h);
+      padding:0 var(--btn-pad);
+      font-weight:800;
+      font-size:15px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition: transform .06s ease, opacity .2s ease, border-color .2s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
     }
-
-    button {
-      border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      background: #1f2937;
-      color: var(--text);
+    button:hover{ border-color:#2b3b56; }
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      background:var(--primary);
+      border-color:transparent;
+      color:#fff;
     }
+    button:disabled{ opacity:.6; cursor:not-allowed; }
 
-    button.primary {
-      background: var(--primary);
-      color: #fff;
+    /* Spinner */
+    .spinner{
+      display:none;
+      text-align:center;
+      padding:10px 0 0;
     }
-
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .hint {
-      margin-top: 8px;
-      color: var(--danger);
-      font-size: 14px;
-    }
-
-    .result {
-      margin-top: 20px;
-      padding: 14px;
-      background: #020617;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-
-    .spinner {
-      display: none;
-      margin-top: 16px;
-      text-align: center;
-    }
-
-    .loader {
-      width: 42px;
-      height: 42px;
-      border: 4px solid #1f2937;
-      border-top: 4px solid var(--primary);
-      border-radius: 50%;
+    .loader{
+      width:42px;
+      height:42px;
+      border:4px solid #1f2937;
+      border-top:4px solid var(--primary);
+      border-radius:50%;
       animation: spin 1s linear infinite;
-      margin: 0 auto 8px;
+      margin:0 auto 8px;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
+
+    /* Footer */
+    .footer{
+      padding:14px var(--pad);
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* --- MOBILE OPTIMIERUNG --- */
+    @media (max-width: 720px){
+      :root{
+        --pad:16px;
+        --btn-h:50px;
+        --btn-pad:16px;
+      }
+      h1{ font-size:22px; }
+      textarea{ min-height:220px; }
+      .actions{ display:none; } /* wir nutzen sticky bar unten */
+      .result{ min-height:140px; }
     }
 
-    .footer {
-      margin-top: 16px;
-      font-size: 13px;
-      color: var(--muted);
+    /* Sticky action bar (nur mobile) */
+    .stickyBar{
+      display:none;
+    }
+    @media (max-width: 720px){
+      .stickyBar{
+        display:flex;
+        position:sticky;
+        bottom:0;
+        gap:10px;
+        padding:12px var(--pad) calc(12px + env(safe-area-inset-bottom));
+        background: rgba(17,24,39,.92);
+        backdrop-filter: blur(10px);
+        border-top:1px solid var(--border);
+        z-index:10;
+      }
+      .stickyBar button{
+        flex:1;
+        min-width:0;
+      }
+      .stickyBar button.secondary{
+        background:#0f1a2b;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>📄 briefe-einfach</h1>
-    <div class="subtitle">
-      Füge einen Brief / Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
+    <div class="header">
+      <h1>📄 briefe-einfach</h1>
+      <p class="subtitle">
+        Füge einen Brief / Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
+      </p>
     </div>
 
-    <label for="text">Originaltext</label>
-    <textarea id="text" placeholder="Text hier einfügen..."></textarea>
+    <div class="content">
+      <div>
+        <label for="text">Originaltext</label>
+        <textarea id="text" placeholder="Text hier einfügen..."></textarea>
 
-    <div class="buttons">
-      <button class="primary" id="btnExplain">✨ Erklären</button>
-      <button id="btnClear">Leeren</button>
-      <button id="btnCopy">Ergebnis kopieren</button>
+        <div class="actions">
+          <button class="primary" id="btnExplain">✨ Erklären</button>
+          <button id="btnClear">Leeren</button>
+          <button id="btnCopy">Ergebnis kopieren</button>
+        </div>
+
+        <div class="hint" id="hint"></div>
+
+        <div class="spinner" id="spinner">
+          <div class="loader"></div>
+          Erklärung wird erstellt …
+        </div>
+      </div>
+
+      <div class="resultWrap">
+        <div class="resultTitle">Ergebnis</div>
+        <div class="result" id="result"></div>
+      </div>
     </div>
 
-    <div class="hint" id="hint"></div>
-
-    <div class="spinner" id="spinner">
-      <div class="loader"></div>
-      Erklärung wird erstellt …
+    <!-- Sticky bar nur mobile -->
+    <div class="stickyBar">
+      <button class="primary" id="btnExplainMobile">✨ Erklären</button>
+      <button class="secondary" id="btnClearMobile">Leeren</button>
+      <button class="secondary" id="btnCopyMobile">Kopieren</button>
     </div>
-
-    <div class="result" id="result"></div>
 
     <div class="footer">
       Tipp: Später kannst du Rate-Limit, API-Key-Schutz & bessere Formatierung ergänzen.
@@ -189,50 +286,77 @@
     const btnClear = document.getElementById("btnClear");
     const btnCopy = document.getElementById("btnCopy");
 
-    btnExplain.onclick = async () => {
+    const btnExplainMobile = document.getElementById("btnExplainMobile");
+    const btnClearMobile = document.getElementById("btnClearMobile");
+    const btnCopyMobile = document.getElementById("btnCopyMobile");
+
+    function setBusy(isBusy){
+      spinnerEl.style.display = isBusy ? "block" : "none";
+      [btnExplain, btnExplainMobile].forEach(b => { if (b) b.disabled = isBusy; });
+    }
+
+    async function doExplain(){
       hintEl.textContent = "";
       resultEl.textContent = "";
 
       const text = textEl.value.trim();
-      if (!text) {
+      if (!text){
         hintEl.textContent = "Bitte zuerst einen Text eingeben.";
         return;
       }
 
-      spinnerEl.style.display = "block";
-      btnExplain.disabled = true;
+      setBusy(true);
 
-      try {
+      try{
         const res = await fetch("/erklaeren", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text })
         });
 
-        if (!res.ok) {
-          throw new Error("Serverfehler");
+        if (!res.ok){
+          throw new Error("Serverfehler: " + res.status);
         }
 
         const data = await res.json();
         resultEl.textContent = data.explanation || "Keine Erklärung erhalten.";
-      } catch (e) {
+      }catch(e){
         hintEl.textContent = "Fehler: Unbekannter Fehler";
-      } finally {
-        spinnerEl.style.display = "none";
-        btnExplain.disabled = false;
+      }finally{
+        setBusy(false);
       }
-    };
+    }
 
-    btnClear.onclick = () => {
+    function doClear(){
       textEl.value = "";
       resultEl.textContent = "";
       hintEl.textContent = "";
-    };
+    }
 
-    btnCopy.onclick = () => {
+    async function doCopy(){
       if (!resultEl.textContent) return;
-      navigator.clipboard.writeText(resultEl.textContent);
-    };
+      try{
+        await navigator.clipboard.writeText(resultEl.textContent);
+      }catch(e){
+        // fallback: select + copy
+        const range = document.createRange();
+        range.selectNodeContents(resultEl);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+        sel.removeAllRanges();
+      }
+    }
+
+    if (btnExplain) btnExplain.onclick = doExplain;
+    if (btnExplainMobile) btnExplainMobile.onclick = doExplain;
+
+    if (btnClear) btnClear.onclick = doClear;
+    if (btnClearMobile) btnClearMobile.onclick = doClear;
+
+    if (btnCopy) btnCopy.onclick = doCopy;
+    if (btnCopyMobile) btnCopyMobile.onclick = doCopy;
   </script>
 </body>
 </html>
