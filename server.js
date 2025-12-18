@@ -1,122 +1,149 @@
+/* server.js - briefe-einfach (Railway-ready) */
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+const stripe = STRIPE_SECRET_KEY ? require("stripe")(STRIPE_SECRET_KEY) : null;
+
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+// Für Stripe Webhooks braucht man RAW Body – wir definieren Webhook-Route VOR json()
+app.post(
+  "/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    try {
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      if (!stripe) return res.status(500).send("Stripe not configured");
+      if (!webhookSecret) return res.status(200).send("No webhook secret set");
 
-// ===== Basics =====
-app.use(cors());
+      const sig = req.headers["stripe-signature"];
+      const event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+
+      // Hier könntest du später “Pro freischalten” machen (DB etc.)
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object;
+        console.log("✅ Stripe checkout completed:", session.id);
+      }
+
+      return res.status(200).json({ received: true });
+    } catch (err) {
+      console.error("❌ Webhook error:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+  }
+);
+
+// Normaler JSON Parser für Rest
 app.use(express.json({ limit: "1mb" }));
+
+// CORS (bei gleicher Domain egal, aber hilft beim Debug)
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
 
 // Static Frontend
 app.use(express.static(path.join(__dirname, "public")));
 
-// ===== Health =====
-app.get("/health", (req, res) => {
-  res.status(200).json({ ok: true, status: "healthy" });
-});
+// Healthcheck (Railway)
+app.get("/health", (req, res) => res.json({ ok: true }));
 
-// Root -> index.html
+// Root (falls direkt auf /)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ===== Config endpoint for frontend (no secrets) =====
-app.get("/config", (req, res) => {
-  const paymentsEnabled = Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_PRICE_ID);
-  res.json({
-    ok: true,
-    paymentsEnabled
-  });
-});
-
-// ===== MVP Explain endpoint =====
-app.post("/erklaeren", (req, res) => {
+/**
+ * API: /erklaeren
+ * Erwartet: { text: "..." }
+ * Gibt zurück: { result: "..." }
+ */
+app.post("/erklaeren", async (req, res) => {
   try {
-    const text = (req.body && req.body.text ? String(req.body.text) : "").trim();
+    const text = (req.body?.text || "").toString().trim();
+    if (!text) return res.status(400).json({ error: "Bitte Text eingeben." });
 
-    if (!text) {
-      return res.status(400).json({
-        ok: false,
-        error: "Bitte zuerst einen Text eingeben."
-      });
-    }
+    // Minimal-Logik (Platzhalter). Später ersetzen wir das mit echter KI.
+    const kurzeSaetze = text
+      .replace(/\s+/g, " ")
+      .split(/(?<=[.!?])\s+/)
+      .filter(Boolean)
+      .slice(0, 6);
 
-    // Simple MVP explanation
-    const cleaned = text.replace(/\s+/g, " ").trim();
-    const firstSentence = cleaned.split(/(?<=[.!?])\s+/)[0] || cleaned;
-    const short = cleaned.length > 600 ? cleaned.slice(0, 600) + " ..." : cleaned;
-
-    const explanation =
+    const result =
       "Das ist eine einfache Erklärung:\n\n" +
-      "• Worum geht es? " +
-      (firstSentence.length > 160 ? firstSentence.slice(0, 160) + " ..." : firstSentence) +
-      "\n" +
-      "• Was sollst du tun? Prüfe: Frist? Antwort nötig? Unterlagen einreichen?\n" +
-      "• Kurzfassung: " +
-      short +
-      "\n\n" +
-      "Hinweis: Das ist aktuell ein MVP (noch ohne echte KI).";
+      "- Der Brief ist ein offizielles Schreiben.\n" +
+      "- Es geht darum, den Inhalt verständlich zu machen.\n" +
+      "- Wichtig ist: Fristen prüfen und ggf. reagieren.\n\n" +
+      "Kurz-Auszug aus deinem Text:\n" +
+      kurzeSaetze.map((s) => `• ${s}`).join("\n");
 
-    return res.status(200).json({
-      ok: true,
-      explanation
-    });
+    return res.json({ result });
   } catch (err) {
-    console.error("Fehler /erklaeren:", err);
-    return res.status(500).json({
-      ok: false,
-      error: "Unbekannter Fehler im Server."
-    });
+    console.error("❌ /erklaeren error:", err);
+    return res.status(500).json({ error: "Unbekannter Fehler im Server." });
   }
 });
 
-// ===== Payments (Stripe Checkout) =====
-// Will NOT crash if you haven't set keys yet.
-// It returns a clean error instead.
+/**
+ * Stripe Checkout
+ * POST /create-checkout-session
+ * Body optional: { mode: "payment"|"subscription" }
+ *
+ * Aktuell: Einmalzahlung 5,00 € (ohne Price-ID, per price_data)
+ */
 app.post("/create-checkout-session", async (req, res) => {
   try {
-    const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-    const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID;
-
-    if (!STRIPE_SECRET_KEY || !STRIPE_PRICE_ID) {
-      return res.status(501).json({
-        ok: false,
-        error: "Bezahlung ist noch nicht konfiguriert (Stripe Keys fehlen)."
+    if (!stripe) {
+      return res.status(500).json({
+        error:
+          "Stripe ist nicht konfiguriert. Setze STRIPE_SECRET_KEY in Railway Variablen."
       });
     }
 
-    const stripe = require("stripe")(STRIPE_SECRET_KEY);
-
-    const origin =
-      (req.headers["x-forwarded-proto"] ? req.headers["x-forwarded-proto"] + "://" : "https://") +
-      req.headers.host;
+    // Domain automatisch aus Request bauen (Railway URL)
+    const proto =
+      (req.headers["x-forwarded-proto"] || "").toString().split(",")[0] ||
+      "https";
+    const host = req.headers["x-forwarded-host"] || req.headers.host;
+    const baseUrl = `${proto}://${host}`;
 
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
-      success_url: `${origin}/?paid=1`,
-      cancel_url: `${origin}/?paid=0`,
-      allow_promotion_codes: true
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: "Briefe-einfach Pro (Einmalzahlung)"
+            },
+            unit_amount: 500 // 5,00 €
+          },
+          quantity: 1
+        }
+      ],
+      success_url: `${baseUrl}/?paid=1`,
+      cancel_url: `${baseUrl}/?paid=0`
     });
 
-    return res.json({ ok: true, url: session.url });
+    return res.json({ url: session.url });
   } catch (err) {
-    console.error("Fehler /create-checkout-session:", err);
-    return res.status(500).json({
-      ok: false,
-      error: "Checkout konnte nicht erstellt werden."
-    });
+    console.error("❌ Stripe error:", err);
+    return res.status(500).json({ error: "Stripe Fehler: " + err.message });
   }
 });
 
-// Fallback 404
+// Fallback (wenn jemand auf nicht-existierende Seite geht)
 app.use((req, res) => {
-  res.status(404).json({ ok: false, error: "Not Found" });
+  res.status(404).send("Not Found");
 });
 
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`✅ Server läuft auf Port ${PORT}`);
 });

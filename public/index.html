@@ -1,681 +1,354 @@
 <!doctype html>
 <html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0b1220" />
-  <title>briefe-einfach</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>briefe-einfach</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: rgba(255, 255, 255, 0.07);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.70);
+        --btn: rgba(255, 255, 255, 0.10);
+        --btn2: rgba(255, 255, 255, 0.16);
+      }
 
-  <style>
-    :root{
-      --bg:#0b1220;
-      --panel:#111a2e;
-      --panel2:#0f1729;
-      --text:#e8eefc;
-      --muted:#9fb0d0;
-      --brand:#4f7cff;
-      --brand2:#2f5bff;
-      --danger:#ff5b5b;
-      --ok:#2dd4bf;
-      --border:rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:16px;
-    }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: radial-gradient(1200px 600px at 20% 0%, #1b2a6b 0%, transparent 60%),
+          radial-gradient(800px 500px at 90% 10%, #4b1b6b 0%, transparent 55%),
+          var(--bg);
+        color: var(--text);
+      }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(79,124,255,.20), transparent 60%),
-        radial-gradient(900px 500px at 90% 30%, rgba(45,212,191,.15), transparent 55%),
-        var(--bg);
-      color: var(--text);
-      min-height:100svh;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      padding: 14px;
-    }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 22px 14px 60px;
+      }
 
-    .wrap{
-      width:min(980px, 100%);
-      display:grid;
-      gap: 12px;
-    }
+      .header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 14px;
+      }
 
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      padding: 10px 6px 0 6px;
-    }
+      .logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.12);
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border);
+      }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      min-width: 0;
-    }
+      h1 {
+        font-size: 26px;
+        margin: 0;
+        letter-spacing: 0.2px;
+      }
+      .subtitle {
+        margin: 6px 0 18px;
+        color: var(--muted);
+        line-height: 1.35;
+      }
 
-    .logo{
-      width:36px;height:36px;border-radius:12px;
-      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(45,212,191,.85));
-      display:grid;place-items:center;
-      box-shadow: var(--shadow);
-      flex: 0 0 auto;
-      user-select:none;
-    }
-    .logo span{font-weight:900}
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
 
-    .titles{min-width:0}
-    h1{font-size: 22px;margin:0;letter-spacing:.2px}
-    .subtitle{margin:2px 0 0 0;color:var(--muted);font-size:13px;line-height:1.25}
+      @media (min-width: 900px) {
+        .grid { grid-template-columns: 1fr 1fr; }
+      }
 
-    .pillrow{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content:flex-end;
-    }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        backdrop-filter: blur(10px);
+      }
 
-    .pill{
-      font-size: 12px;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      padding: 8px 10px;
-      border-radius: 999px;
-      display:inline-flex;
-      gap: 8px;
-      align-items:center;
-      user-select:none;
-    }
-    .dot{width:8px;height:8px;border-radius:999px;background: var(--ok); display:inline-block}
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
 
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
+      textarea {
+        width: 100%;
+        min-height: 220px;
+        resize: vertical;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.18);
+        color: var(--text);
+        outline: none;
+        font-size: 14px;
+        line-height: 1.45;
+      }
 
-    .panel-inner{
-      padding: 14px;
-      display:grid;
-      gap: 12px;
-    }
+      .btnRow {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
 
-    .tabs{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding: 10px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(0,0,0,.12);
-    }
-    .tab{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      padding: 9px 11px;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor:pointer;
-    }
-    .tab.active{
-      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(47,91,255,.95));
-      border-color: rgba(79,124,255,.45);
-    }
+      button {
+        border: 1px solid var(--border);
+        background: var(--btn);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      button:hover { background: var(--btn2); }
 
-    .grid{
-      display:grid;
-      gap: 12px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 900px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-    }
+      button.primary {
+        background: rgba(120, 110, 255, 0.35);
+        border-color: rgba(120, 110, 255, 0.55);
+      }
+      button.primary:hover {
+        background: rgba(120, 110, 255, 0.48);
+      }
 
-    label{
-      font-size: 13px;
-      color: var(--muted);
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .counter{
-      color: var(--muted);
-      font-variant-numeric: tabular-nums;
-    }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-    textarea{
-      width:100%;
-      min-height: 210px;
-      resize: vertical;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(17,26,46,.70);
-      color: var(--text);
-      padding: 12px;
-      outline:none;
-      font-size: 15px;
-      line-height: 1.45;
-    }
+      .resultBox {
+        white-space: pre-wrap;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.18);
+        padding: 12px;
+        min-height: 220px;
+        font-size: 14px;
+        line-height: 1.45;
+      }
 
-    .result{
-      white-space: pre-wrap;
-      min-height: 210px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(15,23,41,.65);
-      padding: 12px;
-      font-size: 15px;
-      line-height: 1.45;
-    }
+      .hint {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
 
-    .actions{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items:center;
-    }
+      .error {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 120, 120, 0.45);
+        background: rgba(255, 120, 120, 0.12);
+        color: rgba(255, 210, 210, 0.95);
+        display: none;
+      }
 
-    button{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-weight: 750;
-      cursor:pointer;
-      transition: transform .05s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-    }
-    button:hover{ background: rgba(255,255,255,.10); }
-    button:active{ transform: translateY(1px); }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
+      /* Spinner */
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.35);
+        border-top-color: rgba(255,255,255,0.95);
+        display: inline-block;
+        animation: spin 0.8s linear infinite;
+        vertical-align: -3px;
+        margin-right: 8px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
 
-    .primary{
-      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(47,91,255,.95));
-      border-color: rgba(79,124,255,.45);
-    }
+      .paid {
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(120, 255, 160, 0.35);
+        background: rgba(120, 255, 160, 0.12);
+        color: rgba(220, 255, 230, 0.95);
+        display: none;
+      }
+    </style>
+  </head>
 
-    .copy{ margin-left:auto; }
-
-    .hint{
-      color: var(--muted);
-      font-size: 12px;
-      padding-top: 2px;
-      line-height: 1.35;
-    }
-
-    .error{
-      display:none;
-      color: #fff;
-      background: rgba(255,91,91,.18);
-      border: 1px solid rgba(255,91,91,.35);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-    }
-
-    .success{
-      display:none;
-      color: #fff;
-      background: rgba(45,212,191,.14);
-      border: 1px solid rgba(45,212,191,.35);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-    }
-
-    .history{
-      display:none;
-      border-top: 1px solid var(--border);
-      padding-top: 10px;
-      margin-top: 6px;
-    }
-    .history h3{
-      margin: 0 0 8px 0;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 800;
-      letter-spacing:.2px;
-    }
-    .historyList{
-      display:grid;
-      gap: 8px;
-    }
-    .histItem{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      border-radius: 12px;
-      padding: 10px;
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
-      cursor:pointer;
-    }
-    .histItem:hover{ background: rgba(255,255,255,.06); }
-    .histText{
-      color: var(--text);
-      font-size: 13px;
-      line-height:1.3;
-      overflow:hidden;
-      display:-webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-    .histMeta{
-      color: var(--muted);
-      font-size: 12px;
-      white-space:nowrap;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Loading overlay */
-    .overlay{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.45);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      z-index: 9999;
-    }
-    .loaderCard{
-      width:min(420px, 100%);
-      background: rgba(17,26,46,.92);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      display:flex;
-      gap: 12px;
-      align-items:center;
-    }
-    .spinner{
-      width: 22px;
-      height: 22px;
-      border-radius: 999px;
-      border: 3px solid rgba(255,255,255,.20);
-      border-top-color: rgba(79,124,255,.95);
-      animation: spin .8s linear infinite;
-      flex: 0 0 auto;
-    }
-    @keyframes spin{ to { transform: rotate(360deg);} }
-
-    .loaderText{
-      display:grid;
-      gap: 4px;
-    }
-    .loaderTitle{font-weight:900}
-    .loaderSub{color: var(--muted); font-size: 13px; line-height:1.25}
-
-    /* Mobile: keep actions reachable */
-    @media (max-width: 520px){
-      h1{font-size:20px}
-      .panel-inner{padding:12px}
-      textarea,.result{min-height: 180px}
-      .copy{margin-left:0}
-      .actions{gap:8px}
-      button{width:100%; justify-content:center}
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo"><span>✉️</span></div>
-        <div class="titles">
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div class="logo">📄</div>
+        <div>
           <h1>briefe-einfach</h1>
-          <p class="subtitle">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.</p>
-        </div>
-      </div>
-      <div class="pillrow">
-        <div class="pill"><span class="dot"></span><span id="statusText">Online</span></div>
-        <button id="btnUpgrade" class="pill" type="button">⭐ Pro freischalten</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="tabs">
-        <button class="tab active" id="tabExplain" type="button">Erklären</button>
-        <button class="tab" id="tabPro" type="button">Pro (kommt)</button>
-      </div>
-
-      <div class="panel-inner" id="viewExplain">
-        <div class="grid">
-          <div>
-            <label>
-              <span>Originaltext</span>
-              <span class="counter"><span id="charCount">0</span> Zeichen</span>
-            </label>
-            <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
-            <div class="actions" style="margin-top:10px">
-              <button id="btnExplain" class="primary" type="button">✨ Erklären</button>
-              <button id="btnClear" type="button">🧹 Leeren</button>
-              <button id="btnCopy" class="copy" type="button">📋 Ergebnis kopieren</button>
-            </div>
-
-            <div class="error" id="errorBox"></div>
-            <div class="success" id="successBox"></div>
-
-            <div class="hint">
-              Tipp: Später ergänzen wir Rate-Limit, API-Key-Schutz, echte KI-Antworten, Formatierung (Fristen/To-Dos) und Bezahlung.
-            </div>
-
-            <div class="history" id="historyBox">
-              <h3>Letzte Erklärungen (lokal auf diesem Gerät)</h3>
-              <div class="historyList" id="historyList"></div>
-            </div>
-          </div>
-
-          <div>
-            <label>
-              <span>Ergebnis</span>
-              <span class="counter" id="serverHint">Server: ok</span>
-            </label>
-            <div class="result" id="outputBox"></div>
+          <div class="subtitle">
+            Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
           </div>
         </div>
       </div>
 
-      <div class="panel-inner" id="viewPro" style="display:none">
-        <div class="success" style="display:block">
-          Pro-Features bauen wir als Nächstes rein: bessere Struktur (Frist/To-Dos), Vorlagen, Export PDF, Login, Bezahlung.
+      <div class="paid" id="paidBox">✅ Zahlung erkannt. Danke! (Demo-Hinweis: Freischaltung bauen wir als nächstes.)</div>
+
+      <div class="grid">
+        <div class="card">
+          <label for="inputText">Originaltext</label>
+          <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
+
+          <div class="btnRow">
+            <button class="primary" id="btnExplain">
+              <span id="btnExplainIcon">✨</span>
+              <span id="btnExplainText">Erklären</span>
+            </button>
+
+            <button id="btnClear">Leeren</button>
+
+            <button id="btnCopy" disabled>Ergebnis kopieren</button>
+
+            <button id="btnPay">💳 Pro kaufen (5 €)</button>
+          </div>
+
+          <div class="error" id="errorBox"></div>
+
+          <div class="hint">
+            Tipp: Als nächstes bauen wir Rate-Limit, API-Key Schutz, bessere Formatierung und echte KI-Antworten ein.
+          </div>
         </div>
-        <div class="hint">
-          Sobald Stripe eingerichtet ist, kannst du hier direkt „Pro“ aktivieren.
+
+        <div class="card">
+          <label>Ergebnis</label>
+          <div class="resultBox" id="resultBox"></div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Loading Overlay -->
-  <div class="overlay" id="overlay">
-    <div class="loaderCard">
-      <div class="spinner"></div>
-      <div class="loaderText">
-        <div class="loaderTitle">Bitte warten…</div>
-        <div class="loaderSub">Wir erstellen gerade deine einfache Erklärung.</div>
-      </div>
-    </div>
-  </div>
+    <script>
+      const input = document.getElementById("inputText");
+      const resultBox = document.getElementById("resultBox");
+      const errorBox = document.getElementById("errorBox");
+      const paidBox = document.getElementById("paidBox");
 
-  <script>
-    const inputText = document.getElementById("inputText");
-    const outputBox = document.getElementById("outputBox");
-    const btnExplain = document.getElementById("btnExplain");
-    const btnClear = document.getElementById("btnClear");
-    const btnCopy = document.getElementById("btnCopy");
-    const errorBox = document.getElementById("errorBox");
-    const successBox = document.getElementById("successBox");
-    const overlay = document.getElementById("overlay");
-    const charCount = document.getElementById("charCount");
-    const historyBox = document.getElementById("historyBox");
-    const historyList = document.getElementById("historyList");
-    const serverHint = document.getElementById("serverHint");
-    const statusText = document.getElementById("statusText");
-    const btnUpgrade = document.getElementById("btnUpgrade");
+      const btnExplain = document.getElementById("btnExplain");
+      const btnExplainText = document.getElementById("btnExplainText");
+      const btnExplainIcon = document.getElementById("btnExplainIcon");
 
-    const tabExplain = document.getElementById("tabExplain");
-    const tabPro = document.getElementById("tabPro");
-    const viewExplain = document.getElementById("viewExplain");
-    const viewPro = document.getElementById("viewPro");
+      const btnClear = document.getElementById("btnClear");
+      const btnCopy = document.getElementById("btnCopy");
+      const btnPay = document.getElementById("btnPay");
 
-    function showOverlay(show){
-      overlay.style.display = show ? "flex" : "none";
-    }
-    function showError(msg){
-      successBox.style.display = "none";
-      errorBox.textContent = msg;
-      errorBox.style.display = "block";
-    }
-    function showSuccess(msg){
-      errorBox.style.display = "none";
-      successBox.textContent = msg;
-      successBox.style.display = "block";
-      setTimeout(()=>{ successBox.style.display = "none"; }, 2500);
-    }
-    function setBusy(busy){
-      btnExplain.disabled = busy;
-      btnClear.disabled = busy;
-      btnCopy.disabled = busy;
-      btnUpgrade.disabled = busy;
-    }
-
-    function updateCount(){
-      charCount.textContent = String((inputText.value || "").length);
-    }
-    inputText.addEventListener("input", updateCount);
-    updateCount();
-
-    function loadHistory(){
-      try{
-        const items = JSON.parse(localStorage.getItem("be_history") || "[]");
-        historyList.innerHTML = "";
-        if (!items.length){
-          historyBox.style.display = "none";
+      function setError(msg) {
+        if (!msg) {
+          errorBox.style.display = "none";
+          errorBox.textContent = "";
           return;
         }
-        historyBox.style.display = "block";
-        items.slice(0,5).forEach((it, idx)=>{
-          const div = document.createElement("div");
-          div.className = "histItem";
-          div.innerHTML = `
-            <div class="histText">${escapeHtml(it.inputPreview || "")}</div>
-            <div class="histMeta">${escapeHtml(it.time || "")}</div>
-          `;
-          div.addEventListener("click", ()=>{
-            outputBox.textContent = it.output || "";
-            showSuccess("Ergebnis aus Verlauf geladen");
+        errorBox.style.display = "block";
+        errorBox.textContent = "❌ " + msg;
+      }
+
+      function setLoading(isLoading) {
+        btnExplain.disabled = isLoading;
+        btnClear.disabled = isLoading;
+        btnPay.disabled = isLoading;
+
+        if (isLoading) {
+          btnExplainIcon.innerHTML = '<span class="spinner"></span>';
+          btnExplainText.textContent = "Bitte warten…";
+        } else {
+          btnExplainIcon.textContent = "✨";
+          btnExplainText.textContent = "Erklären";
+        }
+      }
+
+      async function explainText() {
+        setError("");
+        const text = (input.value || "").trim();
+        if (!text) {
+          setError("Bitte zuerst einen Text eingeben.");
+          return;
+        }
+
+        setLoading(true);
+        resultBox.textContent = "";
+
+        try {
+          const res = await fetch("/erklaeren", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
           });
-          historyList.appendChild(div);
-        });
-      }catch(e){
-        historyBox.style.display = "none";
-      }
-    }
 
-    function saveHistory(input, output){
-      try{
-        const now = new Date();
-        const time = now.toLocaleString("de-DE", { hour: "2-digit", minute: "2-digit", day:"2-digit", month:"2-digit" });
-        const inputPreview = (input || "").replace(/\s+/g," ").trim().slice(0, 120);
-        const existing = JSON.parse(localStorage.getItem("be_history") || "[]");
-        const next = [{ time, inputPreview, output }, ...existing].slice(0, 10);
-        localStorage.setItem("be_history", JSON.stringify(next));
-        loadHistory();
-      }catch(e){}
-    }
+          const data = await res.json().catch(() => ({}));
 
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    async function checkServer(){
-      try{
-        const res = await fetch("/health");
-        const data = await res.json();
-        if (data && data.ok){
-          statusText.textContent = "Online";
-          serverHint.textContent = "Server: ok";
-        } else {
-          statusText.textContent = "Problem";
-          serverHint.textContent = "Server: ?";
-        }
-      }catch(e){
-        statusText.textContent = "Offline?";
-        serverHint.textContent = "Server: offline?";
-      }
-    }
-
-    async function loadConfig(){
-      try{
-        const res = await fetch("/config");
-        const data = await res.json();
-        if (data && data.ok){
-          if (data.paymentsEnabled){
-            btnUpgrade.textContent = "⭐ Pro freischalten";
-          } else {
-            btnUpgrade.textContent = "⭐ Pro (noch ohne Zahlung)";
+          if (!res.ok) {
+            throw new Error(data.error || "Unbekannter Fehler");
           }
+
+          resultBox.textContent = data.result || "";
+          btnCopy.disabled = !data.result;
+        } catch (err) {
+          setError(err.message || "Unbekannter Fehler");
+          btnCopy.disabled = true;
+        } finally {
+          setLoading(false);
         }
-      }catch(e){}
-    }
-
-    async function explain(){
-      const text = (inputText.value || "").trim();
-      if (!text){
-        showError("Bitte zuerst einen Text eingeben.");
-        return;
       }
 
-      showOverlay(true);
-      setBusy(true);
-      errorBox.style.display = "none";
+      function clearAll() {
+        setError("");
+        input.value = "";
+        resultBox.textContent = "";
+        btnCopy.disabled = true;
+      }
 
-      try{
-        const res = await fetch("/erklaeren", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text })
-        });
+      async function buyPro() {
+        setError("");
+        setLoading(true);
 
-        const data = await res.json().catch(()=>null);
+        try {
+          const res = await fetch("/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({})
+          });
 
-        if (!res.ok || !data || data.ok !== true){
-          const msg = (data && data.error) ? data.error : "Unbekannter Fehler.";
-          showError(msg);
-          return;
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Stripe Fehler");
+
+          if (!data.url) throw new Error("Keine Checkout-URL erhalten.");
+          window.location.href = data.url;
+        } catch (err) {
+          setError(err.message || "Stripe Fehler");
+        } finally {
+          setLoading(false);
         }
-
-        outputBox.textContent = data.explanation || "";
-        saveHistory(text, data.explanation || "");
-        showSuccess("Fertig ✅");
-      }catch(e){
-        showError("Netzwerkfehler: Server nicht erreichbar.");
-      }finally{
-        showOverlay(false);
-        setBusy(false);
       }
-    }
 
-    function clearAll(){
-      inputText.value = "";
-      outputBox.textContent = "";
-      errorBox.style.display = "none";
-      successBox.style.display = "none";
-      updateCount();
-      showSuccess("Geleert");
-    }
+      btnExplain.addEventListener("click", explainText);
+      btnClear.addEventListener("click", clearAll);
 
-    async function copyResult(){
-      const text = outputBox.textContent || "";
-      if (!text){
-        showError("Kein Ergebnis zum Kopieren.");
-        return;
-      }
-      try{
-        await navigator.clipboard.writeText(text);
-        showSuccess("Kopiert ✅");
-      }catch(e){
-        showError("Kopieren ging nicht (Browser-Rechte). Markiere den Text und kopiere manuell.");
-      }
-    }
-
-    async function startCheckout(){
-      showOverlay(true);
-      setBusy(true);
-      try{
-        const res = await fetch("/create-checkout-session", { method: "POST" });
-        const data = await res.json().catch(()=>null);
-
-        if (!res.ok || !data || data.ok !== true){
-          const msg = (data && data.error) ? data.error : "Bezahlung aktuell nicht verfügbar.";
-          showError(msg);
-          return;
+      btnCopy.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(resultBox.textContent || "");
+        } catch (e) {
+          setError("Kopieren ging nicht (Browser-Rechte).");
         }
+      });
 
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      }catch(e){
-        showError("Netzwerkfehler beim Checkout.");
-      }finally{
-        showOverlay(false);
-        setBusy(false);
+      btnPay.addEventListener("click", buyPro);
+
+      // Payment-Status in URL anzeigen (?paid=1)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("paid") === "1") {
+        paidBox.style.display = "block";
       }
-    }
-
-    // Tabs
-    function setTab(which){
-      if (which === "explain"){
-        tabExplain.classList.add("active");
-        tabPro.classList.remove("active");
-        viewExplain.style.display = "grid";
-        viewPro.style.display = "none";
-      } else {
-        tabPro.classList.add("active");
-        tabExplain.classList.remove("active");
-        viewPro.style.display = "grid";
-        viewExplain.style.display = "none";
-      }
-    }
-    tabExplain.addEventListener("click", ()=>setTab("explain"));
-    tabPro.addEventListener("click", ()=>setTab("pro"));
-
-    // Buttons
-    btnExplain.addEventListener("click", explain);
-    btnClear.addEventListener("click", clearAll);
-    btnCopy.addEventListener("click", copyResult);
-    btnUpgrade.addEventListener("click", async ()=>{
-      // If Stripe not configured yet, just switch to Pro tab
-      try{
-        const res = await fetch("/config");
-        const data = await res.json();
-        if (data && data.ok && data.paymentsEnabled){
-          await startCheckout();
-        } else {
-          setTab("pro");
-          showSuccess("Pro-Bereich geöffnet (Zahlung kommt als Nächstes).");
-        }
-      }catch(e){
-        setTab("pro");
-      }
-    });
-
-    // Enter = explain (Desktop). Shift+Enter -> newline
-    inputText.addEventListener("keydown", (e)=>{
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){
-        explain();
-      }
-    });
-
-    // init
-    loadHistory();
-    checkServer();
-    loadConfig();
-
-    // show paid status
-    const url = new URL(window.location.href);
-    if (url.searchParams.get("paid") === "1"){
-      showSuccess("Zahlung erfolgreich ✅ Pro wird als Nächstes freigeschaltet.");
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
