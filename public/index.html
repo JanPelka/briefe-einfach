@@ -9,32 +9,35 @@
     :root{
       --bg:#0b1020;
       --card:#111a33;
-      --card2:#0f1730;
       --text:#e9ecff;
       --muted:#a8b0d6;
       --line:rgba(255,255,255,.12);
       --btn:#2f6bff;
-      --btn2:#2a355f;
-      --danger:#ff5a78;
       --ok:#21d07a;
+      --danger:#ff5a78;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
       --radius: 14px;
+      --safeBottom: env(safe-area-inset-bottom, 0px);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 700px at 20% 20%, rgba(47,107,255,.25), transparent 60%),
-                  radial-gradient(900px 600px at 90% 30%, rgba(255,90,120,.16), transparent 55%),
-                  var(--bg);
+      background:
+        radial-gradient(1200px 700px at 20% 20%, rgba(47,107,255,.25), transparent 60%),
+        radial-gradient(900px 600px at 90% 30%, rgba(255,90,120,.16), transparent 55%),
+        var(--bg);
       color:var(--text);
     }
     .wrap{
       width:min(980px, 100%);
       margin:0 auto;
       padding:18px 14px 40px;
+      /* Platz für Sticky-Bar auf Mobile */
+      padding-bottom: calc(40px + var(--safeBottom));
     }
+
     header{
       display:flex;
       align-items:center;
@@ -42,10 +45,7 @@
       gap:12px;
       padding:12px 2px 18px;
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      font-weight:800; letter-spacing:.2px;
-    }
+    .brand{display:flex; align-items:center; gap:12px; font-weight:800}
     .logo{
       width:44px;height:44px;border-radius:12px;
       background: linear-gradient(135deg, rgba(47,107,255,.95), rgba(33,208,122,.7));
@@ -53,10 +53,7 @@
       display:grid; place-items:center;
       font-size:22px;
     }
-    .subtitle{
-      font-size:13px; color:var(--muted); font-weight:500;
-      margin-top:3px;
-    }
+    .subtitle{font-size:13px; color:var(--muted); font-weight:500; margin-top:3px;}
     .pill{
       font-size:12px;
       padding:8px 10px;
@@ -72,7 +69,7 @@
       gap:14px;
     }
     @media (max-width: 860px){
-      .grid{grid-template-columns:1fr; }
+      .grid{grid-template-columns:1fr;}
       header{flex-direction:column; align-items:flex-start;}
       .pill{width:100%; text-align:center;}
     }
@@ -90,37 +87,34 @@
       background: rgba(255,255,255,.02);
     }
     .cardTitle{
-      font-size:14px; font-weight:800; margin:0;
+      font-size:14px; font-weight:900; margin:0;
       display:flex; align-items:center; gap:8px;
     }
-    .cardBody{ padding:14px; }
     .hint{ color:var(--muted); font-size:13px; margin:8px 0 0; }
+    .cardBody{ padding:14px; }
 
     textarea{
       width:100%;
-      min-height:200px;
+      min-height:180px;
       resize:vertical;
       border-radius: 12px;
       border:1px solid rgba(255,255,255,.14);
       background: rgba(0,0,0,.18);
       color:var(--text);
-      padding:12px 12px;
+      padding:12px;
       font-size:14px;
       line-height:1.35;
       outline:none;
     }
     textarea:focus{ border-color: rgba(47,107,255,.55); box-shadow: 0 0 0 4px rgba(47,107,255,.14); }
 
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top:10px;
-      align-items:center;
-    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px;}
+
     button{
       border:0;
       border-radius: 12px;
       padding:10px 12px;
-      font-weight:800;
+      font-weight:900;
       cursor:pointer;
       color: white;
       background: var(--btn);
@@ -128,6 +122,8 @@
       display:inline-flex;
       align-items:center;
       gap:10px;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
     }
     button.secondary{
       background: rgba(255,255,255,.06);
@@ -140,13 +136,9 @@
       color: var(--muted);
       border: 1px dashed rgba(255,255,255,.18);
       box-shadow:none;
-      font-weight:700;
+      font-weight:800;
     }
-    button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      filter:saturate(.8);
-    }
+    button:disabled{opacity:.55; cursor:not-allowed; filter:saturate(.8);}
 
     .msg{
       margin-top:10px;
@@ -160,34 +152,6 @@
     .msg.err{ border-color: rgba(255,90,120,.45); color:#ffd0d8; background: rgba(255,90,120,.08); }
     .msg.ok{ border-color: rgba(33,208,122,.35); color:#d9ffef; background: rgba(33,208,122,.07); }
 
-    .result{
-      display:grid;
-      gap:10px;
-    }
-    .block{
-      border:1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(0,0,0,.12);
-      padding:12px;
-    }
-    .block h3{
-      margin:0 0 6px;
-      font-size:13px;
-      font-weight:900;
-      color:#ffffff;
-      display:flex; align-items:center; gap:8px;
-    }
-    .block p, .block ul{
-      margin:0;
-      color: var(--text);
-      font-size:14px;
-      line-height:1.35;
-      white-space:pre-wrap;
-    }
-    .block ul{ padding-left:18px; }
-
-    .small{ font-size:12px; color:var(--muted); }
-
     /* Spinner */
     .spinner{
       width:16px;height:16px;
@@ -200,25 +164,61 @@
     @keyframes spin{ to{ transform:rotate(360deg);} }
     .loading .spinner{ display:inline-block; }
 
+    /* Ergebnisblöcke */
+    .result{display:grid; gap:10px;}
+    .block{
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(0,0,0,.12);
+      padding:12px;
+    }
+    .block h3{
+      margin:0 0 6px;
+      font-size:13px;
+      font-weight:900;
+      color:#fff;
+      display:flex; align-items:center; gap:8px;
+    }
+    .block p, .block ul{
+      margin:0;
+      color: var(--text);
+      font-size:14px;
+      line-height:1.35;
+      white-space:pre-wrap;
+    }
+    .block ul{ padding-left:18px; }
+
+    /* Tabs (mobile-first) */
+    .tabs{
+      display:none;
+      gap:8px;
+      padding:10px 14px 0;
+      flex-wrap:wrap;
+    }
+    .tabBtn{
+      border-radius:999px;
+      padding:10px 12px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color: var(--text);
+      font-weight:900;
+      box-shadow:none;
+    }
+    .tabBtn.active{
+      background: rgba(47,107,255,.18);
+      border-color: rgba(47,107,255,.45);
+    }
+
     /* Deadline widget */
     .deadlineGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
-    @media (max-width: 860px){
-      .deadlineGrid{ grid-template-columns:1fr; }
-    }
-    label{
-      font-size:12px;
-      color: var(--muted);
-      display:block;
-      margin:0 0 6px;
-      font-weight:700;
-    }
+    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px; font-weight:800;}
     input[type="date"], input[type="number"], select{
       width:100%;
-      padding:10px 10px;
+      padding:12px 10px;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.14);
       background: rgba(0,0,0,.18);
@@ -236,6 +236,46 @@
       font-size:14px;
       color: var(--text);
       white-space:pre-wrap;
+    }
+    .small{ font-size:12px; color:var(--muted); }
+
+    /* Sticky Action-Bar auf Mobile */
+    .stickyBar{
+      display:none;
+      position:fixed;
+      left:0; right:0;
+      bottom:0;
+      padding:10px 12px calc(10px + var(--safeBottom));
+      background: linear-gradient(180deg, rgba(11,16,32,.0), rgba(11,16,32,.75) 25%, rgba(11,16,32,.92));
+      backdrop-filter: blur(10px);
+      border-top:1px solid rgba(255,255,255,.10);
+      z-index:1000;
+    }
+    .stickyRow{
+      width:min(980px, 100%);
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+    }
+    .stickyRow button{ flex:1; padding:14px 12px; border-radius:14px; }
+
+    /* Mobile Anpassungen */
+    @media (max-width: 860px){
+      .wrap{ padding-bottom: calc(95px + var(--safeBottom)); }
+      .tabs{ display:flex; }
+      .stickyBar{ display:block; }
+      /* Desktop-Buttons verstecken, damit du nicht doppelt klickst */
+      #actions{ display:none; }
+      /* Ergebnis: auf mobile nur 1 Block sichtbar (per Tabs) */
+      .result .block{ display:none; }
+      .result .block.active{ display:block; }
+      textarea{
+        min-height: 160px;
+        resize:none;
+      }
+      button, .tabBtn{
+        padding:12px 12px;
+      }
     }
 
     footer{
@@ -257,7 +297,7 @@
           <div class="subtitle">Text rein → Erklärung + Fristenhilfe (MVP)</div>
         </div>
       </div>
-      <div class="pill">Tipp: Später: Rate-Limit + API-Key + bessere Formatierung</div>
+      <div class="pill">Mobile: Sticky Buttons + Tabs + Auto-Grow</div>
     </header>
 
     <div class="grid">
@@ -265,11 +305,12 @@
       <section class="card">
         <div class="cardHead">
           <p class="cardTitle">🧾 Originaltext</p>
-          <p class="hint">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>.</p>
+          <p class="hint">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>. (Ctrl+Enter geht auch)</p>
         </div>
         <div class="cardBody">
           <textarea id="inputText" placeholder="Text hier einfügen…"></textarea>
 
+          <!-- Desktop Actions -->
           <div class="row" id="actions">
             <button id="btnExplain">
               <span class="spinner" aria-hidden="true"></span>
@@ -287,7 +328,7 @@
       <aside class="card">
         <div class="cardHead">
           <p class="cardTitle">⏳ Fristenrechner</p>
-          <p class="hint">Hilft dir schnell zu sehen, wann eine Frist endet (MVP, ohne Feiertage).</p>
+          <p class="hint">MVP: Ohne Feiertage/Sonderregeln.</p>
         </div>
         <div class="cardBody">
           <div class="deadlineGrid">
@@ -321,9 +362,7 @@
           </div>
 
           <div class="deadlineOut" id="deadlineOut">Noch nichts berechnet.</div>
-          <div class="small" style="margin-top:8px;">
-            Hinweis: Das ist ein MVP-Rechner. Feiertage & Sonderregeln sind nicht drin.
-          </div>
+          <div class="small" style="margin-top:8px;">Hinweis: Feiertage & Sonderregeln nicht berücksichtigt.</div>
         </div>
       </aside>
     </div>
@@ -332,21 +371,31 @@
     <section class="card" style="margin-top:14px;">
       <div class="cardHead">
         <p class="cardTitle">✅ Ergebnis</p>
-        <p class="hint">Wir zeigen es in 3 Blöcken: Kurz, Was tun, Fristen/Termine.</p>
+        <p class="hint">Mobile: Tabs. Desktop: 3 Blöcke untereinander.</p>
       </div>
+
+      <!-- Tabs (mobile) -->
+      <div class="tabs" id="tabs">
+        <button class="tabBtn active" data-tab="short">Kurz</button>
+        <button class="tabBtn" data-tab="todo">ToDo</button>
+        <button class="tabBtn" data-tab="dates">Fristen</button>
+      </div>
+
       <div class="cardBody">
         <div class="result" id="resultWrap">
-          <div class="block">
+          <div class="block active" id="block-short">
             <h3>🧠 Kurz erklärt</h3>
             <p id="rShort">Noch kein Ergebnis.</p>
           </div>
-          <div class="block">
+
+          <div class="block" id="block-todo">
             <h3>✅ Was du tun solltest</h3>
             <ul id="rTodo">
               <li>Noch kein Ergebnis.</li>
             </ul>
           </div>
-          <div class="block">
+
+          <div class="block" id="block-dates">
             <h3>📅 Fristen / Termine</h3>
             <p id="rDates">Noch kein Ergebnis.</p>
           </div>
@@ -355,8 +404,20 @@
     </section>
 
     <footer>
-      MVP – funktioniert ohne API-Key. Wenn du willst, bauen wir als nächstes „Antwortbrief erstellen“ + „Aktenzeichen/Datum automatisch erkennen“.
+      Step 3 – Mobile UX: Sticky Bar + Tabs + Auto-Grow. Nächster Step wäre „Antwort schreiben“.
     </footer>
+  </div>
+
+  <!-- Sticky Action-Bar (mobile) -->
+  <div class="stickyBar" id="stickyBar">
+    <div class="stickyRow">
+      <button id="mExplain">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="mExplainLabel">Erklären</span>
+      </button>
+      <button class="secondary" id="mClear">Leeren</button>
+      <button class="ghost" id="mCopy" disabled>Kopieren</button>
+    </div>
   </div>
 
   <script>
@@ -364,15 +425,26 @@
     const $ = (id) => document.getElementById(id);
 
     const inputText = $("inputText");
+
+    // Desktop buttons
     const btnExplain = $("btnExplain");
     const btnExplainLabel = $("btnExplainLabel");
     const btnClear = $("btnClear");
     const btnCopy = $("btnCopy");
+
+    // Mobile buttons
+    const mExplain = $("mExplain");
+    const mExplainLabel = $("mExplainLabel");
+    const mClear = $("mClear");
+    const mCopy = $("mCopy");
+
     const statusBox = $("statusBox");
 
     const rShort = $("rShort");
     const rTodo = $("rTodo");
     const rDates = $("rDates");
+
+    const tabs = $("tabs");
 
     function setStatus(type, text){
       statusBox.style.display = "block";
@@ -386,34 +458,47 @@
     }
 
     function setLoading(isLoading){
+      // Desktop
       const actions = $("actions");
+      if(actions){
+        if(isLoading) actions.classList.add("loading");
+        else actions.classList.remove("loading");
+      }
+      // Mobile
+      const sticky = $("stickyBar");
+      if(sticky){
+        if(isLoading) sticky.classList.add("loading");
+        else sticky.classList.remove("loading");
+      }
+
+      // disable/enable
+      const setDisabled = (v) => {
+        if(btnExplain) btnExplain.disabled = v;
+        if(btnClear) btnClear.disabled = v;
+        if(btnCopy) btnCopy.disabled = true;
+
+        mExplain.disabled = v;
+        mClear.disabled = v;
+        mCopy.disabled = true;
+      };
+
       if(isLoading){
-        actions.classList.add("loading");
-        btnExplain.disabled = true;
-        btnClear.disabled = true;
-        btnCopy.disabled = true;
-        btnExplainLabel.textContent = "Lade…";
+        setDisabled(true);
+        if(btnExplainLabel) btnExplainLabel.textContent = "Lade…";
+        mExplainLabel.textContent = "Lade…";
       } else {
-        actions.classList.remove("loading");
-        btnExplain.disabled = false;
-        btnClear.disabled = false;
-        btnExplainLabel.textContent = "Erklären";
+        setDisabled(false);
+        if(btnExplainLabel) btnExplainLabel.textContent = "Erklären";
+        mExplainLabel.textContent = "Erklären";
       }
     }
 
     function splitIntoBlocks(explanationText){
-      // Wir nehmen das MVP-Textformat und machen 3 sinnvolle Blöcke draus.
       const t = String(explanationText || "").trim();
       if(!t){
-        return {
-          short: "Kein Ergebnis.",
-          todo: ["—"],
-          dates: "—"
-        };
+        return { short: "Kein Ergebnis.", todo: ["—"], dates: "—" };
       }
 
-      // Heuristik: suche typische Bereiche
-      // Alles nach "Nächste sinnvolle Schritte:" => todo
       let shortPart = t;
       let todoPart = "";
       let hintPart = "";
@@ -427,21 +512,15 @@
       const idxHints = t.toLowerCase().indexOf("hinweise aus deinem text:");
       if(idxHints !== -1){
         hintPart = t.slice(idxHints).trim();
-        // Entferne Hinweise aus shortPart falls drin
         if(idxSteps === -1){
           shortPart = t.slice(0, idxHints).trim();
-        } else {
-          // todoPart enthält evtl auch hints – ok lassen, wir nutzen hintPart extra
         }
       }
 
-      // Todo-Liste extrahieren
       let todos = [];
       if(todoPart){
         const lines = todoPart.split("\n").map(x=>x.trim()).filter(Boolean);
-        // alles nach der Überschrift
         const cleaned = lines.filter(l => !l.toLowerCase().startsWith("nächste sinnvolle schritte"));
-        // nummerierte Steps -> in bullets
         todos = cleaned.map(l => l.replace(/^(\d+[\)\.\-])\s*/, ""));
       }
 
@@ -454,8 +533,7 @@
         ];
       }
 
-      // Dates/Fristen Block
-      let dates = "Wenn im Text eine Frist/Termin steht: bitte im Fristenrechner oben testen.";
+      let dates = "Wenn im Text eine Frist/Termin steht: oben im Fristenrechner testen.";
       if(hintPart){
         dates = hintPart.replace(/^Hinweise aus deinem Text:\s*/i, "").trim();
       }
@@ -465,6 +543,24 @@
         todo: todos,
         dates: dates || "—"
       };
+    }
+
+    function activateTab(name){
+      // Tab Buttons
+      if(!tabs) return;
+      tabs.querySelectorAll(".tabBtn").forEach(b => {
+        b.classList.toggle("active", b.dataset.tab === name);
+      });
+
+      // Blocks
+      const map = {
+        short: $("block-short"),
+        todo: $("block-todo"),
+        dates: $("block-dates")
+      };
+      Object.keys(map).forEach(k => {
+        map[k].classList.toggle("active", k === name);
+      });
     }
 
     function makeCopyText(){
@@ -483,7 +579,6 @@
       ].join("\n");
     }
 
-    // ===== API Call =====
     async function explain(){
       clearStatus();
 
@@ -502,8 +597,7 @@
         });
 
         if(!resp.ok){
-          const msg = "Server antwortet mit Fehler: " + resp.status + " " + resp.statusText;
-          setStatus("err", msg);
+          setStatus("err", "Server antwortet mit Fehler: " + resp.status + " " + resp.statusText);
           return;
         }
 
@@ -514,7 +608,6 @@
         }
 
         const blocks = splitIntoBlocks(data.explanation);
-
         rShort.textContent = blocks.short;
 
         rTodo.innerHTML = "";
@@ -526,13 +619,75 @@
 
         rDates.textContent = blocks.dates;
 
-        setStatus("ok", "Fertig. Du kannst jetzt das Ergebnis kopieren.");
-        btnCopy.disabled = false;
+        // enable copy buttons
+        if(btnCopy) btnCopy.disabled = false;
+        mCopy.disabled = false;
+
+        setStatus("ok", "Fertig ✅ (Mobile: Tabs oben nutzen)");
+        // Mobile: spring direkt auf „Kurz“
+        activateTab("short");
       } catch(e){
         setStatus("err", "Fehler: " + (e?.message || "Unbekannt"));
       } finally {
         setLoading(false);
       }
+    }
+
+    function clearAll(){
+      inputText.value = "";
+      rShort.textContent = "Noch kein Ergebnis.";
+      rTodo.innerHTML = "<li>Noch kein Ergebnis.</li>";
+      rDates.textContent = "Noch kein Ergebnis.";
+      if(btnCopy) btnCopy.disabled = true;
+      mCopy.disabled = true;
+      clearStatus();
+      inputText.focus();
+      activateTab("short");
+      autoGrow();
+    }
+
+    async function copyResult(){
+      try{
+        await navigator.clipboard.writeText(makeCopyText());
+        setStatus("ok", "Kopiert ✅");
+      } catch(e){
+        setStatus("err", "Kopieren ging nicht (Browser blockiert Clipboard).");
+      }
+    }
+
+    // ===== Auto-grow Textarea (Mobile besser) =====
+    function autoGrow(){
+      // nur wenn resize ausgeschaltet (mobile)
+      inputText.style.height = "auto";
+      const max = 520; // nicht zu groß
+      inputText.style.height = Math.min(inputText.scrollHeight, max) + "px";
+    }
+    inputText.addEventListener("input", autoGrow);
+    window.addEventListener("load", autoGrow);
+
+    // Ctrl+Enter
+    inputText.addEventListener("keydown", (e) => {
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        explain();
+      }
+    });
+
+    // Buttons
+    if(btnExplain) btnExplain.addEventListener("click", explain);
+    if(btnClear) btnClear.addEventListener("click", clearAll);
+    if(btnCopy) btnCopy.addEventListener("click", copyResult);
+
+    mExplain.addEventListener("click", explain);
+    mClear.addEventListener("click", clearAll);
+    mCopy.addEventListener("click", copyResult);
+
+    // Tabs
+    if(tabs){
+      tabs.addEventListener("click", (e) => {
+        const b = e.target.closest(".tabBtn");
+        if(!b) return;
+        activateTab(b.dataset.tab);
+      });
     }
 
     // ===== Deadline calculator =====
@@ -543,39 +698,25 @@
     const deadlineOut = $("deadlineOut");
 
     function pad2(n){ return String(n).padStart(2,"0"); }
-    function fmt(d){
-      return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;
-    }
+    function fmt(d){ return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`; }
 
     function calcDeadline(){
       const v = dateStart.value;
       const n = parseInt(days.value, 10);
 
-      if(!v){
-        deadlineOut.textContent = "Bitte erst ein Eingangsdatum wählen.";
-        return;
-      }
-      if(!n || n < 1){
-        deadlineOut.textContent = "Bitte eine gültige Anzahl Tage eingeben (mind. 1).";
-        return;
-      }
+      if(!v){ deadlineOut.textContent = "Bitte erst ein Eingangsdatum wählen."; return; }
+      if(!n || n < 1){ deadlineOut.textContent = "Bitte gültige Tage eingeben (mind. 1)."; return; }
 
-      // input date is YYYY-MM-DD
       const start = new Date(v + "T00:00:00");
-
-      // Starttag nach Zählweise
       let current = new Date(start);
+
       if(countMode.value === "nextDay"){
         current.setDate(current.getDate() + 1);
       }
-
-      // Jetzt n Tage zählen: Wenn Start am nächsten Tag, dann zählt Tag1 = current
-      // Wir addieren (n-1), weil current bereits Tag1 ist.
       current.setDate(current.getDate() + (n - 1));
 
       const original = new Date(current);
 
-      // Wochenende-Regel
       if(weekendMode.value === "push"){
         const dow = current.getDay(); // 0 So, 6 Sa
         if(dow === 6) current.setDate(current.getDate() + 2);
@@ -599,33 +740,8 @@
       calcDeadline();
     });
 
-    // ===== Events =====
-    btnExplain.addEventListener("click", explain);
-    btnClear.addEventListener("click", () => {
-      inputText.value = "";
-      rShort.textContent = "Noch kein Ergebnis.";
-      rTodo.innerHTML = "<li>Noch kein Ergebnis.</li>";
-      rDates.textContent = "Noch kein Ergebnis.";
-      btnCopy.disabled = true;
-      clearStatus();
-      inputText.focus();
-    });
-
-    btnCopy.addEventListener("click", async () => {
-      try{
-        await navigator.clipboard.writeText(makeCopyText());
-        setStatus("ok", "Kopiert ✅");
-      } catch(e){
-        setStatus("err", "Kopieren ging nicht (Browser blockiert Clipboard). Markiere den Text manuell.");
-      }
-    });
-
-    // Enter+Ctrl zum erklären
-    inputText.addEventListener("keydown", (e) => {
-      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
-        explain();
-      }
-    });
+    // Default Tab
+    activateTab("short");
   </script>
 </body>
 </html>
