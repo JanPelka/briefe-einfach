@@ -1,112 +1,79 @@
-// server.js (komplett)
-"use strict";
-
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
 const app = express();
 
-// Railway setzt PORT automatisch. Lokal: 3000
-const PORT = process.env.PORT || 3000;
+// Railway / Proxy friendly
+app.set("trust proxy", 1);
 
-// ===== Basics =====
-app.use(express.json({ limit: "1mb" }));
-
-// Optional: CORS (wenn du später Frontend/Backend trennst)
-// Für gleiche Domain brauchst du es NICHT, schadet aber nicht.
 app.use(cors());
+app.use(express.json({ limit: "2mb" }));
 
-// ===== Static Frontend =====
-// WICHTIG: deine index.html liegt in /public
-app.use(express.static(path.join(__dirname, "public")));
+// Static Frontend aus /public
+const publicDir = path.join(__dirname, "public");
+app.use(express.static(publicDir));
 
-// ===== Health / Status =====
+// Healthcheck
 app.get("/health", (req, res) => {
-  res.status(200).json({
-    ok: true,
-    service: "briefe-einfach",
-    uptimeSec: Math.round(process.uptime()),
-    timestamp: new Date().toISOString(),
-  });
+  res.json({ ok: true, status: "healthy" });
 });
 
-// Root immer zur App
+// Root -> index.html
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(publicDir, "index.html"));
 });
 
-// ===== KI / Erklärung (MVP ohne API-Key) =====
-// Hier ist die "MVP-Erklärung" wie vorher – später ersetzen wir das durch OpenAI-API.
+// MVP Erklärung (ohne externe APIs, damit es stabil läuft)
 function simpleExplain(text) {
   const t = String(text || "").trim();
-  if (!t) return "Bitte gib einen Text ein.";
+  if (!t) return "Bitte Text einfügen.";
 
-  // super simple Heuristik (MVP)
-  const lower = t.toLowerCase();
-  const hints = [];
+  // super simple Heuristik
+  const lines = t.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  const first = lines.slice(0, 3).join(" ");
 
-  if (lower.includes("frist") || lower.includes("fristgerecht") || lower.includes("innerhalb")) {
-    hints.push("• Es gibt sehr wahrscheinlich eine Frist. Prüfe Datum + Anzahl Tage genau.");
-  }
-  if (lower.includes("zahlung") || lower.includes("zahlen") || lower.includes("betrag")) {
-    hints.push("• Es geht vermutlich um Geld (Zahlung / Forderung / Beitrag).");
-  }
-  if (lower.includes("widerspruch") || lower.includes("einspruch")) {
-    hints.push("• Es geht um einen Widerspruch/Einspruch oder die Möglichkeit dazu.");
-  }
-  if (lower.includes("unterlagen") || lower.includes("nachweis") || lower.includes("belege")) {
-    hints.push("• Du sollst wahrscheinlich Unterlagen/Nachweise einreichen.");
-  }
-
-  const base =
+  return (
 `Das ist eine einfache Erklärung:
 
-• Der Brief richtet sich an dich.
-• Er möchte dir etwas mitteilen oder fordert eine Reaktion.
-• Lies die Fristen/Termine genau und notiere dir, was du tun sollst.
+Kurz:
+- Es geht um ein Schreiben/Anliegen. Wichtig ist: Was wird verlangt und bis wann?
 
 Nächste sinnvolle Schritte:
-1) Datum des Schreibens + Eingangsdatum notieren
-2) Frist ausrechnen (falls vorhanden)
-3) Was wird verlangt? (Zahlung / Unterlagen / Rückmeldung)
-4) Wenn unklar: kurz nachfragen oder schriftlich antworten`;
+1) Datum des Schreibens + Eingangsdatum notieren.
+2) Im Text nach Frist/Termin/Betreff/Zeichen suchen.
+3) Prüfen: wird eine Zahlung/Unterlage/Antwort verlangt?
+4) Wenn unklar: schriftlich um kurze Erklärung bitten.
 
-  if (hints.length) {
-    return base + "\n\nHinweise aus deinem Text:\n" + hints.join("\n");
-  }
-  return base;
+Hinweise aus deinem Text:
+- Anfang: "${first.slice(0, 140)}${first.length > 140 ? "…" : ""}"`
+  );
 }
 
-// Endpoint muss GENAU /erklaeren heißen (weil Frontend fetch("/erklaeren") macht)
-app.post("/erklaeren", async (req, res) => {
+app.post("/erklaeren", (req, res) => {
   try {
-    const text = req.body?.text;
-
-    if (!text || typeof text !== "string" || !text.trim()) {
-      return res.status(400).json({ ok: false, error: "Kein Text erhalten." });
+    const { text } = req.body || {};
+    if (!text || !String(text).trim()) {
+      return res.status(400).json({ ok: false, error: "Bitte Text eingeben." });
     }
-
-    // MVP Erklärung
     const explanation = simpleExplain(text);
-
-    return res.status(200).json({ ok: true, explanation });
+    return res.json({ ok: true, explanation });
   } catch (err) {
+    console.error("POST /erklaeren error:", err);
     return res.status(500).json({ ok: false, error: "Serverfehler." });
   }
 });
 
-// ===== 404 (JSON für API, HTML für Browser) =====
+// 404 für API (damit du es im Browser klar siehst)
 app.use((req, res) => {
-  // Wenn Browser (accept html) -> index.html (für sauberes SPA-Verhalten)
-  const accept = req.headers.accept || "";
-  if (accept.includes("text/html")) {
-    return res.status(200).sendFile(path.join(__dirname, "public", "index.html"));
-  }
-  return res.status(404).json({ ok: false, error: "Not Found" });
+  res.status(404).json({ ok: false, error: "Not Found" });
 });
 
-// ===== Start =====
+// Fehler abfangen (damit es NICHT den Prozess killt)
+process.on("unhandledRejection", (err) => console.error("unhandledRejection:", err));
+process.on("uncaughtException", (err) => console.error("uncaughtException:", err));
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ briefe-einfach läuft auf Port ${PORT}`);
+  console.log("✅ Server läuft auf Port", PORT);
 });
