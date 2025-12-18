@@ -4,22 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>briefe-einfach</title>
-
   <style>
     :root{
-      --bg:#0b1220;
-      --panel:rgba(255,255,255,.06);
-      --panel2:rgba(255,255,255,.09);
-      --text:#eaf0ff;
-      --muted:rgba(234,240,255,.75);
-      --line:rgba(255,255,255,.12);
-      --ok:#30d158;
-      --warn:#ffd60a;
-      --bad:#ff453a;
-      --btn:#3b82f6;
-      --btn2:rgba(255,255,255,.08);
-      --shadow: 0 12px 40px rgba(0,0,0,.35);
-      --radius:16px;
+      --bg:#0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.10);
+      --text:#e9eefc;
+      --muted:#a9b3d6;
+      --line: rgba(255,255,255,.10);
+      --accent:#4aa3ff;
+      --danger:#ff4d6d;
+      --ok:#2ee59d;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 16px;
     }
     *{box-sizing:border-box}
     body{
@@ -27,459 +24,445 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
       background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.35), transparent 60%),
-        radial-gradient(800px 500px at 90% 10%, rgba(168,85,247,.25), transparent 55%),
+        radial-gradient(1200px 600px at 20% 0%, rgba(74,163,255,.18), transparent 60%),
+        radial-gradient(800px 500px at 90% 10%, rgba(46,229,157,.12), transparent 55%),
         var(--bg);
       min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
     }
-
-    .wrap{
-      width:min(980px, 100%);
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap:16px;
+    a{color:var(--accent);text-decoration:none}
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    .header{
+      display:flex;gap:14px;align-items:center;justify-content:space-between;
+      padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      box-shadow: var(--shadow);
     }
-
-    .card{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .cardHeader{
-      padding:18px 18px 12px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
+    .brand{display:flex;gap:12px;align-items:center}
     .logo{
-      width:34px;height:34px;
-      border-radius:10px;
-      background:linear-gradient(135deg, rgba(59,130,246,.95), rgba(168,85,247,.9));
-      display:grid;place-items:center;
-      font-weight:800;
+      width:42px;height:42px;border-radius:12px;background:rgba(74,163,255,.18);
+      display:grid;place-items:center;border:1px solid var(--line)
     }
-    .title{
-      font-size:22px;
-      font-weight:800;
-      margin:0;
-      line-height:1.1;
+    .brand h1{font-size:18px;margin:0}
+    .brand .sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);
+      padding:10px 12px;border-radius:12px;cursor:pointer;
+      display:inline-flex;gap:8px;align-items:center;
     }
-    .subtitle{
-      margin:2px 0 0;
-      color:var(--muted);
-      font-size:13px;
+    .btn.primary{background:rgba(74,163,255,.18);border-color:rgba(74,163,255,.35)}
+    .btn.danger{background:rgba(255,77,109,.12);border-color:rgba(255,77,109,.35)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .grid{
+      margin-top:16px;
+      display:grid;gap:16px;
+      grid-template-columns: 1.35fr .65fr;
+      align-items:start;
     }
-    .cardBody{ padding:16px 18px 18px; }
-
-    label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px;}
-    textarea{
-      width:100%;
-      min-height:220px;
-      border-radius:14px;
+    .card{
       border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{margin:0 0 10px 0;font-size:16px}
+    label{display:block;color:var(--muted);font-size:12px;margin:10px 0 6px}
+    textarea,input,select{
+      width:100%;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.14);
       color:var(--text);
-      padding:12px;
-      resize:vertical;
+      border-radius:12px;
+      padding:10px 12px;
       outline:none;
     }
-    textarea:focus{border-color:rgba(59,130,246,.7)}
-
-    .btnRow{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
-    button{
-      border:none;
-      border-radius:12px;
-      padding:10px 14px;
-      font-weight:700;
-      cursor:pointer;
-      color:var(--text);
-      background:var(--btn2);
-      border:1px solid var(--line);
-    }
-    button.primary{
-      background:linear-gradient(135deg, rgba(59,130,246,.95), rgba(59,130,246,.65));
-      border-color:rgba(59,130,246,.6);
-    }
-    button:disabled{opacity:.45; cursor:not-allowed}
-
+    textarea{min-height:170px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row .btn{flex:0 0 auto}
+    .hint{margin-top:8px;color:var(--muted);font-size:12px}
     .result{
-      margin-top:12px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      padding:12px;
-      min-height:170px;
-      white-space:pre-wrap;
+      margin-top:10px;border-top:1px solid var(--line);padding-top:12px;
+      display:grid;gap:10px;
     }
-
-    .hint{ margin-top:10px; font-size:12px; color:var(--muted); }
-
-    /* Right panel */
-    .sideBox{
-      padding:16px 18px 18px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+    .pill{display:inline-flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+    .box{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25);
+      border-radius:12px;padding:12px;white-space:pre-wrap
     }
-    .statusRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.16);
+    .msg{
+      margin-top:10px;border-radius:12px;padding:10px 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.25);
     }
-    .pill{
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-      color:var(--muted);
-    }
-    .pill.ok{ color:var(--ok); border-color:rgba(48,209,88,.35); }
-    .pill.bad{ color:var(--bad); border-color:rgba(255,69,58,.35); }
-
-    .divider{ height:1px; background:var(--line); margin:4px 0; }
-
+    .msg.err{border-color:rgba(255,77,109,.45);background:rgba(255,77,109,.10)}
+    .msg.ok{border-color:rgba(46,229,157,.45);background:rgba(46,229,157,.10)}
     /* Modal */
     .modalBackdrop{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:10;
+      position:fixed;inset:0;background:rgba(0,0,0,.55);
+      display:none;align-items:center;justify-content:center;padding:18px;z-index:10;
     }
     .modal{
-      width:min(420px, 100%);
-      background:rgba(15,23,42,.92);
+      width:min(520px, 100%);
       border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
       border-radius:18px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
+      padding:16px;
+      box-shadow: var(--shadow);
     }
-    .modalHead{
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .modalHead h3{ margin:0; font-size:18px; }
-    .modalBody{ padding:14px 16px 16px; }
-    .err{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      background:rgba(255,69,58,.14);
-      border:1px solid rgba(255,69,58,.22);
-      color:rgba(255,255,255,.92);
+    .modal h3{margin:0 0 10px}
+    .tabs{display:flex;gap:8px;margin:8px 0 12px}
+    .tab{padding:8px 10px;border-radius:12px;border:1px solid var(--line);cursor:pointer;color:var(--muted)}
+    .tab.active{background:rgba(74,163,255,.18);border-color:rgba(74,163,255,.35);color:var(--text)}
+    /* Spinner */
+    .spinner{
+      width:16px;height:16px;border-radius:999px;border:2px solid rgba(255,255,255,.25);
+      border-top-color: rgba(74,163,255,.95);
+      animation: spin .8s linear infinite;
       display:none;
     }
-
-    .twoBtns{
-      display:flex; gap:10px; margin-top:12px;
-    }
-    .twoBtns button{ flex:1; }
-
-    /* Mobile Optimierung */
-    @media (max-width: 880px){
-      .wrap{ grid-template-columns: 1fr; }
-      textarea{ min-height: 180px; }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Mobile */
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+      textarea{min-height:150px}
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-
-    <!-- Left: Explain -->
-    <section class="card">
-      <div class="cardHeader">
+    <div class="header">
+      <div class="brand">
         <div class="logo">📄</div>
         <div>
-          <p class="title">briefe-einfach</p>
-          <p class="subtitle">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.</p>
+          <h1>briefe-einfach</h1>
+          <div class="sub">Text rein → Erklärung + Fristenhilfe (MVP)</div>
         </div>
       </div>
+      <div class="actions">
+        <div class="pill" id="userPill">👤 nicht eingeloggt</div>
+        <button class="btn primary" id="btnOpenAuth">Login / Registrieren</button>
+        <button class="btn" id="btnLogout" disabled>Logout</button>
+      </div>
+    </div>
 
-      <div class="cardBody">
-        <label for="input">Originaltext</label>
-        <textarea id="input" placeholder="Text hier einfügen..."></textarea>
+    <div class="grid">
+      <div class="card">
+        <h2>📝 Originaltext</h2>
+        <div class="hint">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>. (Ctrl+Enter geht auch)</div>
+        <label for="txt">Text</label>
+        <textarea id="txt" placeholder="Text hier einfügen..."></textarea>
 
-        <div class="btnRow">
-          <button id="btnExplain" class="primary">✨ Erklären</button>
-          <button id="btnClear">🧹 Leeren</button>
-          <button id="btnCopy">📋 Ergebnis kopieren</button>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="btnExplain">
+            <span class="spinner" id="spinExplain"></span>
+            ✨ Erklären
+          </button>
+          <button class="btn" id="btnClear">Leeren</button>
+          <button class="btn" id="btnCopy" disabled>Ergebnis kopieren</button>
         </div>
 
-        <label>Ergebnis</label>
-        <div id="output" class="result"></div>
+        <div id="msgBox" class="msg" style="display:none"></div>
 
-        <div class="hint">Tipp: Später kannst du Rate-Limit, API-Key-Schutz & bessere Formatierung ergänzen.</div>
-      </div>
-    </section>
-
-    <!-- Right: Account + Status -->
-    <aside class="card">
-      <div class="cardHeader">
-        <div class="logo">👤</div>
-        <div>
-          <p class="title">Account</p>
-          <p class="subtitle">Login / Registrierung + Status (Demo)</p>
-        </div>
-      </div>
-
-      <div class="sideBox">
-        <div class="statusRow">
+        <div class="result" id="resultWrap">
+          <div class="pill">✅ Ergebnis</div>
           <div>
-            <div style="font-weight:800;">Backend</div>
-            <div style="color:var(--muted); font-size:12px;">/health</div>
+            <div class="pill">Kurz erklärt</div>
+            <div class="box" id="outKurz">Noch kein Ergebnis.</div>
           </div>
-          <span id="pillBackend" class="pill">prüfe…</span>
-        </div>
-
-        <div class="statusRow">
           <div>
-            <div style="font-weight:800;">Login</div>
-            <div id="who" style="color:var(--muted); font-size:12px;">nicht eingeloggt</div>
+            <div class="pill">Ausführlich</div>
+            <div class="box" id="outExplain">—</div>
           </div>
-          <button id="btnOpenAuth" class="primary">Login / Registrieren</button>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="statusRow">
           <div>
-            <div style="font-weight:800;">Abo (später Stripe)</div>
-            <div style="color:var(--muted); font-size:12px;">Noch Demo – kommt als Nächstes</div>
+            <div class="pill">Was du tun solltest</div>
+            <div class="box" id="outTodo">—</div>
           </div>
-          <span class="pill">Demo</span>
-        </div>
-
-        <div class="hint">
-          Wichtig: Öffne diese App immer über <b>https://…railway.app</b> oder <b>http://localhost:3000</b>.
-          <br/>Wenn du sie als Datei (<b>file:///…</b>) öffnest, blockt der Browser alle API-Calls (CORS).
         </div>
       </div>
-    </aside>
 
-  </div>
+      <div class="card">
+        <h2>⏳ Fristenrechner (MVP)</h2>
+        <div class="hint">MVP: ohne Feiertage/Sonderregeln.</div>
 
-  <!-- Auth Modal -->
-  <div class="modalBackdrop" id="authBackdrop">
-    <div class="modal">
-      <div class="modalHead">
-        <h3 id="authTitle">Registrieren</h3>
-        <button id="btnCloseAuth" title="Schließen">✖</button>
-      </div>
-      <div class="modalBody">
-        <label>E-Mail</label>
-        <input id="email" type="email" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);outline:none;" placeholder="name@mail.de" />
+        <label for="startDate">Eingangsdatum (Start)</label>
+        <input id="startDate" type="date"/>
 
-        <label>Passwort</label>
-        <input id="pass" type="password" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);outline:none;" placeholder="••••••••" />
+        <label for="days">Frist in Tagen</label>
+        <input id="days" type="number" value="14" min="1"/>
 
-        <div id="authErr" class="err">Fehler</div>
+        <label for="mode">Zählweise</label>
+        <select id="mode">
+          <option value="next">Start am nächsten Tag</option>
+          <option value="same">Start am selben Tag</option>
+        </select>
 
-        <div class="twoBtns">
-          <button id="btnDoAuth" class="primary">Registrieren</button>
-          <button id="btnSwitchMode">Schon ein Konto? Login</button>
+        <div class="row" style="margin-top:12px">
+          <button class="btn primary" id="btnCalc">Frist berechnen</button>
+          <button class="btn" id="btnToday">Heute einsetzen</button>
+        </div>
+
+        <div class="result">
+          <div class="pill">📌 Ergebnis</div>
+          <div class="box" id="fristOut">Noch nichts berechnet.</div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Auth Modal -->
+  <div class="modalBackdrop" id="authBackdrop">
+    <div class="modal">
+      <h3 id="authTitle">Login</h3>
+      <div class="tabs">
+        <div class="tab active" id="tabLogin">Login</div>
+        <div class="tab" id="tabRegister">Registrieren</div>
+      </div>
+
+      <label>E-Mail</label>
+      <input id="authEmail" type="email" placeholder="name@email.de"/>
+
+      <label>Passwort</label>
+      <input id="authPass" type="password" placeholder="mind. 6 Zeichen"/>
+
+      <div id="authMsg" class="msg err" style="display:none"></div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnAuthDo">
+          <span class="spinner" id="spinAuth"></span>
+          Login
+        </button>
+        <button class="btn" id="btnAuthClose">Schließen</button>
+      </div>
+
+      <div class="hint" style="margin-top:10px">
+        Hinweis: MVP-Login ist aktuell ohne Datenbank (nur Demo). Als nächstes bauen wir DB + Stripe-Abo sauber ein.
+      </div>
+    </div>
+  </div>
+
   <script>
-    // ✅ Ganz wichtig: niemals file:/// benutzen
-    if (location.protocol === "file:") {
-      document.body.innerHTML =
-        "<div style='max-width:720px;background:rgba(255,69,58,.15);border:1px solid rgba(255,69,58,.3);padding:18px;border-radius:16px;color:#fff;font-family:system-ui'>" +
-        "<h2>❌ Bitte nicht per Doppelklick öffnen</h2>" +
-        "<p>Du hast die App als Datei geöffnet (<b>file:///…</b>). Dadurch blockt der Browser alle API-Calls (CORS).</p>" +
-        "<p><b>So geht’s richtig:</b><br>1) Lokal: <b>npm start</b> → dann <b>http://localhost:3000</b><br>2) Online: Railway-URL öffnen (<b>https://…railway.app</b>)</p>" +
-        "</div>";
-      throw new Error("App wurde über file:// geöffnet");
+    // Wichtig: NIE file:/// testen. Trotzdem: BaseURL sauber machen.
+    const baseURL = (location.origin && location.origin.startsWith('http'))
+      ? location.origin
+      : 'http://localhost:3000';
+
+    const els = (id) => document.getElementById(id);
+
+    const txt = els('txt');
+    const msgBox = els('msgBox');
+    const outKurz = els('outKurz');
+    const outExplain = els('outExplain');
+    const outTodo = els('outTodo');
+    const btnCopy = els('btnCopy');
+    const spinExplain = els('spinExplain');
+
+    const userPill = els('userPill');
+    const btnOpenAuth = els('btnOpenAuth');
+    const btnLogout = els('btnLogout');
+
+    const authBackdrop = els('authBackdrop');
+    const tabLogin = els('tabLogin');
+    const tabRegister = els('tabRegister');
+    const authTitle = els('authTitle');
+    const authEmail = els('authEmail');
+    const authPass = els('authPass');
+    const btnAuthDo = els('btnAuthDo');
+    const btnAuthClose = els('btnAuthClose');
+    const authMsg = els('authMsg');
+    const spinAuth = els('spinAuth');
+
+    let authMode = 'login'; // login | register
+    let token = localStorage.getItem('token') || '';
+
+    function showMsg(type, text){
+      msgBox.style.display = 'block';
+      msgBox.className = 'msg ' + (type === 'err' ? 'err' : 'ok');
+      msgBox.textContent = text;
+    }
+    function hideMsg(){ msgBox.style.display='none'; }
+
+    function showAuthMsg(text){
+      authMsg.style.display = 'block';
+      authMsg.textContent = text;
+    }
+    function hideAuthMsg(){ authMsg.style.display='none'; }
+
+    function setLoggedIn(email){
+      userPill.textContent = email ? `👤 ${email}` : '👤 nicht eingeloggt';
+      btnLogout.disabled = !email;
     }
 
-    // --- UI helpers ---
-    const $ = (id) => document.getElementById(id);
+    async function api(path, opts = {}){
+      const headers = Object.assign(
+        { 'Content-Type': 'application/json' },
+        opts.headers || {}
+      );
+      if (token) headers.Authorization = 'Bearer ' + token;
 
-    const output = $("output");
-    const input  = $("input");
-
-    const btnExplain = $("btnExplain");
-    const btnClear   = $("btnClear");
-    const btnCopy    = $("btnCopy");
-
-    const pillBackend = $("pillBackend");
-    const who = $("who");
-
-    const authBackdrop = $("authBackdrop");
-    const btnOpenAuth = $("btnOpenAuth");
-    const btnCloseAuth = $("btnCloseAuth");
-    const btnSwitchMode = $("btnSwitchMode");
-    const btnDoAuth = $("btnDoAuth");
-    const authTitle = $("authTitle");
-    const authErr = $("authErr");
-    const email = $("email");
-    const pass = $("pass");
-
-    let mode = "register"; // register | login
-    let token = localStorage.getItem("token") || "";
-
-    function setErr(msg){
-      authErr.style.display = msg ? "block" : "none";
-      authErr.textContent = msg || "";
-    }
-
-    function openAuth(){
-      authBackdrop.style.display = "flex";
-      setErr("");
-      updateAuthUI();
-    }
-    function closeAuth(){
-      authBackdrop.style.display = "none";
-      setErr("");
-    }
-    function updateAuthUI(){
-      if (mode === "register"){
-        authTitle.textContent = "Registrieren";
-        btnDoAuth.textContent = "Registrieren";
-        btnSwitchMode.textContent = "Schon ein Konto? Login";
-      } else {
-        authTitle.textContent = "Login";
-        btnDoAuth.textContent = "Login";
-        btnSwitchMode.textContent = "Noch kein Konto? Registrieren";
-      }
-    }
-
-    async function api(path, options={}){
-      const headers = options.headers || {};
-      headers["Content-Type"] = "application/json";
-      if (token) headers["Authorization"] = "Bearer " + token;
-      const res = await fetch(path, { ...options, headers });
+      const res = await fetch(baseURL + path, { ...opts, headers });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+      if (!res.ok) throw new Error(data.error || 'Unbekannter Fehler');
       return data;
     }
 
-    async function checkBackend(){
-      try{
-        const res = await fetch("/health");
-        const data = await res.json();
-        if (data.ok){
-          pillBackend.className = "pill ok";
-          pillBackend.textContent = "online";
-        } else {
-          throw new Error("not ok");
-        }
-      } catch(e){
-        pillBackend.className = "pill bad";
-        pillBackend.textContent = "offline";
-      }
-    }
+    // --- Explain ---
+    els('btnExplain').addEventListener('click', async () => {
+      hideMsg();
+      const text = txt.value.trim();
+      if (!text) return showMsg('err','Bitte zuerst einen Text eingeben.');
 
-    async function refreshMe(){
-      if (!token){
-        who.textContent = "nicht eingeloggt";
-        return;
-      }
-      try{
-        const me = await api("/auth/me");
-        who.textContent = "eingeloggt (Demo)";
-      } catch(e){
-        token = "";
-        localStorage.removeItem("token");
-        who.textContent = "nicht eingeloggt";
-      }
-    }
-
-    // --- Explain Demo (noch ohne KI, später ersetzen wir das) ---
-    function simpleExplain(text){
-      if (!text.trim()) return "Bitte erst einen Text eingeben.";
-      // Minimal-Demo: sehr einfache Umschreibung
-      return [
-        "Das ist eine einfache Erklärung:",
-        "",
-        "• Der Brief richtet sich höflich an Sie.",
-        "• Es geht darum, Informationen verständlich zu erklären.",
-        "• Sie sollten den Text genau lesen und ggf. reagieren."
-      ].join("\n");
-    }
-
-    btnExplain.addEventListener("click", async () => {
-      output.textContent = simpleExplain(input.value);
-    });
-
-    btnClear.addEventListener("click", () => {
-      input.value = "";
-      output.textContent = "";
-    });
-
-    btnCopy.addEventListener("click", async () => {
-      const t = output.textContent || "";
-      if (!t.trim()) return;
-      await navigator.clipboard.writeText(t);
-      btnCopy.textContent = "✅ Kopiert";
-      setTimeout(()=> btnCopy.textContent = "📋 Ergebnis kopieren", 900);
-    });
-
-    btnOpenAuth.addEventListener("click", openAuth);
-    btnCloseAuth.addEventListener("click", closeAuth);
-    authBackdrop.addEventListener("click", (e) => {
-      if (e.target === authBackdrop) closeAuth();
-    });
-
-    btnSwitchMode.addEventListener("click", () => {
-      mode = (mode === "register") ? "login" : "register";
-      setErr("");
-      updateAuthUI();
-    });
-
-    btnDoAuth.addEventListener("click", async () => {
-      setErr("");
-      const em = email.value.trim();
-      const pw = pass.value.trim();
-      if (!em || !pw) return setErr("Bitte E-Mail und Passwort eingeben.");
+      spinExplain.style.display = 'inline-block';
+      els('btnExplain').disabled = true;
 
       try{
-        if (mode === "register"){
-          await api("/auth/register", { method:"POST", body: JSON.stringify({ email: em, password: pw }) });
-          // Nach Registrierung direkt Login
-          const r = await api("/auth/login", { method:"POST", body: JSON.stringify({ email: em, password: pw }) });
-          token = r.token;
-          localStorage.setItem("token", token);
-          await refreshMe();
-          closeAuth();
-        } else {
-          const r = await api("/auth/login", { method:"POST", body: JSON.stringify({ email: em, password: pw }) });
-          token = r.token;
-          localStorage.setItem("token", token);
-          await refreshMe();
-          closeAuth();
-        }
-      } catch(e){
-        setErr(e.message || "Unbekannter Fehler");
+        const data = await api('/erklaeren', {
+          method:'POST',
+          body: JSON.stringify({ text })
+        });
+        outKurz.textContent = data.kurz || 'OK';
+        outExplain.textContent = data.erklaerung || '—';
+        outTodo.textContent = data.wasTun || '—';
+        btnCopy.disabled = false;
+        showMsg('ok','✅ Erklärung erstellt.');
+      }catch(e){
+        showMsg('err','❌ ' + e.message);
+      }finally{
+        spinExplain.style.display = 'none';
+        els('btnExplain').disabled = false;
       }
     });
 
-    // init
-    checkBackend();
-    refreshMe();
+    els('btnClear').addEventListener('click', () => {
+      txt.value = '';
+      outKurz.textContent = 'Noch kein Ergebnis.';
+      outExplain.textContent = '—';
+      outTodo.textContent = '—';
+      btnCopy.disabled = true;
+      hideMsg();
+    });
+
+    els('btnCopy').addEventListener('click', async () => {
+      const all = [
+        'Kurz erklärt:\n' + outKurz.textContent,
+        '\nAusführlich:\n' + outExplain.textContent,
+        '\nWas du tun solltest:\n' + outTodo.textContent
+      ].join('\n');
+      await navigator.clipboard.writeText(all);
+      showMsg('ok','📋 Ergebnis kopiert.');
+    });
+
+    txt.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') els('btnExplain').click();
+    });
+
+    // --- Fristenrechner ---
+    function addDays(date, days){
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+    function fmt(d){
+      return d.toLocaleDateString('de-DE', { year:'numeric', month:'2-digit', day:'2-digit' });
+    }
+
+    els('btnToday').addEventListener('click', () => {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth()+1).padStart(2,'0');
+      const dd = String(now.getDate()).padStart(2,'0');
+      els('startDate').value = `${yyyy}-${mm}-${dd}`;
+    });
+
+    els('btnCalc').addEventListener('click', () => {
+      const start = els('startDate').value;
+      const days = parseInt(els('days').value || '0', 10);
+      const mode = els('mode').value;
+
+      if (!start || !days) return els('fristOut').textContent = 'Bitte Datum + Tage eingeben.';
+
+      const startDate = new Date(start + 'T00:00:00');
+      const effectiveStart = (mode === 'next') ? addDays(startDate, 1) : startDate;
+      const end = addDays(effectiveStart, days);
+
+      els('fristOut').textContent =
+        `Start: ${fmt(startDate)}\nZählweise: ${mode === 'next' ? 'Start am nächsten Tag' : 'Start am selben Tag'}\nFrist (Tage): ${days}\n➡️ Ende (MVP): ${fmt(end)}`;
+    });
+
+    // --- Auth Modal ---
+    function openAuth(){
+      authBackdrop.style.display = 'flex';
+      hideAuthMsg();
+      authEmail.focus();
+    }
+    function closeAuth(){
+      authBackdrop.style.display = 'none';
+      authEmail.value = '';
+      authPass.value = '';
+      hideAuthMsg();
+    }
+
+    function setAuthMode(mode){
+      authMode = mode;
+      tabLogin.classList.toggle('active', mode === 'login');
+      tabRegister.classList.toggle('active', mode === 'register');
+      authTitle.textContent = (mode === 'login') ? 'Login' : 'Registrieren';
+      btnAuthDo.textContent = (mode === 'login') ? 'Login' : 'Registrieren';
+    }
+
+    btnOpenAuth.addEventListener('click', openAuth);
+    btnAuthClose.addEventListener('click', closeAuth);
+    tabLogin.addEventListener('click', () => setAuthMode('login'));
+    tabRegister.addEventListener('click', () => setAuthMode('register'));
+
+    btnAuthDo.addEventListener('click', async () => {
+      hideAuthMsg();
+      const email = authEmail.value.trim();
+      const password = authPass.value.trim();
+
+      if (!email || !password) return showAuthMsg('Bitte E-Mail + Passwort eingeben.');
+      spinAuth.style.display = 'inline-block';
+      btnAuthDo.disabled = true;
+
+      try{
+        const path = authMode === 'login' ? '/auth/login' : '/auth/register';
+        const data = await api(path, {
+          method:'POST',
+          body: JSON.stringify({ email, password })
+        });
+        token = data.token;
+        localStorage.setItem('token', token);
+        setLoggedIn(data.user.email);
+        closeAuth();
+        showMsg('ok', '✅ Eingeloggt.');
+      }catch(e){
+        showAuthMsg('❌ ' + e.message);
+      }finally{
+        spinAuth.style.display = 'none';
+        btnAuthDo.disabled = false;
+      }
+    });
+
+    btnLogout.addEventListener('click', () => {
+      token = '';
+      localStorage.removeItem('token');
+      setLoggedIn('');
+      showMsg('ok','Du bist ausgeloggt.');
+    });
+
+    // On load: check token
+    (async () => {
+      if (!token) return setLoggedIn('');
+      try{
+        const me = await api('/auth/me');
+        setLoggedIn(me.user.email);
+      }catch{
+        token = '';
+        localStorage.removeItem('token');
+        setLoggedIn('');
+      }
+    })();
   </script>
 </body>
 </html>
