@@ -14,60 +14,39 @@
         --btn: rgba(255, 255, 255, 0.10);
         --btn2: rgba(255, 255, 255, 0.16);
       }
-
       * { box-sizing: border-box; }
       body {
         margin: 0;
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        background: radial-gradient(1200px 600px at 20% 0%, #1b2a6b 0%, transparent 60%),
+        background:
+          radial-gradient(1200px 600px at 20% 0%, #1b2a6b 0%, transparent 60%),
           radial-gradient(800px 500px at 90% 10%, #4b1b6b 0%, transparent 55%),
           var(--bg);
         color: var(--text);
       }
-
-      .wrap {
-        max-width: 980px;
-        margin: 0 auto;
-        padding: 22px 14px 60px;
-      }
-
-      .header {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        margin-bottom: 14px;
-      }
-
+      .wrap { max-width: 980px; margin: 0 auto; padding: 22px 14px 60px; }
+      .topbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 14px; }
+      .header { display: flex; gap: 12px; align-items: center; }
       .logo {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
+        width: 34px; height: 34px; border-radius: 10px;
         background: rgba(255,255,255,0.12);
-        display: grid;
-        place-items: center;
+        display: grid; place-items: center; border: 1px solid var(--border);
+      }
+      h1 { font-size: 26px; margin: 0; letter-spacing: 0.2px; }
+      .subtitle { margin: 6px 0 18px; color: var(--muted); line-height: 1.35; }
+
+      .userbox { display:flex; align-items:center; gap:10px; flex-wrap: wrap; }
+      .pill {
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.18);
         border: 1px solid var(--border);
-      }
-
-      h1 {
-        font-size: 26px;
-        margin: 0;
-        letter-spacing: 0.2px;
-      }
-      .subtitle {
-        margin: 6px 0 18px;
         color: var(--muted);
-        line-height: 1.35;
+        font-size: 12px;
       }
 
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-
-      @media (min-width: 900px) {
-        .grid { grid-template-columns: 1fr 1fr; }
-      }
+      .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+      @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
 
       .card {
         background: var(--card);
@@ -76,20 +55,10 @@
         padding: 14px;
         backdrop-filter: blur(10px);
       }
-
-      label {
-        display: block;
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
-
+      label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
       textarea {
-        width: 100%;
-        min-height: 220px;
-        resize: vertical;
-        padding: 12px;
-        border-radius: 12px;
+        width: 100%; min-height: 220px; resize: vertical;
+        padding: 12px; border-radius: 12px;
         border: 1px solid var(--border);
         background: rgba(0,0,0,0.18);
         color: var(--text);
@@ -97,14 +66,7 @@
         font-size: 14px;
         line-height: 1.45;
       }
-
-      .btnRow {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        flex-wrap: wrap;
-      }
-
+      .btnRow { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
       button {
         border: 1px solid var(--border);
         background: var(--btn);
@@ -116,19 +78,12 @@
         font-size: 14px;
       }
       button:hover { background: var(--btn2); }
-
       button.primary {
         background: rgba(120, 110, 255, 0.35);
         border-color: rgba(120, 110, 255, 0.55);
       }
-      button.primary:hover {
-        background: rgba(120, 110, 255, 0.48);
-      }
-
-      button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      button.primary:hover { background: rgba(120, 110, 255, 0.48); }
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
 
       .resultBox {
         white-space: pre-wrap;
@@ -140,13 +95,7 @@
         font-size: 14px;
         line-height: 1.45;
       }
-
-      .hint {
-        margin-top: 10px;
-        font-size: 12px;
-        color: var(--muted);
-      }
-
+      .hint { margin-top: 10px; font-size: 12px; color: var(--muted); }
       .error {
         margin-top: 10px;
         padding: 10px 12px;
@@ -156,12 +105,8 @@
         color: rgba(255, 210, 210, 0.95);
         display: none;
       }
-
-      /* Spinner */
       .spinner {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
+        width: 16px; height: 16px; border-radius: 50%;
         border: 2px solid rgba(255,255,255,0.35);
         border-top-color: rgba(255,255,255,0.95);
         display: inline-block;
@@ -180,22 +125,69 @@
         color: rgba(220, 255, 230, 0.95);
         display: none;
       }
+
+      /* Modal */
+      .modalBackdrop {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 10;
+      }
+      .modal {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(10,14,30,0.92);
+        backdrop-filter: blur(12px);
+        padding: 14px;
+      }
+      .modal h2 { margin: 0 0 8px; font-size: 18px; }
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-top: 10px;
+      }
+      .field input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.18);
+        color: var(--text);
+        outline: none;
+        font-size: 14px;
+      }
+      .modalRow { display:flex; gap:10px; flex-wrap: wrap; margin-top: 12px; }
+      .smallmuted { font-size: 12px; color: var(--muted); margin-top: 8px; }
+      .linkbtn { background: transparent; border: none; color: rgba(160,170,255,0.95); cursor: pointer; padding: 0; font-weight: 700; }
     </style>
   </head>
 
   <body>
     <div class="wrap">
-      <div class="header">
-        <div class="logo">📄</div>
-        <div>
-          <h1>briefe-einfach</h1>
-          <div class="subtitle">
-            Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
+      <div class="topbar">
+        <div class="header">
+          <div class="logo">📄</div>
+          <div>
+            <h1>briefe-einfach</h1>
+            <div class="subtitle">
+              Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
+            </div>
           </div>
+        </div>
+
+        <div class="userbox">
+          <div class="pill" id="pillUser">Nicht eingeloggt</div>
+          <button id="btnOpenAuth">Login</button>
+          <button id="btnLogout" style="display:none;">Logout</button>
         </div>
       </div>
 
-      <div class="paid" id="paidBox">✅ Zahlung erkannt. Danke! (Demo-Hinweis: Freischaltung bauen wir als nächstes.)</div>
+      <div class="paid" id="paidBox">✅ Checkout erfolgreich. (PRO wird per Webhook freigeschaltet.)</div>
 
       <div class="grid">
         <div class="card">
@@ -212,19 +204,51 @@
 
             <button id="btnCopy" disabled>Ergebnis kopieren</button>
 
-            <button id="btnPay">💳 Pro kaufen (5 €)</button>
+            <button id="btnSub">💳 Pro-Abo starten</button>
           </div>
 
           <div class="error" id="errorBox"></div>
 
           <div class="hint">
-            Tipp: Als nächstes bauen wir Rate-Limit, API-Key Schutz, bessere Formatierung und echte KI-Antworten ein.
+            Als nächstes: Webhook aktivieren + Pro-Features sperren/freischalten + Customer Portal.
           </div>
         </div>
 
         <div class="card">
           <label>Ergebnis</label>
           <div class="resultBox" id="resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modalBackdrop" id="authBackdrop">
+      <div class="modal">
+        <h2 id="authTitle">Login</h2>
+
+        <div class="field">
+          <label>E-Mail</label>
+          <input id="authEmail" type="email" placeholder="name@mail.de" />
+        </div>
+
+        <div class="field">
+          <label>Passwort</label>
+          <input id="authPass" type="password" placeholder="mind. 6 Zeichen" />
+        </div>
+
+        <div class="error" id="authError"></div>
+
+        <div class="modalRow">
+          <button class="primary" id="btnAuthSubmit">
+            <span id="authBtnIcon">🔐</span>
+            <span id="authBtnText">Einloggen</span>
+          </button>
+          <button id="btnAuthClose">Schließen</button>
+        </div>
+
+        <div class="smallmuted">
+          <span id="authSwitchText">Noch kein Konto?</span>
+          <button class="linkbtn" id="btnSwitchMode">Registrieren</button>
         </div>
       </div>
     </div>
@@ -241,22 +265,44 @@
 
       const btnClear = document.getElementById("btnClear");
       const btnCopy = document.getElementById("btnCopy");
-      const btnPay = document.getElementById("btnPay");
+      const btnSub = document.getElementById("btnSub");
+
+      const pillUser = document.getElementById("pillUser");
+      const btnOpenAuth = document.getElementById("btnOpenAuth");
+      const btnLogout = document.getElementById("btnLogout");
+
+      // Modal
+      const authBackdrop = document.getElementById("authBackdrop");
+      const authTitle = document.getElementById("authTitle");
+      const authEmail = document.getElementById("authEmail");
+      const authPass = document.getElementById("authPass");
+      const authError = document.getElementById("authError");
+      const btnAuthSubmit = document.getElementById("btnAuthSubmit");
+      const authBtnText = document.getElementById("authBtnText");
+      const authBtnIcon = document.getElementById("authBtnIcon");
+      const btnAuthClose = document.getElementById("btnAuthClose");
+      const btnSwitchMode = document.getElementById("btnSwitchMode");
+      const authSwitchText = document.getElementById("authSwitchText");
+
+      let authMode = "login"; // login | register
+      let currentUser = null;
 
       function setError(msg) {
-        if (!msg) {
-          errorBox.style.display = "none";
-          errorBox.textContent = "";
-          return;
-        }
+        if (!msg) { errorBox.style.display = "none"; errorBox.textContent = ""; return; }
         errorBox.style.display = "block";
         errorBox.textContent = "❌ " + msg;
+      }
+
+      function setAuthError(msg) {
+        if (!msg) { authError.style.display = "none"; authError.textContent = ""; return; }
+        authError.style.display = "block";
+        authError.textContent = "❌ " + msg;
       }
 
       function setLoading(isLoading) {
         btnExplain.disabled = isLoading;
         btnClear.disabled = isLoading;
-        btnPay.disabled = isLoading;
+        btnSub.disabled = isLoading;
 
         if (isLoading) {
           btnExplainIcon.innerHTML = '<span class="spinner"></span>';
@@ -267,30 +313,116 @@
         }
       }
 
+      function setAuthLoading(isLoading) {
+        btnAuthSubmit.disabled = isLoading;
+        if (isLoading) {
+          authBtnIcon.innerHTML = '<span class="spinner"></span>';
+          authBtnText.textContent = "Bitte warten…";
+        } else {
+          authBtnIcon.textContent = authMode === "login" ? "🔐" : "🧾";
+          authBtnText.textContent = authMode === "login" ? "Einloggen" : "Registrieren";
+        }
+      }
+
+      async function api(path, opts = {}) {
+        // wichtig: credentials, damit cookie-session funktioniert
+        const res = await fetch(path, { credentials: "include", ...opts });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
+        return data;
+      }
+
+      function openAuth() {
+        setAuthError("");
+        authBackdrop.style.display = "flex";
+        authEmail.focus();
+      }
+
+      function closeAuth() {
+        authBackdrop.style.display = "none";
+        setAuthError("");
+      }
+
+      function setAuthMode(mode) {
+        authMode = mode;
+        authTitle.textContent = mode === "login" ? "Login" : "Registrieren";
+        authBtnIcon.textContent = mode === "login" ? "🔐" : "🧾";
+        authBtnText.textContent = mode === "login" ? "Einloggen" : "Registrieren";
+        authSwitchText.textContent = mode === "login" ? "Noch kein Konto?" : "Schon ein Konto?";
+        btnSwitchMode.textContent = mode === "login" ? "Registrieren" : "Login";
+      }
+
+      function renderUser() {
+        if (!currentUser) {
+          pillUser.textContent = "Nicht eingeloggt";
+          btnOpenAuth.style.display = "inline-block";
+          btnLogout.style.display = "none";
+          return;
+        }
+        pillUser.textContent = `${currentUser.email} · ${currentUser.pro ? "PRO ✅" : "FREE"}`;
+        btnOpenAuth.style.display = "none";
+        btnLogout.style.display = "inline-block";
+      }
+
+      async function loadMe() {
+        try {
+          const data = await api("/auth/me");
+          currentUser = data.user;
+          renderUser();
+        } catch {
+          currentUser = null;
+          renderUser();
+        }
+      }
+
+      async function doAuth() {
+        setAuthError("");
+        const email = (authEmail.value || "").trim();
+        const password = (authPass.value || "").toString();
+
+        if (!email || !email.includes("@")) { setAuthError("Bitte gültige E-Mail eingeben."); return; }
+        if (!password || password.length < 6) { setAuthError("Passwort mind. 6 Zeichen."); return; }
+
+        setAuthLoading(true);
+        try {
+          const endpoint = authMode === "login" ? "/auth/login" : "/auth/register";
+          const data = await api(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+          currentUser = data.user;
+          renderUser();
+          closeAuth();
+        } catch (err) {
+          setAuthError(err.message || "Fehler");
+        } finally {
+          setAuthLoading(false);
+        }
+      }
+
+      async function doLogout() {
+        try {
+          await api("/auth/logout", { method: "POST" });
+        } catch {}
+        currentUser = null;
+        renderUser();
+      }
+
       async function explainText() {
         setError("");
         const text = (input.value || "").trim();
-        if (!text) {
-          setError("Bitte zuerst einen Text eingeben.");
-          return;
-        }
+        if (!text) { setError("Bitte zuerst einen Text eingeben."); return; }
 
         setLoading(true);
         resultBox.textContent = "";
 
         try {
-          const res = await fetch("/erklaeren", {
+          const data = await api("/erklaeren", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text })
           });
-
-          const data = await res.json().catch(() => ({}));
-
-          if (!res.ok) {
-            throw new Error(data.error || "Unbekannter Fehler");
-          }
-
           resultBox.textContent = data.result || "";
           btnCopy.disabled = !data.result;
         } catch (err) {
@@ -308,21 +440,22 @@
         btnCopy.disabled = true;
       }
 
-      async function buyPro() {
+      async function startSubscription() {
         setError("");
-        setLoading(true);
 
+        if (!currentUser) {
+          setError("Bitte zuerst einloggen, dann Abo starten.");
+          openAuth();
+          return;
+        }
+
+        setLoading(true);
         try {
-          const res = await fetch("/create-checkout-session", {
+          const data = await api("/create-checkout-session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({})
           });
-
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data.error || "Stripe Fehler");
-
-          if (!data.url) throw new Error("Keine Checkout-URL erhalten.");
           window.location.href = data.url;
         } catch (err) {
           setError(err.message || "Stripe Fehler");
@@ -331,24 +464,33 @@
         }
       }
 
+      // Events
       btnExplain.addEventListener("click", explainText);
       btnClear.addEventListener("click", clearAll);
+      btnSub.addEventListener("click", startSubscription);
 
       btnCopy.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(resultBox.textContent || "");
-        } catch (e) {
-          setError("Kopieren ging nicht (Browser-Rechte).");
-        }
+        try { await navigator.clipboard.writeText(resultBox.textContent || ""); }
+        catch { setError("Kopieren ging nicht (Browser-Rechte)."); }
       });
 
-      btnPay.addEventListener("click", buyPro);
+      btnOpenAuth.addEventListener("click", openAuth);
+      btnAuthClose.addEventListener("click", closeAuth);
+      btnAuthSubmit.addEventListener("click", doAuth);
+      btnSwitchMode.addEventListener("click", () => setAuthMode(authMode === "login" ? "register" : "login"));
+      btnLogout.addEventListener("click", doLogout);
 
-      // Payment-Status in URL anzeigen (?paid=1)
+      authBackdrop.addEventListener("click", (e) => {
+        if (e.target === authBackdrop) closeAuth();
+      });
+
+      // Paid banner
       const params = new URLSearchParams(window.location.search);
-      if (params.get("paid") === "1") {
-        paidBox.style.display = "block";
-      }
+      if (params.get("paid") === "1") paidBox.style.display = "block";
+
+      // Init
+      setAuthMode("login");
+      loadMe();
     </script>
   </body>
 </html>
