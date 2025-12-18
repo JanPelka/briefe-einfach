@@ -1,496 +1,485 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>briefe-einfach</title>
-    <style>
-      :root {
-        --bg: #0b1020;
-        --card: rgba(255, 255, 255, 0.07);
-        --border: rgba(255, 255, 255, 0.12);
-        --text: rgba(255, 255, 255, 0.92);
-        --muted: rgba(255, 255, 255, 0.70);
-        --btn: rgba(255, 255, 255, 0.10);
-        --btn2: rgba(255, 255, 255, 0.16);
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        background:
-          radial-gradient(1200px 600px at 20% 0%, #1b2a6b 0%, transparent 60%),
-          radial-gradient(800px 500px at 90% 10%, #4b1b6b 0%, transparent 55%),
-          var(--bg);
-        color: var(--text);
-      }
-      .wrap { max-width: 980px; margin: 0 auto; padding: 22px 14px 60px; }
-      .topbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 14px; }
-      .header { display: flex; gap: 12px; align-items: center; }
-      .logo {
-        width: 34px; height: 34px; border-radius: 10px;
-        background: rgba(255,255,255,0.12);
-        display: grid; place-items: center; border: 1px solid var(--border);
-      }
-      h1 { font-size: 26px; margin: 0; letter-spacing: 0.2px; }
-      .subtitle { margin: 6px 0 18px; color: var(--muted); line-height: 1.35; }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>briefe-einfach</title>
 
-      .userbox { display:flex; align-items:center; gap:10px; flex-wrap: wrap; }
-      .pill {
-        padding: 8px 10px;
-        border-radius: 999px;
-        background: rgba(0,0,0,0.18);
-        border: 1px solid var(--border);
-        color: var(--muted);
-        font-size: 12px;
-      }
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.09);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.75);
+      --line:rgba(255,255,255,.12);
+      --ok:#30d158;
+      --warn:#ffd60a;
+      --bad:#ff453a;
+      --btn:#3b82f6;
+      --btn2:rgba(255,255,255,.08);
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(59,130,246,.35), transparent 60%),
+        radial-gradient(800px 500px at 90% 10%, rgba(168,85,247,.25), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
 
-      .grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-      @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .wrap{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
 
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 14px;
-        backdrop-filter: blur(10px);
-      }
-      label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-      textarea {
-        width: 100%; min-height: 220px; resize: vertical;
-        padding: 12px; border-radius: 12px;
-        border: 1px solid var(--border);
-        background: rgba(0,0,0,0.18);
-        color: var(--text);
-        outline: none;
-        font-size: 14px;
-        line-height: 1.45;
-      }
-      .btnRow { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-      button {
-        border: 1px solid var(--border);
-        background: var(--btn);
-        color: var(--text);
-        padding: 10px 12px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 14px;
-      }
-      button:hover { background: var(--btn2); }
-      button.primary {
-        background: rgba(120, 110, 255, 0.35);
-        border-color: rgba(120, 110, 255, 0.55);
-      }
-      button.primary:hover { background: rgba(120, 110, 255, 0.48); }
-      button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:18px 18px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:34px;height:34px;
+      border-radius:10px;
+      background:linear-gradient(135deg, rgba(59,130,246,.95), rgba(168,85,247,.9));
+      display:grid;place-items:center;
+      font-weight:800;
+    }
+    .title{
+      font-size:22px;
+      font-weight:800;
+      margin:0;
+      line-height:1.1;
+    }
+    .subtitle{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .cardBody{ padding:16px 18px 18px; }
 
-      .resultBox {
-        white-space: pre-wrap;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: rgba(0,0,0,0.18);
-        padding: 12px;
-        min-height: 220px;
-        font-size: 14px;
-        line-height: 1.45;
-      }
-      .hint { margin-top: 10px; font-size: 12px; color: var(--muted); }
-      .error {
-        margin-top: 10px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 120, 120, 0.45);
-        background: rgba(255, 120, 120, 0.12);
-        color: rgba(255, 210, 210, 0.95);
-        display: none;
-      }
-      .spinner {
-        width: 16px; height: 16px; border-radius: 50%;
-        border: 2px solid rgba(255,255,255,0.35);
-        border-top-color: rgba(255,255,255,0.95);
-        display: inline-block;
-        animation: spin 0.8s linear infinite;
-        vertical-align: -3px;
-        margin-right: 8px;
-      }
-      @keyframes spin { to { transform: rotate(360deg); } }
+    label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px;}
+    textarea{
+      width:100%;
+      min-height:220px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      padding:12px;
+      resize:vertical;
+      outline:none;
+    }
+    textarea:focus{border-color:rgba(59,130,246,.7)}
 
-      .paid {
-        margin: 10px 0 0;
-        padding: 10px 12px;
-        border-radius: 12px;
-        border: 1px solid rgba(120, 255, 160, 0.35);
-        background: rgba(120, 255, 160, 0.12);
-        color: rgba(220, 255, 230, 0.95);
-        display: none;
-      }
+    .btnRow{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
+      color:var(--text);
+      background:var(--btn2);
+      border:1px solid var(--line);
+    }
+    button.primary{
+      background:linear-gradient(135deg, rgba(59,130,246,.95), rgba(59,130,246,.65));
+      border-color:rgba(59,130,246,.6);
+    }
+    button:disabled{opacity:.45; cursor:not-allowed}
 
-      /* Modal */
-      .modalBackdrop {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.55);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-        z-index: 10;
-      }
-      .modal {
-        width: 100%;
-        max-width: 420px;
-        border-radius: 14px;
-        border: 1px solid var(--border);
-        background: rgba(10,14,30,0.92);
-        backdrop-filter: blur(12px);
-        padding: 14px;
-      }
-      .modal h2 { margin: 0 0 8px; font-size: 18px; }
-      .field {
-        display: grid;
-        gap: 6px;
-        margin-top: 10px;
-      }
-      .field input {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: rgba(0,0,0,0.18);
-        color: var(--text);
-        outline: none;
-        font-size: 14px;
-      }
-      .modalRow { display:flex; gap:10px; flex-wrap: wrap; margin-top: 12px; }
-      .smallmuted { font-size: 12px; color: var(--muted); margin-top: 8px; }
-      .linkbtn { background: transparent; border: none; color: rgba(160,170,255,0.95); cursor: pointer; padding: 0; font-weight: 700; }
-    </style>
-  </head>
+    .result{
+      margin-top:12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      padding:12px;
+      min-height:170px;
+      white-space:pre-wrap;
+    }
 
-  <body>
-    <div class="wrap">
-      <div class="topbar">
-        <div class="header">
-          <div class="logo">📄</div>
+    .hint{ margin-top:10px; font-size:12px; color:var(--muted); }
+
+    /* Right panel */
+    .sideBox{
+      padding:16px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .statusRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.16);
+    }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+    }
+    .pill.ok{ color:var(--ok); border-color:rgba(48,209,88,.35); }
+    .pill.bad{ color:var(--bad); border-color:rgba(255,69,58,.35); }
+
+    .divider{ height:1px; background:var(--line); margin:4px 0; }
+
+    /* Modal */
+    .modalBackdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:10;
+    }
+    .modal{
+      width:min(420px, 100%);
+      background:rgba(15,23,42,.92);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalHead h3{ margin:0; font-size:18px; }
+    .modalBody{ padding:14px 16px 16px; }
+    .err{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(255,69,58,.14);
+      border:1px solid rgba(255,69,58,.22);
+      color:rgba(255,255,255,.92);
+      display:none;
+    }
+
+    .twoBtns{
+      display:flex; gap:10px; margin-top:12px;
+    }
+    .twoBtns button{ flex:1; }
+
+    /* Mobile Optimierung */
+    @media (max-width: 880px){
+      .wrap{ grid-template-columns: 1fr; }
+      textarea{ min-height: 180px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- Left: Explain -->
+    <section class="card">
+      <div class="cardHeader">
+        <div class="logo">📄</div>
+        <div>
+          <p class="title">briefe-einfach</p>
+          <p class="subtitle">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.</p>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <label for="input">Originaltext</label>
+        <textarea id="input" placeholder="Text hier einfügen..."></textarea>
+
+        <div class="btnRow">
+          <button id="btnExplain" class="primary">✨ Erklären</button>
+          <button id="btnClear">🧹 Leeren</button>
+          <button id="btnCopy">📋 Ergebnis kopieren</button>
+        </div>
+
+        <label>Ergebnis</label>
+        <div id="output" class="result"></div>
+
+        <div class="hint">Tipp: Später kannst du Rate-Limit, API-Key-Schutz & bessere Formatierung ergänzen.</div>
+      </div>
+    </section>
+
+    <!-- Right: Account + Status -->
+    <aside class="card">
+      <div class="cardHeader">
+        <div class="logo">👤</div>
+        <div>
+          <p class="title">Account</p>
+          <p class="subtitle">Login / Registrierung + Status (Demo)</p>
+        </div>
+      </div>
+
+      <div class="sideBox">
+        <div class="statusRow">
           <div>
-            <h1>briefe-einfach</h1>
-            <div class="subtitle">
-              Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.
-            </div>
+            <div style="font-weight:800;">Backend</div>
+            <div style="color:var(--muted); font-size:12px;">/health</div>
           </div>
+          <span id="pillBackend" class="pill">prüfe…</span>
         </div>
 
-        <div class="userbox">
-          <div class="pill" id="pillUser">Nicht eingeloggt</div>
-          <button id="btnOpenAuth">Login</button>
-          <button id="btnLogout" style="display:none;">Logout</button>
+        <div class="statusRow">
+          <div>
+            <div style="font-weight:800;">Login</div>
+            <div id="who" style="color:var(--muted); font-size:12px;">nicht eingeloggt</div>
+          </div>
+          <button id="btnOpenAuth" class="primary">Login / Registrieren</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="statusRow">
+          <div>
+            <div style="font-weight:800;">Abo (später Stripe)</div>
+            <div style="color:var(--muted); font-size:12px;">Noch Demo – kommt als Nächstes</div>
+          </div>
+          <span class="pill">Demo</span>
+        </div>
+
+        <div class="hint">
+          Wichtig: Öffne diese App immer über <b>https://…railway.app</b> oder <b>http://localhost:3000</b>.
+          <br/>Wenn du sie als Datei (<b>file:///…</b>) öffnest, blockt der Browser alle API-Calls (CORS).
         </div>
       </div>
+    </aside>
 
-      <div class="paid" id="paidBox">✅ Checkout erfolgreich. (PRO wird per Webhook freigeschaltet.)</div>
+  </div>
 
-      <div class="grid">
-        <div class="card">
-          <label for="inputText">Originaltext</label>
-          <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
-
-          <div class="btnRow">
-            <button class="primary" id="btnExplain">
-              <span id="btnExplainIcon">✨</span>
-              <span id="btnExplainText">Erklären</span>
-            </button>
-
-            <button id="btnClear">Leeren</button>
-
-            <button id="btnCopy" disabled>Ergebnis kopieren</button>
-
-            <button id="btnSub">💳 Pro-Abo starten</button>
-          </div>
-
-          <div class="error" id="errorBox"></div>
-
-          <div class="hint">
-            Als nächstes: Webhook aktivieren + Pro-Features sperren/freischalten + Customer Portal.
-          </div>
-        </div>
-
-        <div class="card">
-          <label>Ergebnis</label>
-          <div class="resultBox" id="resultBox"></div>
-        </div>
+  <!-- Auth Modal -->
+  <div class="modalBackdrop" id="authBackdrop">
+    <div class="modal">
+      <div class="modalHead">
+        <h3 id="authTitle">Registrieren</h3>
+        <button id="btnCloseAuth" title="Schließen">✖</button>
       </div>
-    </div>
+      <div class="modalBody">
+        <label>E-Mail</label>
+        <input id="email" type="email" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);outline:none;" placeholder="name@mail.de" />
 
-    <!-- Auth Modal -->
-    <div class="modalBackdrop" id="authBackdrop">
-      <div class="modal">
-        <h2 id="authTitle">Login</h2>
+        <label>Passwort</label>
+        <input id="pass" type="password" style="width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);outline:none;" placeholder="••••••••" />
 
-        <div class="field">
-          <label>E-Mail</label>
-          <input id="authEmail" type="email" placeholder="name@mail.de" />
-        </div>
+        <div id="authErr" class="err">Fehler</div>
 
-        <div class="field">
-          <label>Passwort</label>
-          <input id="authPass" type="password" placeholder="mind. 6 Zeichen" />
-        </div>
-
-        <div class="error" id="authError"></div>
-
-        <div class="modalRow">
-          <button class="primary" id="btnAuthSubmit">
-            <span id="authBtnIcon">🔐</span>
-            <span id="authBtnText">Einloggen</span>
-          </button>
-          <button id="btnAuthClose">Schließen</button>
-        </div>
-
-        <div class="smallmuted">
-          <span id="authSwitchText">Noch kein Konto?</span>
-          <button class="linkbtn" id="btnSwitchMode">Registrieren</button>
+        <div class="twoBtns">
+          <button id="btnDoAuth" class="primary">Registrieren</button>
+          <button id="btnSwitchMode">Schon ein Konto? Login</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      const input = document.getElementById("inputText");
-      const resultBox = document.getElementById("resultBox");
-      const errorBox = document.getElementById("errorBox");
-      const paidBox = document.getElementById("paidBox");
+  <script>
+    // ✅ Ganz wichtig: niemals file:/// benutzen
+    if (location.protocol === "file:") {
+      document.body.innerHTML =
+        "<div style='max-width:720px;background:rgba(255,69,58,.15);border:1px solid rgba(255,69,58,.3);padding:18px;border-radius:16px;color:#fff;font-family:system-ui'>" +
+        "<h2>❌ Bitte nicht per Doppelklick öffnen</h2>" +
+        "<p>Du hast die App als Datei geöffnet (<b>file:///…</b>). Dadurch blockt der Browser alle API-Calls (CORS).</p>" +
+        "<p><b>So geht’s richtig:</b><br>1) Lokal: <b>npm start</b> → dann <b>http://localhost:3000</b><br>2) Online: Railway-URL öffnen (<b>https://…railway.app</b>)</p>" +
+        "</div>";
+      throw new Error("App wurde über file:// geöffnet");
+    }
 
-      const btnExplain = document.getElementById("btnExplain");
-      const btnExplainText = document.getElementById("btnExplainText");
-      const btnExplainIcon = document.getElementById("btnExplainIcon");
+    // --- UI helpers ---
+    const $ = (id) => document.getElementById(id);
 
-      const btnClear = document.getElementById("btnClear");
-      const btnCopy = document.getElementById("btnCopy");
-      const btnSub = document.getElementById("btnSub");
+    const output = $("output");
+    const input  = $("input");
 
-      const pillUser = document.getElementById("pillUser");
-      const btnOpenAuth = document.getElementById("btnOpenAuth");
-      const btnLogout = document.getElementById("btnLogout");
+    const btnExplain = $("btnExplain");
+    const btnClear   = $("btnClear");
+    const btnCopy    = $("btnCopy");
 
-      // Modal
-      const authBackdrop = document.getElementById("authBackdrop");
-      const authTitle = document.getElementById("authTitle");
-      const authEmail = document.getElementById("authEmail");
-      const authPass = document.getElementById("authPass");
-      const authError = document.getElementById("authError");
-      const btnAuthSubmit = document.getElementById("btnAuthSubmit");
-      const authBtnText = document.getElementById("authBtnText");
-      const authBtnIcon = document.getElementById("authBtnIcon");
-      const btnAuthClose = document.getElementById("btnAuthClose");
-      const btnSwitchMode = document.getElementById("btnSwitchMode");
-      const authSwitchText = document.getElementById("authSwitchText");
+    const pillBackend = $("pillBackend");
+    const who = $("who");
 
-      let authMode = "login"; // login | register
-      let currentUser = null;
+    const authBackdrop = $("authBackdrop");
+    const btnOpenAuth = $("btnOpenAuth");
+    const btnCloseAuth = $("btnCloseAuth");
+    const btnSwitchMode = $("btnSwitchMode");
+    const btnDoAuth = $("btnDoAuth");
+    const authTitle = $("authTitle");
+    const authErr = $("authErr");
+    const email = $("email");
+    const pass = $("pass");
 
-      function setError(msg) {
-        if (!msg) { errorBox.style.display = "none"; errorBox.textContent = ""; return; }
-        errorBox.style.display = "block";
-        errorBox.textContent = "❌ " + msg;
+    let mode = "register"; // register | login
+    let token = localStorage.getItem("token") || "";
+
+    function setErr(msg){
+      authErr.style.display = msg ? "block" : "none";
+      authErr.textContent = msg || "";
+    }
+
+    function openAuth(){
+      authBackdrop.style.display = "flex";
+      setErr("");
+      updateAuthUI();
+    }
+    function closeAuth(){
+      authBackdrop.style.display = "none";
+      setErr("");
+    }
+    function updateAuthUI(){
+      if (mode === "register"){
+        authTitle.textContent = "Registrieren";
+        btnDoAuth.textContent = "Registrieren";
+        btnSwitchMode.textContent = "Schon ein Konto? Login";
+      } else {
+        authTitle.textContent = "Login";
+        btnDoAuth.textContent = "Login";
+        btnSwitchMode.textContent = "Noch kein Konto? Registrieren";
       }
+    }
 
-      function setAuthError(msg) {
-        if (!msg) { authError.style.display = "none"; authError.textContent = ""; return; }
-        authError.style.display = "block";
-        authError.textContent = "❌ " + msg;
-      }
+    async function api(path, options={}){
+      const headers = options.headers || {};
+      headers["Content-Type"] = "application/json";
+      if (token) headers["Authorization"] = "Bearer " + token;
+      const res = await fetch(path, { ...options, headers });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+      return data;
+    }
 
-      function setLoading(isLoading) {
-        btnExplain.disabled = isLoading;
-        btnClear.disabled = isLoading;
-        btnSub.disabled = isLoading;
-
-        if (isLoading) {
-          btnExplainIcon.innerHTML = '<span class="spinner"></span>';
-          btnExplainText.textContent = "Bitte warten…";
+    async function checkBackend(){
+      try{
+        const res = await fetch("/health");
+        const data = await res.json();
+        if (data.ok){
+          pillBackend.className = "pill ok";
+          pillBackend.textContent = "online";
         } else {
-          btnExplainIcon.textContent = "✨";
-          btnExplainText.textContent = "Erklären";
+          throw new Error("not ok");
         }
+      } catch(e){
+        pillBackend.className = "pill bad";
+        pillBackend.textContent = "offline";
       }
+    }
 
-      function setAuthLoading(isLoading) {
-        btnAuthSubmit.disabled = isLoading;
-        if (isLoading) {
-          authBtnIcon.innerHTML = '<span class="spinner"></span>';
-          authBtnText.textContent = "Bitte warten…";
-        } else {
-          authBtnIcon.textContent = authMode === "login" ? "🔐" : "🧾";
-          authBtnText.textContent = authMode === "login" ? "Einloggen" : "Registrieren";
-        }
+    async function refreshMe(){
+      if (!token){
+        who.textContent = "nicht eingeloggt";
+        return;
       }
-
-      async function api(path, opts = {}) {
-        // wichtig: credentials, damit cookie-session funktioniert
-        const res = await fetch(path, { credentials: "include", ...opts });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || "Unbekannter Fehler");
-        return data;
+      try{
+        const me = await api("/auth/me");
+        who.textContent = "eingeloggt (Demo)";
+      } catch(e){
+        token = "";
+        localStorage.removeItem("token");
+        who.textContent = "nicht eingeloggt";
       }
+    }
 
-      function openAuth() {
-        setAuthError("");
-        authBackdrop.style.display = "flex";
-        authEmail.focus();
-      }
+    // --- Explain Demo (noch ohne KI, später ersetzen wir das) ---
+    function simpleExplain(text){
+      if (!text.trim()) return "Bitte erst einen Text eingeben.";
+      // Minimal-Demo: sehr einfache Umschreibung
+      return [
+        "Das ist eine einfache Erklärung:",
+        "",
+        "• Der Brief richtet sich höflich an Sie.",
+        "• Es geht darum, Informationen verständlich zu erklären.",
+        "• Sie sollten den Text genau lesen und ggf. reagieren."
+      ].join("\n");
+    }
 
-      function closeAuth() {
-        authBackdrop.style.display = "none";
-        setAuthError("");
-      }
+    btnExplain.addEventListener("click", async () => {
+      output.textContent = simpleExplain(input.value);
+    });
 
-      function setAuthMode(mode) {
-        authMode = mode;
-        authTitle.textContent = mode === "login" ? "Login" : "Registrieren";
-        authBtnIcon.textContent = mode === "login" ? "🔐" : "🧾";
-        authBtnText.textContent = mode === "login" ? "Einloggen" : "Registrieren";
-        authSwitchText.textContent = mode === "login" ? "Noch kein Konto?" : "Schon ein Konto?";
-        btnSwitchMode.textContent = mode === "login" ? "Registrieren" : "Login";
-      }
+    btnClear.addEventListener("click", () => {
+      input.value = "";
+      output.textContent = "";
+    });
 
-      function renderUser() {
-        if (!currentUser) {
-          pillUser.textContent = "Nicht eingeloggt";
-          btnOpenAuth.style.display = "inline-block";
-          btnLogout.style.display = "none";
-          return;
-        }
-        pillUser.textContent = `${currentUser.email} · ${currentUser.pro ? "PRO ✅" : "FREE"}`;
-        btnOpenAuth.style.display = "none";
-        btnLogout.style.display = "inline-block";
-      }
+    btnCopy.addEventListener("click", async () => {
+      const t = output.textContent || "";
+      if (!t.trim()) return;
+      await navigator.clipboard.writeText(t);
+      btnCopy.textContent = "✅ Kopiert";
+      setTimeout(()=> btnCopy.textContent = "📋 Ergebnis kopieren", 900);
+    });
 
-      async function loadMe() {
-        try {
-          const data = await api("/auth/me");
-          currentUser = data.user;
-          renderUser();
-        } catch {
-          currentUser = null;
-          renderUser();
-        }
-      }
+    btnOpenAuth.addEventListener("click", openAuth);
+    btnCloseAuth.addEventListener("click", closeAuth);
+    authBackdrop.addEventListener("click", (e) => {
+      if (e.target === authBackdrop) closeAuth();
+    });
 
-      async function doAuth() {
-        setAuthError("");
-        const email = (authEmail.value || "").trim();
-        const password = (authPass.value || "").toString();
+    btnSwitchMode.addEventListener("click", () => {
+      mode = (mode === "register") ? "login" : "register";
+      setErr("");
+      updateAuthUI();
+    });
 
-        if (!email || !email.includes("@")) { setAuthError("Bitte gültige E-Mail eingeben."); return; }
-        if (!password || password.length < 6) { setAuthError("Passwort mind. 6 Zeichen."); return; }
+    btnDoAuth.addEventListener("click", async () => {
+      setErr("");
+      const em = email.value.trim();
+      const pw = pass.value.trim();
+      if (!em || !pw) return setErr("Bitte E-Mail und Passwort eingeben.");
 
-        setAuthLoading(true);
-        try {
-          const endpoint = authMode === "login" ? "/auth/login" : "/auth/register";
-          const data = await api(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-          });
-          currentUser = data.user;
-          renderUser();
+      try{
+        if (mode === "register"){
+          await api("/auth/register", { method:"POST", body: JSON.stringify({ email: em, password: pw }) });
+          // Nach Registrierung direkt Login
+          const r = await api("/auth/login", { method:"POST", body: JSON.stringify({ email: em, password: pw }) });
+          token = r.token;
+          localStorage.setItem("token", token);
+          await refreshMe();
           closeAuth();
-        } catch (err) {
-          setAuthError(err.message || "Fehler");
-        } finally {
-          setAuthLoading(false);
+        } else {
+          const r = await api("/auth/login", { method:"POST", body: JSON.stringify({ email: em, password: pw }) });
+          token = r.token;
+          localStorage.setItem("token", token);
+          await refreshMe();
+          closeAuth();
         }
+      } catch(e){
+        setErr(e.message || "Unbekannter Fehler");
       }
+    });
 
-      async function doLogout() {
-        try {
-          await api("/auth/logout", { method: "POST" });
-        } catch {}
-        currentUser = null;
-        renderUser();
-      }
-
-      async function explainText() {
-        setError("");
-        const text = (input.value || "").trim();
-        if (!text) { setError("Bitte zuerst einen Text eingeben."); return; }
-
-        setLoading(true);
-        resultBox.textContent = "";
-
-        try {
-          const data = await api("/erklaeren", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text })
-          });
-          resultBox.textContent = data.result || "";
-          btnCopy.disabled = !data.result;
-        } catch (err) {
-          setError(err.message || "Unbekannter Fehler");
-          btnCopy.disabled = true;
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      function clearAll() {
-        setError("");
-        input.value = "";
-        resultBox.textContent = "";
-        btnCopy.disabled = true;
-      }
-
-      async function startSubscription() {
-        setError("");
-
-        if (!currentUser) {
-          setError("Bitte zuerst einloggen, dann Abo starten.");
-          openAuth();
-          return;
-        }
-
-        setLoading(true);
-        try {
-          const data = await api("/create-checkout-session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({})
-          });
-          window.location.href = data.url;
-        } catch (err) {
-          setError(err.message || "Stripe Fehler");
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      // Events
-      btnExplain.addEventListener("click", explainText);
-      btnClear.addEventListener("click", clearAll);
-      btnSub.addEventListener("click", startSubscription);
-
-      btnCopy.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(resultBox.textContent || ""); }
-        catch { setError("Kopieren ging nicht (Browser-Rechte)."); }
-      });
-
-      btnOpenAuth.addEventListener("click", openAuth);
-      btnAuthClose.addEventListener("click", closeAuth);
-      btnAuthSubmit.addEventListener("click", doAuth);
-      btnSwitchMode.addEventListener("click", () => setAuthMode(authMode === "login" ? "register" : "login"));
-      btnLogout.addEventListener("click", doLogout);
-
-      authBackdrop.addEventListener("click", (e) => {
-        if (e.target === authBackdrop) closeAuth();
-      });
-
-      // Paid banner
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("paid") === "1") paidBox.style.display = "block";
-
-      // Init
-      setAuthMode("login");
-      loadMe();
-    </script>
-  </body>
+    // init
+    checkBackend();
+    refreshMe();
+  </script>
+</body>
 </html>
