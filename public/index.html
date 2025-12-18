@@ -3,745 +3,679 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
   <title>briefe-einfach</title>
-  <meta name="description" content="Behörden- & Briefe-Text einfügen → einfache Erklärung + Fristenhilfe" />
+
   <style>
     :root{
-      --bg:#0b1020;
-      --card:#111a33;
-      --text:#e9ecff;
-      --muted:#a8b0d6;
-      --line:rgba(255,255,255,.12);
-      --btn:#2f6bff;
-      --ok:#21d07a;
-      --danger:#ff5a78;
+      --bg:#0b1220;
+      --panel:#111a2e;
+      --panel2:#0f1729;
+      --text:#e8eefc;
+      --muted:#9fb0d0;
+      --brand:#4f7cff;
+      --brand2:#2f5bff;
+      --danger:#ff5b5b;
+      --ok:#2dd4bf;
+      --border:rgba(255,255,255,.10);
       --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 14px;
-      --safeBottom: env(safe-area-inset-bottom, 0px);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 700px at 20% 20%, rgba(47,107,255,.25), transparent 60%),
-        radial-gradient(900px 600px at 90% 30%, rgba(255,90,120,.16), transparent 55%),
-        var(--bg);
-      color:var(--text);
-    }
-    .wrap{
-      width:min(980px, 100%);
-      margin:0 auto;
-      padding:18px 14px 40px;
-      /* Platz für Sticky-Bar auf Mobile */
-      padding-bottom: calc(40px + var(--safeBottom));
+      --radius:16px;
     }
 
-    header{
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(79,124,255,.20), transparent 60%),
+        radial-gradient(900px 500px at 90% 30%, rgba(45,212,191,.15), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height:100svh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 14px;
+    }
+
+    .wrap{
+      width:min(980px, 100%);
+      display:grid;
+      gap: 12px;
+    }
+
+    .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      padding:12px 2px 18px;
+      gap: 12px;
+      padding: 10px 6px 0 6px;
     }
-    .brand{display:flex; align-items:center; gap:12px; font-weight:800}
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+
     .logo{
-      width:44px;height:44px;border-radius:12px;
-      background: linear-gradient(135deg, rgba(47,107,255,.95), rgba(33,208,122,.7));
+      width:36px;height:36px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(45,212,191,.85));
+      display:grid;place-items:center;
       box-shadow: var(--shadow);
-      display:grid; place-items:center;
-      font-size:22px;
+      flex: 0 0 auto;
+      user-select:none;
     }
-    .subtitle{font-size:13px; color:var(--muted); font-weight:500; margin-top:3px;}
+    .logo span{font-weight:900}
+
+    .titles{min-width:0}
+    h1{font-size: 22px;margin:0;letter-spacing:.2px}
+    .subtitle{margin:2px 0 0 0;color:var(--muted);font-size:13px;line-height:1.25}
+
+    .pillrow{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
     .pill{
-      font-size:12px;
-      padding:8px 10px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      color:var(--muted);
-      background: rgba(255,255,255,.03);
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      padding: 8px 10px;
+      border-radius: 999px;
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+      user-select:none;
     }
+    .dot{width:8px;height:8px;border-radius:999px;background: var(--ok); display:inline-block}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:14px;
-    }
-    @media (max-width: 860px){
-      .grid{grid-template-columns:1fr;}
-      header{flex-direction:column; align-items:flex-start;}
-      .pill{width:100%; text-align:center;}
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--line);
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .cardHead{
-      padding:14px 14px 10px;
-      border-bottom:1px solid var(--line);
-      background: rgba(255,255,255,.02);
+
+    .panel-inner{
+      padding: 14px;
+      display:grid;
+      gap: 12px;
     }
-    .cardTitle{
-      font-size:14px; font-weight:900; margin:0;
-      display:flex; align-items:center; gap:8px;
+
+    .tabs{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,.12);
     }
-    .hint{ color:var(--muted); font-size:13px; margin:8px 0 0; }
-    .cardBody{ padding:14px; }
+    .tab{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 9px 11px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor:pointer;
+    }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(47,91,255,.95));
+      border-color: rgba(79,124,255,.45);
+    }
+
+    .grid{
+      display:grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    label{
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .counter{
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
 
     textarea{
       width:100%;
-      min-height:180px;
-      resize:vertical;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color:var(--text);
-      padding:12px;
-      font-size:14px;
-      line-height:1.35;
+      min-height: 210px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(17,26,46,.70);
+      color: var(--text);
+      padding: 12px;
       outline:none;
+      font-size: 15px;
+      line-height: 1.45;
     }
-    textarea:focus{ border-color: rgba(47,107,255,.55); box-shadow: 0 0 0 4px rgba(47,107,255,.14); }
 
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px;}
+    .result{
+      white-space: pre-wrap;
+      min-height: 210px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(15,23,41,.65);
+      padding: 12px;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items:center;
+    }
 
     button{
-      border:0;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
       border-radius: 12px;
-      padding:10px 12px;
-      font-weight:900;
+      font-weight: 750;
       cursor:pointer;
-      color: white;
-      background: var(--btn);
-      box-shadow: 0 10px 22px rgba(47,107,255,.22);
+      transition: transform .05s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
       display:inline-flex;
       align-items:center;
-      gap:10px;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
+      gap: 8px;
     }
-    button.secondary{
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      border: 1px solid var(--line);
-      box-shadow:none;
-    }
-    button.ghost{
-      background: transparent;
-      color: var(--muted);
-      border: 1px dashed rgba(255,255,255,.18);
-      box-shadow:none;
-      font-weight:800;
-    }
-    button:disabled{opacity:.55; cursor:not-allowed; filter:saturate(.8);}
+    button:hover{ background: rgba(255,255,255,.10); }
+    button:active{ transform: translateY(1px); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
 
-    .msg{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color: var(--muted);
-      font-size:13px;
+    .primary{
+      background: linear-gradient(135deg, rgba(79,124,255,.95), rgba(47,91,255,.95));
+      border-color: rgba(79,124,255,.45);
     }
-    .msg.err{ border-color: rgba(255,90,120,.45); color:#ffd0d8; background: rgba(255,90,120,.08); }
-    .msg.ok{ border-color: rgba(33,208,122,.35); color:#d9ffef; background: rgba(33,208,122,.07); }
 
-    /* Spinner */
-    .spinner{
-      width:16px;height:16px;
-      border-radius:50%;
-      border:2px solid rgba(255,255,255,.35);
-      border-top-color: rgba(255,255,255,.95);
-      animation: spin .8s linear infinite;
+    .copy{ margin-left:auto; }
+
+    .hint{
+      color: var(--muted);
+      font-size: 12px;
+      padding-top: 2px;
+      line-height: 1.35;
+    }
+
+    .error{
       display:none;
-    }
-    @keyframes spin{ to{ transform:rotate(360deg);} }
-    .loading .spinner{ display:inline-block; }
-
-    /* Ergebnisblöcke */
-    .result{display:grid; gap:10px;}
-    .block{
-      border:1px solid var(--line);
+      color: #fff;
+      background: rgba(255,91,91,.18);
+      border: 1px solid rgba(255,91,91,.35);
+      padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(0,0,0,.12);
-      padding:12px;
+      font-size: 13px;
     }
-    .block h3{
-      margin:0 0 6px;
-      font-size:13px;
-      font-weight:900;
-      color:#fff;
-      display:flex; align-items:center; gap:8px;
-    }
-    .block p, .block ul{
-      margin:0;
-      color: var(--text);
-      font-size:14px;
-      line-height:1.35;
-      white-space:pre-wrap;
-    }
-    .block ul{ padding-left:18px; }
 
-    /* Tabs (mobile-first) */
-    .tabs{
+    .success{
       display:none;
-      gap:8px;
-      padding:10px 14px 0;
-      flex-wrap:wrap;
-    }
-    .tabBtn{
-      border-radius:999px;
-      padding:10px 12px;
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      color: var(--text);
-      font-weight:900;
-      box-shadow:none;
-    }
-    .tabBtn.active{
-      background: rgba(47,107,255,.18);
-      border-color: rgba(47,107,255,.45);
+      color: #fff;
+      background: rgba(45,212,191,.14);
+      border: 1px solid rgba(45,212,191,.35);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
     }
 
-    /* Deadline widget */
-    .deadlineGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px; font-weight:800;}
-    input[type="date"], input[type="number"], select{
-      width:100%;
-      padding:12px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      outline:none;
-      font-size:14px;
-    }
-    input:focus, select:focus{ border-color: rgba(47,107,255,.55); box-shadow: 0 0 0 4px rgba(47,107,255,.14); }
-    .deadlineOut{
-      margin-top:10px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px 12px;
-      background: rgba(255,255,255,.03);
-      font-size:14px;
-      color: var(--text);
-      white-space:pre-wrap;
-    }
-    .small{ font-size:12px; color:var(--muted); }
-
-    /* Sticky Action-Bar auf Mobile */
-    .stickyBar{
+    .history{
       display:none;
-      position:fixed;
-      left:0; right:0;
-      bottom:0;
-      padding:10px 12px calc(10px + var(--safeBottom));
-      background: linear-gradient(180deg, rgba(11,16,32,.0), rgba(11,16,32,.75) 25%, rgba(11,16,32,.92));
-      backdrop-filter: blur(10px);
-      border-top:1px solid rgba(255,255,255,.10);
-      z-index:1000;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 6px;
     }
-    .stickyRow{
-      width:min(980px, 100%);
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-    }
-    .stickyRow button{ flex:1; padding:14px 12px; border-radius:14px; }
-
-    /* Mobile Anpassungen */
-    @media (max-width: 860px){
-      .wrap{ padding-bottom: calc(95px + var(--safeBottom)); }
-      .tabs{ display:flex; }
-      .stickyBar{ display:block; }
-      /* Desktop-Buttons verstecken, damit du nicht doppelt klickst */
-      #actions{ display:none; }
-      /* Ergebnis: auf mobile nur 1 Block sichtbar (per Tabs) */
-      .result .block{ display:none; }
-      .result .block.active{ display:block; }
-      textarea{
-        min-height: 160px;
-        resize:none;
-      }
-      button, .tabBtn{
-        padding:12px 12px;
-      }
-    }
-
-    footer{
-      margin-top:16px;
+    .history h3{
+      margin: 0 0 8px 0;
+      font-size: 13px;
       color: var(--muted);
-      font-size:12px;
-      text-align:center;
-      opacity:.9;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .historyList{
+      display:grid;
+      gap: 8px;
+    }
+    .histItem{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      border-radius: 12px;
+      padding: 10px;
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      cursor:pointer;
+    }
+    .histItem:hover{ background: rgba(255,255,255,.06); }
+    .histText{
+      color: var(--text);
+      font-size: 13px;
+      line-height:1.3;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .histMeta{
+      color: var(--muted);
+      font-size: 12px;
+      white-space:nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Loading overlay */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .loaderCard{
+      width:min(420px, 100%);
+      background: rgba(17,26,46,.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display:flex;
+      gap: 12px;
+      align-items:center;
+    }
+    .spinner{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 3px solid rgba(255,255,255,.20);
+      border-top-color: rgba(79,124,255,.95);
+      animation: spin .8s linear infinite;
+      flex: 0 0 auto;
+    }
+    @keyframes spin{ to { transform: rotate(360deg);} }
+
+    .loaderText{
+      display:grid;
+      gap: 4px;
+    }
+    .loaderTitle{font-weight:900}
+    .loaderSub{color: var(--muted); font-size: 13px; line-height:1.25}
+
+    /* Mobile: keep actions reachable */
+    @media (max-width: 520px){
+      h1{font-size:20px}
+      .panel-inner{padding:12px}
+      textarea,.result{min-height: 180px}
+      .copy{margin-left:0}
+      .actions{gap:8px}
+      button{width:100%; justify-content:center}
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <header>
+    <div class="topbar">
       <div class="brand">
-        <div class="logo">📄</div>
-        <div>
-          <div style="font-size:20px;">briefe-einfach</div>
-          <div class="subtitle">Text rein → Erklärung + Fristenhilfe (MVP)</div>
+        <div class="logo"><span>✉️</span></div>
+        <div class="titles">
+          <h1>briefe-einfach</h1>
+          <p class="subtitle">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b> → du bekommst eine einfache Erklärung.</p>
         </div>
       </div>
-      <div class="pill">Mobile: Sticky Buttons + Tabs + Auto-Grow</div>
-    </header>
-
-    <div class="grid">
-      <!-- LEFT: Input -->
-      <section class="card">
-        <div class="cardHead">
-          <p class="cardTitle">🧾 Originaltext</p>
-          <p class="hint">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>. (Ctrl+Enter geht auch)</p>
-        </div>
-        <div class="cardBody">
-          <textarea id="inputText" placeholder="Text hier einfügen…"></textarea>
-
-          <!-- Desktop Actions -->
-          <div class="row" id="actions">
-            <button id="btnExplain">
-              <span class="spinner" aria-hidden="true"></span>
-              <span id="btnExplainLabel">Erklären</span>
-            </button>
-            <button class="secondary" id="btnClear">Leeren</button>
-            <button class="ghost" id="btnCopy" disabled>Ergebnis kopieren</button>
-          </div>
-
-          <div id="statusBox" class="msg" style="display:none;"></div>
-        </div>
-      </section>
-
-      <!-- RIGHT: Deadline helper -->
-      <aside class="card">
-        <div class="cardHead">
-          <p class="cardTitle">⏳ Fristenrechner</p>
-          <p class="hint">MVP: Ohne Feiertage/Sonderregeln.</p>
-        </div>
-        <div class="cardBody">
-          <div class="deadlineGrid">
-            <div>
-              <label for="dateStart">Eingangsdatum (Start)</label>
-              <input type="date" id="dateStart" />
-            </div>
-            <div>
-              <label for="days">Frist in Tagen</label>
-              <input type="number" id="days" value="14" min="1" />
-            </div>
-            <div>
-              <label for="countMode">Zählweise</label>
-              <select id="countMode">
-                <option value="nextDay">Start am nächsten Tag (üblich)</option>
-                <option value="sameDay">Start am selben Tag</option>
-              </select>
-            </div>
-            <div>
-              <label for="weekendMode">Wochenende</label>
-              <select id="weekendMode">
-                <option value="push">Wenn Sa/So → auf Montag schieben</option>
-                <option value="keep">Nicht schieben</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:12px;">
-            <button class="secondary" id="btnCalc">Frist berechnen</button>
-            <button class="ghost" id="btnToday">Heute einsetzen</button>
-          </div>
-
-          <div class="deadlineOut" id="deadlineOut">Noch nichts berechnet.</div>
-          <div class="small" style="margin-top:8px;">Hinweis: Feiertage & Sonderregeln nicht berücksichtigt.</div>
-        </div>
-      </aside>
+      <div class="pillrow">
+        <div class="pill"><span class="dot"></span><span id="statusText">Online</span></div>
+        <button id="btnUpgrade" class="pill" type="button">⭐ Pro freischalten</button>
+      </div>
     </div>
 
-    <!-- RESULT -->
-    <section class="card" style="margin-top:14px;">
-      <div class="cardHead">
-        <p class="cardTitle">✅ Ergebnis</p>
-        <p class="hint">Mobile: Tabs. Desktop: 3 Blöcke untereinander.</p>
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab active" id="tabExplain" type="button">Erklären</button>
+        <button class="tab" id="tabPro" type="button">Pro (kommt)</button>
       </div>
 
-      <!-- Tabs (mobile) -->
-      <div class="tabs" id="tabs">
-        <button class="tabBtn active" data-tab="short">Kurz</button>
-        <button class="tabBtn" data-tab="todo">ToDo</button>
-        <button class="tabBtn" data-tab="dates">Fristen</button>
-      </div>
+      <div class="panel-inner" id="viewExplain">
+        <div class="grid">
+          <div>
+            <label>
+              <span>Originaltext</span>
+              <span class="counter"><span id="charCount">0</span> Zeichen</span>
+            </label>
+            <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
+            <div class="actions" style="margin-top:10px">
+              <button id="btnExplain" class="primary" type="button">✨ Erklären</button>
+              <button id="btnClear" type="button">🧹 Leeren</button>
+              <button id="btnCopy" class="copy" type="button">📋 Ergebnis kopieren</button>
+            </div>
 
-      <div class="cardBody">
-        <div class="result" id="resultWrap">
-          <div class="block active" id="block-short">
-            <h3>🧠 Kurz erklärt</h3>
-            <p id="rShort">Noch kein Ergebnis.</p>
+            <div class="error" id="errorBox"></div>
+            <div class="success" id="successBox"></div>
+
+            <div class="hint">
+              Tipp: Später ergänzen wir Rate-Limit, API-Key-Schutz, echte KI-Antworten, Formatierung (Fristen/To-Dos) und Bezahlung.
+            </div>
+
+            <div class="history" id="historyBox">
+              <h3>Letzte Erklärungen (lokal auf diesem Gerät)</h3>
+              <div class="historyList" id="historyList"></div>
+            </div>
           </div>
 
-          <div class="block" id="block-todo">
-            <h3>✅ Was du tun solltest</h3>
-            <ul id="rTodo">
-              <li>Noch kein Ergebnis.</li>
-            </ul>
-          </div>
-
-          <div class="block" id="block-dates">
-            <h3>📅 Fristen / Termine</h3>
-            <p id="rDates">Noch kein Ergebnis.</p>
+          <div>
+            <label>
+              <span>Ergebnis</span>
+              <span class="counter" id="serverHint">Server: ok</span>
+            </label>
+            <div class="result" id="outputBox"></div>
           </div>
         </div>
       </div>
-    </section>
 
-    <footer>
-      Step 3 – Mobile UX: Sticky Bar + Tabs + Auto-Grow. Nächster Step wäre „Antwort schreiben“.
-    </footer>
+      <div class="panel-inner" id="viewPro" style="display:none">
+        <div class="success" style="display:block">
+          Pro-Features bauen wir als Nächstes rein: bessere Struktur (Frist/To-Dos), Vorlagen, Export PDF, Login, Bezahlung.
+        </div>
+        <div class="hint">
+          Sobald Stripe eingerichtet ist, kannst du hier direkt „Pro“ aktivieren.
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Sticky Action-Bar (mobile) -->
-  <div class="stickyBar" id="stickyBar">
-    <div class="stickyRow">
-      <button id="mExplain">
-        <span class="spinner" aria-hidden="true"></span>
-        <span id="mExplainLabel">Erklären</span>
-      </button>
-      <button class="secondary" id="mClear">Leeren</button>
-      <button class="ghost" id="mCopy" disabled>Kopieren</button>
+  <!-- Loading Overlay -->
+  <div class="overlay" id="overlay">
+    <div class="loaderCard">
+      <div class="spinner"></div>
+      <div class="loaderText">
+        <div class="loaderTitle">Bitte warten…</div>
+        <div class="loaderSub">Wir erstellen gerade deine einfache Erklärung.</div>
+      </div>
     </div>
   </div>
 
   <script>
-    // ===== Helpers =====
-    const $ = (id) => document.getElementById(id);
+    const inputText = document.getElementById("inputText");
+    const outputBox = document.getElementById("outputBox");
+    const btnExplain = document.getElementById("btnExplain");
+    const btnClear = document.getElementById("btnClear");
+    const btnCopy = document.getElementById("btnCopy");
+    const errorBox = document.getElementById("errorBox");
+    const successBox = document.getElementById("successBox");
+    const overlay = document.getElementById("overlay");
+    const charCount = document.getElementById("charCount");
+    const historyBox = document.getElementById("historyBox");
+    const historyList = document.getElementById("historyList");
+    const serverHint = document.getElementById("serverHint");
+    const statusText = document.getElementById("statusText");
+    const btnUpgrade = document.getElementById("btnUpgrade");
 
-    const inputText = $("inputText");
+    const tabExplain = document.getElementById("tabExplain");
+    const tabPro = document.getElementById("tabPro");
+    const viewExplain = document.getElementById("viewExplain");
+    const viewPro = document.getElementById("viewPro");
 
-    // Desktop buttons
-    const btnExplain = $("btnExplain");
-    const btnExplainLabel = $("btnExplainLabel");
-    const btnClear = $("btnClear");
-    const btnCopy = $("btnCopy");
-
-    // Mobile buttons
-    const mExplain = $("mExplain");
-    const mExplainLabel = $("mExplainLabel");
-    const mClear = $("mClear");
-    const mCopy = $("mCopy");
-
-    const statusBox = $("statusBox");
-
-    const rShort = $("rShort");
-    const rTodo = $("rTodo");
-    const rDates = $("rDates");
-
-    const tabs = $("tabs");
-
-    function setStatus(type, text){
-      statusBox.style.display = "block";
-      statusBox.className = "msg " + (type || "");
-      statusBox.textContent = text;
+    function showOverlay(show){
+      overlay.style.display = show ? "flex" : "none";
     }
-    function clearStatus(){
-      statusBox.style.display = "none";
-      statusBox.textContent = "";
-      statusBox.className = "msg";
+    function showError(msg){
+      successBox.style.display = "none";
+      errorBox.textContent = msg;
+      errorBox.style.display = "block";
     }
-
-    function setLoading(isLoading){
-      // Desktop
-      const actions = $("actions");
-      if(actions){
-        if(isLoading) actions.classList.add("loading");
-        else actions.classList.remove("loading");
-      }
-      // Mobile
-      const sticky = $("stickyBar");
-      if(sticky){
-        if(isLoading) sticky.classList.add("loading");
-        else sticky.classList.remove("loading");
-      }
-
-      // disable/enable
-      const setDisabled = (v) => {
-        if(btnExplain) btnExplain.disabled = v;
-        if(btnClear) btnClear.disabled = v;
-        if(btnCopy) btnCopy.disabled = true;
-
-        mExplain.disabled = v;
-        mClear.disabled = v;
-        mCopy.disabled = true;
-      };
-
-      if(isLoading){
-        setDisabled(true);
-        if(btnExplainLabel) btnExplainLabel.textContent = "Lade…";
-        mExplainLabel.textContent = "Lade…";
-      } else {
-        setDisabled(false);
-        if(btnExplainLabel) btnExplainLabel.textContent = "Erklären";
-        mExplainLabel.textContent = "Erklären";
-      }
+    function showSuccess(msg){
+      errorBox.style.display = "none";
+      successBox.textContent = msg;
+      successBox.style.display = "block";
+      setTimeout(()=>{ successBox.style.display = "none"; }, 2500);
+    }
+    function setBusy(busy){
+      btnExplain.disabled = busy;
+      btnClear.disabled = busy;
+      btnCopy.disabled = busy;
+      btnUpgrade.disabled = busy;
     }
 
-    function splitIntoBlocks(explanationText){
-      const t = String(explanationText || "").trim();
-      if(!t){
-        return { short: "Kein Ergebnis.", todo: ["—"], dates: "—" };
-      }
+    function updateCount(){
+      charCount.textContent = String((inputText.value || "").length);
+    }
+    inputText.addEventListener("input", updateCount);
+    updateCount();
 
-      let shortPart = t;
-      let todoPart = "";
-      let hintPart = "";
-
-      const idxSteps = t.toLowerCase().indexOf("nächste sinnvolle schritte:");
-      if(idxSteps !== -1){
-        shortPart = t.slice(0, idxSteps).trim();
-        todoPart = t.slice(idxSteps).trim();
-      }
-
-      const idxHints = t.toLowerCase().indexOf("hinweise aus deinem text:");
-      if(idxHints !== -1){
-        hintPart = t.slice(idxHints).trim();
-        if(idxSteps === -1){
-          shortPart = t.slice(0, idxHints).trim();
+    function loadHistory(){
+      try{
+        const items = JSON.parse(localStorage.getItem("be_history") || "[]");
+        historyList.innerHTML = "";
+        if (!items.length){
+          historyBox.style.display = "none";
+          return;
         }
+        historyBox.style.display = "block";
+        items.slice(0,5).forEach((it, idx)=>{
+          const div = document.createElement("div");
+          div.className = "histItem";
+          div.innerHTML = `
+            <div class="histText">${escapeHtml(it.inputPreview || "")}</div>
+            <div class="histMeta">${escapeHtml(it.time || "")}</div>
+          `;
+          div.addEventListener("click", ()=>{
+            outputBox.textContent = it.output || "";
+            showSuccess("Ergebnis aus Verlauf geladen");
+          });
+          historyList.appendChild(div);
+        });
+      }catch(e){
+        historyBox.style.display = "none";
       }
-
-      let todos = [];
-      if(todoPart){
-        const lines = todoPart.split("\n").map(x=>x.trim()).filter(Boolean);
-        const cleaned = lines.filter(l => !l.toLowerCase().startsWith("nächste sinnvolle schritte"));
-        todos = cleaned.map(l => l.replace(/^(\d+[\)\.\-])\s*/, ""));
-      }
-
-      if(todos.length === 0){
-        todos = [
-          "Datum des Schreibens + Eingangsdatum notieren",
-          "Frist/Termin im Brief suchen",
-          "Was wird verlangt? (Zahlung / Unterlagen / Rückmeldung)",
-          "Wenn unklar: kurz schriftlich nachfragen"
-        ];
-      }
-
-      let dates = "Wenn im Text eine Frist/Termin steht: oben im Fristenrechner testen.";
-      if(hintPart){
-        dates = hintPart.replace(/^Hinweise aus deinem Text:\s*/i, "").trim();
-      }
-
-      return {
-        short: shortPart.replace(/^Das ist eine einfache Erklärung:\s*/i, "").trim() || "—",
-        todo: todos,
-        dates: dates || "—"
-      };
     }
 
-    function activateTab(name){
-      // Tab Buttons
-      if(!tabs) return;
-      tabs.querySelectorAll(".tabBtn").forEach(b => {
-        b.classList.toggle("active", b.dataset.tab === name);
-      });
-
-      // Blocks
-      const map = {
-        short: $("block-short"),
-        todo: $("block-todo"),
-        dates: $("block-dates")
-      };
-      Object.keys(map).forEach(k => {
-        map[k].classList.toggle("active", k === name);
-      });
+    function saveHistory(input, output){
+      try{
+        const now = new Date();
+        const time = now.toLocaleString("de-DE", { hour: "2-digit", minute: "2-digit", day:"2-digit", month:"2-digit" });
+        const inputPreview = (input || "").replace(/\s+/g," ").trim().slice(0, 120);
+        const existing = JSON.parse(localStorage.getItem("be_history") || "[]");
+        const next = [{ time, inputPreview, output }, ...existing].slice(0, 10);
+        localStorage.setItem("be_history", JSON.stringify(next));
+        loadHistory();
+      }catch(e){}
     }
 
-    function makeCopyText(){
-      const todoItems = Array.from(rTodo.querySelectorAll("li")).map(li => "- " + li.textContent);
-      return [
-        "briefe-einfach – Ergebnis",
-        "",
-        "Kurz erklärt:",
-        rShort.textContent,
-        "",
-        "Was du tun solltest:",
-        ...todoItems,
-        "",
-        "Fristen / Termine:",
-        rDates.textContent
-      ].join("\n");
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function checkServer(){
+      try{
+        const res = await fetch("/health");
+        const data = await res.json();
+        if (data && data.ok){
+          statusText.textContent = "Online";
+          serverHint.textContent = "Server: ok";
+        } else {
+          statusText.textContent = "Problem";
+          serverHint.textContent = "Server: ?";
+        }
+      }catch(e){
+        statusText.textContent = "Offline?";
+        serverHint.textContent = "Server: offline?";
+      }
+    }
+
+    async function loadConfig(){
+      try{
+        const res = await fetch("/config");
+        const data = await res.json();
+        if (data && data.ok){
+          if (data.paymentsEnabled){
+            btnUpgrade.textContent = "⭐ Pro freischalten";
+          } else {
+            btnUpgrade.textContent = "⭐ Pro (noch ohne Zahlung)";
+          }
+        }
+      }catch(e){}
     }
 
     async function explain(){
-      clearStatus();
-
-      const text = inputText.value.trim();
-      if(!text){
-        setStatus("err", "Bitte zuerst einen Text eingeben.");
+      const text = (inputText.value || "").trim();
+      if (!text){
+        showError("Bitte zuerst einen Text eingeben.");
         return;
       }
 
-      setLoading(true);
+      showOverlay(true);
+      setBusy(true);
+      errorBox.style.display = "none";
+
       try{
-        const resp = await fetch("/erklaeren", {
+        const res = await fetch("/erklaeren", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text })
         });
 
-        if(!resp.ok){
-          setStatus("err", "Server antwortet mit Fehler: " + resp.status + " " + resp.statusText);
+        const data = await res.json().catch(()=>null);
+
+        if (!res.ok || !data || data.ok !== true){
+          const msg = (data && data.error) ? data.error : "Unbekannter Fehler.";
+          showError(msg);
           return;
         }
 
-        const data = await resp.json();
-        if(!data?.ok){
-          setStatus("err", data?.error || "Unbekannter Fehler");
-          return;
-        }
-
-        const blocks = splitIntoBlocks(data.explanation);
-        rShort.textContent = blocks.short;
-
-        rTodo.innerHTML = "";
-        blocks.todo.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = item;
-          rTodo.appendChild(li);
-        });
-
-        rDates.textContent = blocks.dates;
-
-        // enable copy buttons
-        if(btnCopy) btnCopy.disabled = false;
-        mCopy.disabled = false;
-
-        setStatus("ok", "Fertig ✅ (Mobile: Tabs oben nutzen)");
-        // Mobile: spring direkt auf „Kurz“
-        activateTab("short");
-      } catch(e){
-        setStatus("err", "Fehler: " + (e?.message || "Unbekannt"));
-      } finally {
-        setLoading(false);
+        outputBox.textContent = data.explanation || "";
+        saveHistory(text, data.explanation || "");
+        showSuccess("Fertig ✅");
+      }catch(e){
+        showError("Netzwerkfehler: Server nicht erreichbar.");
+      }finally{
+        showOverlay(false);
+        setBusy(false);
       }
     }
 
     function clearAll(){
       inputText.value = "";
-      rShort.textContent = "Noch kein Ergebnis.";
-      rTodo.innerHTML = "<li>Noch kein Ergebnis.</li>";
-      rDates.textContent = "Noch kein Ergebnis.";
-      if(btnCopy) btnCopy.disabled = true;
-      mCopy.disabled = true;
-      clearStatus();
-      inputText.focus();
-      activateTab("short");
-      autoGrow();
+      outputBox.textContent = "";
+      errorBox.style.display = "none";
+      successBox.style.display = "none";
+      updateCount();
+      showSuccess("Geleert");
     }
 
     async function copyResult(){
+      const text = outputBox.textContent || "";
+      if (!text){
+        showError("Kein Ergebnis zum Kopieren.");
+        return;
+      }
       try{
-        await navigator.clipboard.writeText(makeCopyText());
-        setStatus("ok", "Kopiert ✅");
-      } catch(e){
-        setStatus("err", "Kopieren ging nicht (Browser blockiert Clipboard).");
+        await navigator.clipboard.writeText(text);
+        showSuccess("Kopiert ✅");
+      }catch(e){
+        showError("Kopieren ging nicht (Browser-Rechte). Markiere den Text und kopiere manuell.");
       }
     }
 
-    // ===== Auto-grow Textarea (Mobile besser) =====
-    function autoGrow(){
-      // nur wenn resize ausgeschaltet (mobile)
-      inputText.style.height = "auto";
-      const max = 520; // nicht zu groß
-      inputText.style.height = Math.min(inputText.scrollHeight, max) + "px";
-    }
-    inputText.addEventListener("input", autoGrow);
-    window.addEventListener("load", autoGrow);
+    async function startCheckout(){
+      showOverlay(true);
+      setBusy(true);
+      try{
+        const res = await fetch("/create-checkout-session", { method: "POST" });
+        const data = await res.json().catch(()=>null);
 
-    // Ctrl+Enter
-    inputText.addEventListener("keydown", (e) => {
-      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        if (!res.ok || !data || data.ok !== true){
+          const msg = (data && data.error) ? data.error : "Bezahlung aktuell nicht verfügbar.";
+          showError(msg);
+          return;
+        }
+
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      }catch(e){
+        showError("Netzwerkfehler beim Checkout.");
+      }finally{
+        showOverlay(false);
+        setBusy(false);
+      }
+    }
+
+    // Tabs
+    function setTab(which){
+      if (which === "explain"){
+        tabExplain.classList.add("active");
+        tabPro.classList.remove("active");
+        viewExplain.style.display = "grid";
+        viewPro.style.display = "none";
+      } else {
+        tabPro.classList.add("active");
+        tabExplain.classList.remove("active");
+        viewPro.style.display = "grid";
+        viewExplain.style.display = "none";
+      }
+    }
+    tabExplain.addEventListener("click", ()=>setTab("explain"));
+    tabPro.addEventListener("click", ()=>setTab("pro"));
+
+    // Buttons
+    btnExplain.addEventListener("click", explain);
+    btnClear.addEventListener("click", clearAll);
+    btnCopy.addEventListener("click", copyResult);
+    btnUpgrade.addEventListener("click", async ()=>{
+      // If Stripe not configured yet, just switch to Pro tab
+      try{
+        const res = await fetch("/config");
+        const data = await res.json();
+        if (data && data.ok && data.paymentsEnabled){
+          await startCheckout();
+        } else {
+          setTab("pro");
+          showSuccess("Pro-Bereich geöffnet (Zahlung kommt als Nächstes).");
+        }
+      }catch(e){
+        setTab("pro");
+      }
+    });
+
+    // Enter = explain (Desktop). Shift+Enter -> newline
+    inputText.addEventListener("keydown", (e)=>{
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){
         explain();
       }
     });
 
-    // Buttons
-    if(btnExplain) btnExplain.addEventListener("click", explain);
-    if(btnClear) btnClear.addEventListener("click", clearAll);
-    if(btnCopy) btnCopy.addEventListener("click", copyResult);
+    // init
+    loadHistory();
+    checkServer();
+    loadConfig();
 
-    mExplain.addEventListener("click", explain);
-    mClear.addEventListener("click", clearAll);
-    mCopy.addEventListener("click", copyResult);
-
-    // Tabs
-    if(tabs){
-      tabs.addEventListener("click", (e) => {
-        const b = e.target.closest(".tabBtn");
-        if(!b) return;
-        activateTab(b.dataset.tab);
-      });
+    // show paid status
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("paid") === "1"){
+      showSuccess("Zahlung erfolgreich ✅ Pro wird als Nächstes freigeschaltet.");
     }
-
-    // ===== Deadline calculator =====
-    const dateStart = $("dateStart");
-    const days = $("days");
-    const countMode = $("countMode");
-    const weekendMode = $("weekendMode");
-    const deadlineOut = $("deadlineOut");
-
-    function pad2(n){ return String(n).padStart(2,"0"); }
-    function fmt(d){ return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`; }
-
-    function calcDeadline(){
-      const v = dateStart.value;
-      const n = parseInt(days.value, 10);
-
-      if(!v){ deadlineOut.textContent = "Bitte erst ein Eingangsdatum wählen."; return; }
-      if(!n || n < 1){ deadlineOut.textContent = "Bitte gültige Tage eingeben (mind. 1)."; return; }
-
-      const start = new Date(v + "T00:00:00");
-      let current = new Date(start);
-
-      if(countMode.value === "nextDay"){
-        current.setDate(current.getDate() + 1);
-      }
-      current.setDate(current.getDate() + (n - 1));
-
-      const original = new Date(current);
-
-      if(weekendMode.value === "push"){
-        const dow = current.getDay(); // 0 So, 6 Sa
-        if(dow === 6) current.setDate(current.getDate() + 2);
-        if(dow === 0) current.setDate(current.getDate() + 1);
-      }
-
-      const moved = (fmt(original) !== fmt(current));
-
-      deadlineOut.textContent =
-        `Start (Eingang): ${fmt(start)}\n` +
-        `Frist: ${n} Tage\n` +
-        `Roh-Ende: ${fmt(original)}\n` +
-        (moved ? `Wochenende → verschoben auf: ${fmt(current)}\n` : `Ende: ${fmt(current)}\n`) +
-        `\nHinweis: Feiertage/Sonderregeln nicht berücksichtigt.`;
-    }
-
-    $("btnCalc").addEventListener("click", calcDeadline);
-    $("btnToday").addEventListener("click", () => {
-      const now = new Date();
-      dateStart.value = `${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`;
-      calcDeadline();
-    });
-
-    // Default Tab
-    activateTab("short");
   </script>
 </body>
 </html>
