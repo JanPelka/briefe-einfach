@@ -1,657 +1,392 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>briefe-einfach</title>
-  <style>
-    :root{
-      --bg: #0b1220;
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --btn: #2f7cff;
-      --btn2:#1c2333;
-      --danger:#ff4d4d;
-      --ok:#2ee59d;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --radius: 16px;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(47,124,255,.25), transparent 55%),
-        radial-gradient(800px 500px at 90% 10%, rgba(46,229,157,.18), transparent 60%),
-        radial-gradient(900px 700px at 60% 100%, rgba(255,255,255,.07), transparent 60%),
-        var(--bg);
-      color: var(--text);
-      min-height:100vh;
-    }
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:18px 18px 8px;
-      gap:12px;
-      position:sticky; top:0;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(to bottom, rgba(11,18,32,.85), rgba(11,18,32,.30));
-      z-index: 20;
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-    .logo{
-      width:34px; height:34px; border-radius:10px;
-      display:grid; place-items:center;
-      background: rgba(47,124,255,.18);
-      border: 1px solid rgba(47,124,255,.30);
-    }
-    .brand small{ display:block; font-weight:600; color:var(--muted); margin-top:2px; }
-    .actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .pill{
-      padding:8px 12px; border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      color: var(--muted);
-      font-size: 13px;
-      max-width: 45vw;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-    .btn{
-      border: 0;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 800;
-      cursor: pointer;
-      color: white;
-      background: var(--btn);
-      box-shadow: 0 10px 20px rgba(47,124,255,.25);
-    }
-    .btn.secondary{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow:none;
-      color: var(--text);
-    }
-    .btn.danger{
-      background: rgba(255,77,77,.18);
-      border: 1px solid rgba(255,77,77,.35);
-      color: #ffd7d7;
-      box-shadow:none;
-    }
-    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>briefe-einfach</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --card: rgba(255, 255, 255, 0.07);
+        --card2: rgba(255, 255, 255, 0.10);
+        --text: #e9eefc;
+        --muted: rgba(233, 238, 252, 0.65);
+        --border: rgba(255, 255, 255, 0.14);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(1200px 600px at 20% 0%, rgba(77, 111, 255, 0.28), transparent 60%),
+          radial-gradient(800px 500px at 90% 10%, rgba(153, 71, 255, 0.25), transparent 55%),
+          var(--bg);
+      }
+      header {
+        max-width: 1100px;
+        margin: 24px auto 8px;
+        padding: 0 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex; gap: 10px; align-items: center;
+      }
+      .logo {
+        width: 34px; height: 34px; border-radius: 10px;
+        background: rgba(255,255,255,0.12);
+        display: grid; place-items: center;
+        border: 1px solid var(--border);
+      }
+      .subtitle { color: var(--muted); font-size: 13px; margin-top: 2px; }
+      .top-right { display: flex; gap: 10px; align-items: center; }
+      .pill { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--muted); font-size: 13px; }
+      button {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.08);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+      button.primary { background: rgba(77,111,255,0.35); }
+      button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .wrap{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 12px 18px 30px;
-    }
+      .wrap {
+        max-width: 1100px;
+        margin: 10px auto 60px;
+        padding: 0 16px;
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 14px;
+        align-items: start;
+      }
+      .card {
+        border: 1px solid var(--border);
+        background: var(--card);
+        border-radius: 18px;
+        padding: 14px;
+        backdrop-filter: blur(10px);
+      }
+      .card h2 { margin: 0 0 6px; font-size: 16px; }
+      .hint { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+      textarea, input, select {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0,0,0,0.2);
+        color: var(--text);
+        padding: 10px 12px;
+        outline: none;
+      }
+      textarea { min-height: 160px; resize: vertical; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+      .resultBox { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+      .resultItem { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-top: 8px; }
+      .muted { color: var(--muted); }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 14px;
-      align-items:start;
-    }
+      /* Modal */
+      .modalBackdrop {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 10;
+      }
+      .modal {
+        width: min(520px, 100%);
+        background: rgba(15, 20, 35, 0.92);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 14px;
+      }
+      .modal h3 { margin: 0 0 10px; }
+      .error { color: #ffb4b4; margin: 10px 0 0; }
+      .ok { color: #baffc6; margin: 10px 0 0; }
 
-    .card{
-      background: var(--card);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card h2{
-      margin:0;
-      padding:14px 14px 10px;
-      font-size: 15px;
-      letter-spacing:.2px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .sub{
-      padding: 0 14px 12px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height:1.35;
-    }
-
-    textarea{
-      width:100%;
-      min-height: 190px;
-      resize: vertical;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px;
-      outline:none;
-      font-size: 14px;
-      line-height:1.35;
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      padding: 12px 14px 14px;
-      align-items:center;
-    }
-
-    .out{
-      padding: 0 14px 14px;
-      display:grid;
-      gap:10px;
-    }
-
-    .box{
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.14);
-      padding: 12px;
-    }
-    .box h3{ margin:0 0 6px; font-size: 13px; color: rgba(255,255,255,.85); }
-    .box p{ margin:0; color: var(--muted); font-size: 13px; line-height:1.35; }
-
-    .rightCard .row{
-      padding-top: 0;
-    }
-
-    .field{
-      display:grid; gap:6px;
-      padding: 0 14px 14px;
-    }
-    .field label{
-      color: var(--muted);
-      font-size: 12px;
-    }
-    input, select{
-      width:100%;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 10px;
-      outline:none;
-      font-size: 14px;
-    }
-
-    .hint{
-      color: var(--muted);
-      font-size: 12px;
-      padding: 0 14px 14px;
-    }
-
-    /* Mobile */
-    @media (max-width: 900px){
-      .grid{ grid-template-columns: 1fr; }
-      .pill{ max-width: 60vw; }
-    }
-
-    /* Modal Auth */
-    .modalBackdrop{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      display: none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      z-index: 50;
-    }
-    .modal{
-      width: min(420px, 100%);
-      background: rgba(15,22,40,.92);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-      overflow:hidden;
-    }
-    .modalHeader{
-      padding: 14px 14px 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .modalHeader h3{ margin:0; font-size: 16px; }
-    .modalBody{ padding: 0 14px 14px; display:grid; gap:10px; }
-    .modalMsg{
-      border-radius: 12px;
-      padding: 10px 10px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .modalMsg.error{
-      border-color: rgba(255,77,77,.35);
-      background: rgba(255,77,77,.12);
-      color: #ffd7d7;
-    }
-    .modalFooter{
-      padding: 12px 14px 14px;
-      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
-    }
-    .link{
-      color: rgba(47,124,255,.95);
-      cursor:pointer;
-      font-weight: 800;
-      text-decoration:none;
-    }
-    .smallLine{
-      padding: 0 14px 14px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* Loader */
-    .spinner{
-      width:16px; height:16px;
-      border-radius:50%;
-      border: 2px solid rgba(255,255,255,.25);
-      border-top-color: rgba(255,255,255,.9);
-      display:inline-block;
-      animation: spin .8s linear infinite;
-      vertical-align: -3px;
-      margin-right:8px;
-    }
-    @keyframes spin{ to { transform: rotate(360deg); } }
-  </style>
-</head>
-<body>
-
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo">📄</div>
-      <div>
-        briefe-einfach
-        <small>Text rein → Erklärung + Fristenhilfe (MVP)</small>
+      @media (max-width: 900px) {
+        .wrap { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">📄</div>
+        <div>
+          <div style="font-weight: 700;">briefe-einfach</div>
+          <div class="subtitle">Text rein → Erklärung + Fristenhilfe (MVP)</div>
+        </div>
       </div>
-    </div>
 
-    <div class="actions">
-      <div class="pill" id="userPill">nicht eingeloggt</div>
-      <button class="btn secondary" id="authBtn">Login / Registrieren</button>
-      <button class="btn danger" id="logoutBtn" style="display:none;">Logout</button>
-    </div>
-  </div>
+      <div class="top-right">
+        <span id="userPill" class="pill">nicht eingeloggt</span>
+        <button id="loginBtn">Login / Registrieren</button>
+        <button id="logoutBtn" style="display:none;">Logout</button>
+      </div>
+    </header>
 
-  <div class="wrap">
-    <div class="grid">
-
-      <!-- LEFT: Text + Ergebnis -->
-      <div class="card">
+    <main class="wrap">
+      <section class="card">
         <h2>🧾 Originaltext</h2>
-        <div class="sub">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>. (Ctrl+Enter geht auch)</div>
+        <div class="hint">Füge einen Brief/Behörden-Text ein → klicke „Erklären“. (MVP ohne KI-Backend)</div>
+        <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
 
-        <div style="padding:0 14px 14px;">
-          <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
+        <div class="actions">
+          <button class="primary" id="explainBtn">Erklären</button>
+          <button id="clearBtn">Leeren</button>
+          <button id="copyBtn" disabled>Ergebnis kopieren</button>
+          <button class="primary" id="subscribeBtn">Abo starten (6,99€/Monat)</button>
         </div>
 
-        <div class="row">
-          <button class="btn" id="explainBtn">✨ Erklären</button>
-          <button class="btn secondary" id="clearBtn">Leeren</button>
-          <button class="btn secondary" id="copyBtn" disabled>Ergebnis kopieren</button>
-          <span id="statusLine" style="color:var(--muted); font-size:13px;"></span>
-        </div>
+        <div class="resultBox">
+          <div class="muted">Ergebnis</div>
 
-        <div class="out">
-          <div class="box">
-            <h3>✅ Ergebnis</h3>
-            <p id="resultShort">Noch kein Ergebnis.</p>
+          <div class="resultItem">
+            <div style="font-weight:600;">Kurz erklärt</div>
+            <div id="shortResult" class="muted">Noch kein Ergebnis.</div>
           </div>
-          <div class="box">
-            <h3>🧠 Ausführlich</h3>
-            <p id="resultLong">—</p>
-          </div>
-          <div class="box">
-            <h3>🛠️ Was du tun solltest</h3>
-            <p id="resultTodo">—</p>
+
+          <div class="resultItem">
+            <div style="font-weight:600;">Was du tun solltest</div>
+            <div id="todoResult" class="muted">—</div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- RIGHT: Frist + Abo -->
-      <div class="card rightCard">
+      <aside class="card">
         <h2>⏳ Fristenrechner (MVP)</h2>
-        <div class="sub">MVP: ohne Feiertage/Sonderregeln.</div>
+        <div class="hint">MVP: ohne Feiertage/Sonderregeln.</div>
 
-        <div class="field">
-          <label for="startDate">Eingangsdatum (Start)</label>
-          <input id="startDate" type="date" />
+        <label class="muted">Eingangsdatum (Start)</label>
+        <input id="startDate" placeholder="tt.mm.jjjj" />
+
+        <div style="height:10px;"></div>
+
+        <label class="muted">Frist in Tagen</label>
+        <input id="days" type="number" value="14" />
+
+        <div style="height:10px;"></div>
+
+        <label class="muted">Zählweise</label>
+        <select id="countMode">
+          <option value="next">Start am nächsten Tag</option>
+          <option value="same">Start am gleichen Tag</option>
+        </select>
+
+        <div class="actions">
+          <button class="primary" id="calcBtn">Frist berechnen</button>
+          <button id="todayBtn">Heute einsetzen</button>
         </div>
 
-        <div class="field">
-          <label for="days">Frist in Tagen</label>
-          <input id="days" type="number" value="14" min="1" max="365" />
+        <div class="resultItem">
+          <div style="font-weight:600;">Ergebnis</div>
+          <div id="deadlineResult" class="muted">Noch nichts berechnet.</div>
         </div>
+      </aside>
+    </main>
 
-        <div class="field">
-          <label for="countMode">Zählweise</label>
-          <select id="countMode">
-            <option value="nextDay" selected>Start am nächsten Tag</option>
-            <option value="sameDay">Start am selben Tag</option>
-          </select>
-        </div>
-
-        <div class="row">
-          <button class="btn" id="calcBtn">Frist berechnen</button>
-          <button class="btn secondary" id="todayBtn">Heute einsetzen</button>
-        </div>
-
-        <div class="out">
-          <div class="box">
-            <h3>📌 Ergebnis</h3>
-            <p id="deadlineOut">Noch nichts berechnet.</p>
-          </div>
-        </div>
-
-        <hr style="border:0;border-top:1px solid rgba(255,255,255,.10); margin:0 0 12px;" />
-
-        <h2>⭐ Pro (Abo)</h2>
-        <div class="sub">
-          Pro schaltet zusätzliche Funktionen frei (z.B. bessere Formatierung, mehr Erklärung, später: Upload, Speicherung etc.).
-        </div>
-
-        <div class="row">
-          <button class="btn" id="subscribeBtn">Abo starten (6,99€/Monat)</button>
-        </div>
-
-        <div class="hint">
-          Hinweis: Für Checkout brauchst du Login (Email). Stripe öffnet dann die sichere Bezahlseite.
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- AUTH MODAL -->
-  <div class="modalBackdrop" id="authBackdrop">
-    <div class="modal">
-      <div class="modalHeader">
+    <!-- AUTH MODAL -->
+    <div id="authBackdrop" class="modalBackdrop">
+      <div class="modal">
         <h3 id="authTitle">Registrieren</h3>
-        <button class="btn secondary" id="closeAuth">✕</button>
-      </div>
 
-      <div class="modalBody">
-        <div class="field" style="padding:0;">
-          <label for="authEmail">E-Mail</label>
-          <input id="authEmail" type="email" placeholder="name@mail.de" />
-        </div>
+        <label class="muted">E-Mail</label>
+        <input id="authEmail" type="email" placeholder="name@email.de" />
 
-        <div class="field" style="padding:0;">
-          <label for="authPass">Passwort</label>
-          <input id="authPass" type="password" placeholder="••••••••" />
-        </div>
+        <div style="height:10px;"></div>
 
-        <div class="modalMsg" id="authMsg">Bitte registrieren oder einloggen.</div>
+        <label class="muted">Passwort</label>
+        <input id="authPass" type="password" placeholder="Passwort" />
 
-        <div class="row" style="padding:0;">
-          <button class="btn" id="doRegister">Registrieren</button>
-          <button class="btn secondary" id="doLogin">Login</button>
-        </div>
+        <div id="authMsg" class="error" style="display:none;"></div>
 
-        <div class="smallLine">
-          Schon ein Konto? <span class="link" id="switchToLogin">Login</span>
-          &nbsp;&nbsp;|&nbsp;&nbsp;
-          Neu hier? <span class="link" id="switchToRegister">Registrieren</span>
+        <div class="actions" style="margin-top:12px;">
+          <button class="primary" id="registerDoBtn">Registrieren</button>
+          <button id="loginDoBtn">Login</button>
+          <button id="closeAuthBtn">Schließen</button>
         </div>
       </div>
     </div>
-  </div>
 
-<script>
-  // ====== Simple local auth (MVP) ======
-  // Speichert User nur im Browser. Später ersetzen wir das durch richtiges Backend + DB.
-  const state = {
-    userEmail: localStorage.getItem("be_userEmail") || "",
-  };
+    <script>
+      // ===== UTIL =====
+      const $ = (id) => document.getElementById(id);
 
-  const userPill = document.getElementById("userPill");
-  const authBtn = document.getElementById("authBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  function renderAuth(){
-    if(state.userEmail){
-      userPill.textContent = state.userEmail;
-      authBtn.style.display = "none";
-      logoutBtn.style.display = "inline-block";
-    } else {
-      userPill.textContent = "nicht eingeloggt";
-      authBtn.style.display = "inline-block";
-      logoutBtn.style.display = "none";
-    }
-  }
-
-  function setUser(email){
-    state.userEmail = email || "";
-    if(state.userEmail){
-      localStorage.setItem("be_userEmail", state.userEmail);
-    } else {
-      localStorage.removeItem("be_userEmail");
-    }
-    renderAuth();
-  }
-
-  // Modal logic
-  const authBackdrop = document.getElementById("authBackdrop");
-  const authTitle = document.getElementById("authTitle");
-  const authMsg = document.getElementById("authMsg");
-  const authEmail = document.getElementById("authEmail");
-  const authPass = document.getElementById("authPass");
-  const closeAuth = document.getElementById("closeAuth");
-  const doRegister = document.getElementById("doRegister");
-  const doLogin = document.getElementById("doLogin");
-  const switchToLogin = document.getElementById("switchToLogin");
-  const switchToRegister = document.getElementById("switchToRegister");
-
-  function openAuth(mode="register"){
-    authBackdrop.style.display = "flex";
-    setAuthMode(mode);
-    authEmail.value = state.userEmail || "";
-    authPass.value = "";
-    setMsg("Bitte registrieren oder einloggen.", false);
-  }
-  function closeAuthModal(){
-    authBackdrop.style.display = "none";
-  }
-  function setAuthMode(mode){
-    if(mode === "login"){
-      authTitle.textContent = "Login";
-    } else {
-      authTitle.textContent = "Registrieren";
-    }
-  }
-  function setMsg(text, isError){
-    authMsg.textContent = text;
-    authMsg.classList.toggle("error", !!isError);
-  }
-
-  authBtn.addEventListener("click", () => openAuth("register"));
-  closeAuth.addEventListener("click", closeAuthModal);
-  authBackdrop.addEventListener("click", (e) => { if(e.target === authBackdrop) closeAuthModal(); });
-
-  switchToLogin.addEventListener("click", () => setAuthMode("login"));
-  switchToRegister.addEventListener("click", () => setAuthMode("register"));
-
-  doRegister.addEventListener("click", () => {
-    const email = (authEmail.value || "").trim();
-    const pass = (authPass.value || "").trim();
-    if(!email || !pass) return setMsg("Bitte E-Mail und Passwort eingeben.", true);
-    // MVP: wir speichern nur Email lokal
-    setUser(email);
-    setMsg("Registriert (MVP). Du bist jetzt eingeloggt.", false);
-    setTimeout(closeAuthModal, 500);
-  });
-
-  doLogin.addEventListener("click", () => {
-    const email = (authEmail.value || "").trim();
-    const pass = (authPass.value || "").trim();
-    if(!email || !pass) return setMsg("Bitte E-Mail und Passwort eingeben.", true);
-    setUser(email);
-    setMsg("Login ok (MVP).", false);
-    setTimeout(closeAuthModal, 500);
-  });
-
-  logoutBtn.addEventListener("click", () => {
-    setUser("");
-  });
-
-  // ====== Explain button (MVP - placeholder) ======
-  const explainBtn = document.getElementById("explainBtn");
-  const clearBtn = document.getElementById("clearBtn");
-  const copyBtn = document.getElementById("copyBtn");
-  const inputText = document.getElementById("inputText");
-  const statusLine = document.getElementById("statusLine");
-  const resultShort = document.getElementById("resultShort");
-  const resultLong = document.getElementById("resultLong");
-  const resultTodo = document.getElementById("resultTodo");
-
-  function setStatus(text){ statusLine.textContent = text || ""; }
-
-  function setResult(shortText, longText, todoText){
-    resultShort.textContent = shortText || "—";
-    resultLong.textContent = longText || "—";
-    resultTodo.textContent = todoText || "—";
-    copyBtn.disabled = !shortText;
-  }
-
-  explainBtn.addEventListener("click", async () => {
-    const t = (inputText.value || "").trim();
-    if(!t){
-      setStatus("Bitte zuerst einen Text eingeben.");
-      return;
-    }
-    setStatus("Erkläre... (MVP)");
-    // Placeholder. Später hängt hier die echte KI.
-    setTimeout(() => {
-      setResult(
-        "Das ist eine einfache Erklärung: Der Brief richtet sich an dich und du sollst reagieren.",
-        "Ausführlicher: Hier kommt später die KI-Erklärung. Aktuell ist das ein MVP-Platzhalter.",
-        "Was du tun solltest: Frist prüfen, Antwort vorbereiten, Unterlagen sammeln."
-      );
-      setStatus("");
-    }, 400);
-  });
-
-  clearBtn.addEventListener("click", () => {
-    inputText.value = "";
-    setResult("Noch kein Ergebnis.", "—", "—");
-    setStatus("");
-    copyBtn.disabled = true;
-  });
-
-  copyBtn.addEventListener("click", async () => {
-    const all = [
-      "Kurz erklärt: " + resultShort.textContent,
-      "Ausführlich: " + resultLong.textContent,
-      "Was du tun solltest: " + resultTodo.textContent
-    ].join("\n\n");
-    await navigator.clipboard.writeText(all);
-    setStatus("✅ Ergebnis kopiert");
-    setTimeout(() => setStatus(""), 800);
-  });
-
-  inputText.addEventListener("keydown", (e) => {
-    if(e.ctrlKey && e.key === "Enter"){
-      explainBtn.click();
-    }
-  });
-
-  // ====== Deadline calc ======
-  const startDate = document.getElementById("startDate");
-  const days = document.getElementById("days");
-  const countMode = document.getElementById("countMode");
-  const calcBtn = document.getElementById("calcBtn");
-  const todayBtn = document.getElementById("todayBtn");
-  const deadlineOut = document.getElementById("deadlineOut");
-
-  function formatDE(d){
-    const dd = String(d.getDate()).padStart(2,"0");
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const yyyy = d.getFullYear();
-    return `${dd}.${mm}.${yyyy}`;
-  }
-
-  function calcDeadline(){
-    if(!startDate.value){
-      deadlineOut.textContent = "Bitte Startdatum auswählen.";
-      return;
-    }
-    const n = Math.max(1, parseInt(days.value || "14", 10));
-    const base = new Date(startDate.value + "T00:00:00");
-    const start = new Date(base);
-
-    if(countMode.value === "nextDay"){
-      start.setDate(start.getDate() + 1);
-    }
-
-    const end = new Date(start);
-    end.setDate(end.getDate() + (n - 1));
-
-    deadlineOut.textContent = `Fristende: ${formatDE(end)} (Start: ${formatDE(start)}, ${n} Tage)`;
-  }
-
-  calcBtn.addEventListener("click", calcDeadline);
-  todayBtn.addEventListener("click", () => {
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth()+1).padStart(2,"0");
-    const dd = String(now.getDate()).padStart(2,"0");
-    startDate.value = `${yyyy}-${mm}-${dd}`;
-    calcDeadline();
-  });
-
-  // ====== Stripe subscribe ======
-  const subscribeBtn = document.getElementById("subscribeBtn");
-
-  function setSubscribeLoading(isLoading){
-    subscribeBtn.disabled = isLoading;
-    subscribeBtn.innerHTML = isLoading ? `<span class="spinner"></span>Weiter zu Stripe...` : `Abo starten (6,99€/Monat)`;
-  }
-
-  subscribeBtn.addEventListener("click", async () => {
-    if(!state.userEmail){
-      openAuth("register");
-      setMsg("Bitte erst einloggen/registrieren, damit Stripe deine E-Mail bekommt.", false);
-      return;
-    }
-    try{
-      setSubscribeLoading(true);
-
-      const r = await fetch("/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({ email: state.userEmail })
-      });
-
-      if(!r.ok){
-        const txt = await r.text();
-        throw new Error(txt || "Serverfehler");
+      function showAuth(open) {
+        $("authBackdrop").style.display = open ? "flex" : "none";
+        $("authMsg").style.display = "none";
+        $("authMsg").textContent = "";
       }
 
-      const data = await r.json();
-      if(!data.url) throw new Error("Keine Checkout-URL erhalten.");
+      function setMsg(text, ok=false) {
+        const el = $("authMsg");
+        el.style.display = "block";
+        el.className = ok ? "ok" : "error";
+        el.textContent = text;
+      }
 
-      window.location.href = data.url;
-    } catch(err){
-      console.error(err);
-      alert("Abo konnte nicht gestartet werden: " + (err.message || err));
-    } finally{
-      setSubscribeLoading(false);
-    }
-  });
+      async function api(path, body) {
+        const res = await fetch(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(body || {})
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Fehler");
+        return data;
+      }
 
-  // Init
-  renderAuth();
-  setResult("Noch kein Ergebnis.", "—", "—");
-</script>
+      async function refreshMe() {
+        const res = await fetch("/auth/me", { credentials: "include" });
+        const me = await res.json();
+        if (me.loggedIn) {
+          $("userPill").textContent = me.email + (me.isPro ? " • PRO" : "");
+          $("loginBtn").style.display = "none";
+          $("logoutBtn").style.display = "inline-block";
+        } else {
+          $("userPill").textContent = "nicht eingeloggt";
+          $("loginBtn").style.display = "inline-block";
+          $("logoutBtn").style.display = "none";
+        }
+      }
 
-</body>
+      // ===== AUTH UI =====
+      $("loginBtn").onclick = () => showAuth(true);
+      $("closeAuthBtn").onclick = () => showAuth(false);
+
+      $("registerDoBtn").onclick = async () => {
+        try {
+          const email = $("authEmail").value.trim();
+          const password = $("authPass").value;
+          await api("/auth/register", { email, password });
+          setMsg("Registriert & eingeloggt ✅", true);
+          await refreshMe();
+          setTimeout(() => showAuth(false), 500);
+        } catch (e) {
+          setMsg(e.message || "Fehler");
+        }
+      };
+
+      $("loginDoBtn").onclick = async () => {
+        try {
+          const email = $("authEmail").value.trim();
+          const password = $("authPass").value;
+          await api("/auth/login", { email, password });
+          setMsg("Eingeloggt ✅", true);
+          await refreshMe();
+          setTimeout(() => showAuth(false), 500);
+        } catch (e) {
+          setMsg(e.message || "Fehler");
+        }
+      };
+
+      $("logoutBtn").onclick = async () => {
+        await api("/auth/logout", {});
+        await refreshMe();
+      };
+
+      // ===== MVP "Erklären" =====
+      $("explainBtn").onclick = () => {
+        const t = $("inputText").value.trim();
+        if (!t) {
+          $("shortResult").textContent = "Bitte Text einfügen.";
+          $("todoResult").textContent = "—";
+          $("copyBtn").disabled = true;
+          return;
+        }
+        $("shortResult").textContent =
+          "MVP: Hier kommt später die KI-Erklärung. Aktuell: Text erkannt (" + t.length + " Zeichen).";
+        $("todoResult").textContent =
+          "MVP: Nächster Schritt → KI-Backend anbinden + Pro-Features per Abo freischalten.";
+        $("copyBtn").disabled = false;
+      };
+
+      $("clearBtn").onclick = () => {
+        $("inputText").value = "";
+        $("shortResult").textContent = "Noch kein Ergebnis.";
+        $("todoResult").textContent = "—";
+        $("copyBtn").disabled = true;
+      };
+
+      $("copyBtn").onclick = async () => {
+        const out =
+          "Kurz erklärt:\n" + $("shortResult").textContent +
+          "\n\nWas du tun solltest:\n" + $("todoResult").textContent;
+        await navigator.clipboard.writeText(out);
+        alert("Kopiert ✅");
+      };
+
+      // ===== FRISTENRECHNER =====
+      function parseDEDate(s) {
+        const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s.trim());
+        if (!m) return null;
+        const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+        return isNaN(d.getTime()) ? null : d;
+      }
+      function fmtDE(d) {
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const yy = d.getFullYear();
+        return `${dd}.${mm}.${yy}`;
+      }
+
+      $("todayBtn").onclick = () => {
+        $("startDate").value = fmtDE(new Date());
+      };
+
+      $("calcBtn").onclick = () => {
+        const start = parseDEDate($("startDate").value);
+        const days = Number($("days").value || 0);
+        const mode = $("countMode").value;
+
+        if (!start || !days) {
+          $("deadlineResult").textContent = "Bitte Datum (tt.mm.jjjj) und Tage eingeben.";
+          return;
+        }
+
+        const d = new Date(start);
+        if (mode === "next") d.setDate(d.getDate() + 1);
+        d.setDate(d.getDate() + days - 1);
+
+        $("deadlineResult").textContent = "Frist endet am: " + fmtDE(d);
+      };
+
+      // ===== STRIPE SUBSCRIBE =====
+      $("subscribeBtn").onclick = async () => {
+        try {
+          const res = await fetch("/stripe/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({})
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            alert(data.error || "Stripe Fehler");
+            return;
+          }
+          window.location.href = data.url;
+        } catch (e) {
+          alert("Fehler: " + (e.message || e));
+        }
+      };
+
+      // INIT
+      refreshMe();
+      if (new URLSearchParams(location.search).get("success")) {
+        alert("Zahlung erfolgreich ✅ (Webhook setzt später PRO automatisch)");
+      }
+      if (new URLSearchParams(location.search).get("canceled")) {
+        alert("Zahlung abgebrochen.");
+      }
+    </script>
+  </body>
 </html>

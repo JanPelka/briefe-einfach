@@ -1,14 +1,18 @@
 {
   "name": "briefe-einfach",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "express": "^4.19.2",
-    "stripe": "^20.1.0"
+    "express-session": "^1.17.3",
+    "helmet": "^7.1.0",
+    "stripe": "^16.12.0"
   }
 }
