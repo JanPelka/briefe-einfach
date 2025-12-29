@@ -1,392 +1,403 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>briefe-einfach</title>
-    <style>
-      :root {
-        --bg: #0b1220;
-        --card: rgba(255, 255, 255, 0.07);
-        --card2: rgba(255, 255, 255, 0.10);
-        --text: #e9eefc;
-        --muted: rgba(233, 238, 252, 0.65);
-        --border: rgba(255, 255, 255, 0.14);
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        color: var(--text);
-        background:
-          radial-gradient(1200px 600px at 20% 0%, rgba(77, 111, 255, 0.28), transparent 60%),
-          radial-gradient(800px 500px at 90% 10%, rgba(153, 71, 255, 0.25), transparent 55%),
-          var(--bg);
-      }
-      header {
-        max-width: 1100px;
-        margin: 24px auto 8px;
-        padding: 0 16px;
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .brand {
-        display: flex; gap: 10px; align-items: center;
-      }
-      .logo {
-        width: 34px; height: 34px; border-radius: 10px;
-        background: rgba(255,255,255,0.12);
-        display: grid; place-items: center;
-        border: 1px solid var(--border);
-      }
-      .subtitle { color: var(--muted); font-size: 13px; margin-top: 2px; }
-      .top-right { display: flex; gap: 10px; align-items: center; }
-      .pill { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--muted); font-size: 13px; }
-      button {
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.08);
-        color: var(--text);
-        padding: 10px 12px;
-        border-radius: 12px;
-        cursor: pointer;
-      }
-      button.primary { background: rgba(77,111,255,0.35); }
-      button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-      .wrap {
-        max-width: 1100px;
-        margin: 10px auto 60px;
-        padding: 0 16px;
-        display: grid;
-        grid-template-columns: 1.6fr 1fr;
-        gap: 14px;
-        align-items: start;
-      }
-      .card {
-        border: 1px solid var(--border);
-        background: var(--card);
-        border-radius: 18px;
-        padding: 14px;
-        backdrop-filter: blur(10px);
-      }
-      .card h2 { margin: 0 0 6px; font-size: 16px; }
-      .hint { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-      textarea, input, select {
-        width: 100%;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        background: rgba(0,0,0,0.2);
-        color: var(--text);
-        padding: 10px 12px;
-        outline: none;
-      }
-      textarea { min-height: 160px; resize: vertical; }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-      .resultBox { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
-      .resultItem { background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-top: 8px; }
-      .muted { color: var(--muted); }
-
-      /* Modal */
-      .modalBackdrop {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.55);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-        z-index: 10;
-      }
-      .modal {
-        width: min(520px, 100%);
-        background: rgba(15, 20, 35, 0.92);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 14px;
-      }
-      .modal h3 { margin: 0 0 10px; }
-      .error { color: #ffb4b4; margin: 10px 0 0; }
-      .ok { color: #baffc6; margin: 10px 0 0; }
-
-      @media (max-width: 900px) {
-        .wrap { grid-template-columns: 1fr; }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Briefe einfach erklärt</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.12);
+      --text:#e9eefc; --muted:rgba(233,238,252,.7);
+      --btn:rgba(120,160,255,.22); --btn2:rgba(120,160,255,.33);
+      --danger:rgba(255,80,80,.25); --ok:rgba(80,255,160,.18);
+      --shadow:0 10px 30px rgba(0,0,0,.35); --r:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(120,160,255,.20), transparent 60%),
+        radial-gradient(800px 500px at 90% 10%, rgba(120,255,200,.15), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg, rgba(120,160,255,.35), rgba(120,255,200,.22));
+      box-shadow:var(--shadow);display:grid;place-items:center;border:1px solid var(--border)
+    }
+    .title{font-size:22px;font-weight:800}
+    .subtitle{color:var(--muted);font-size:13px;margin-top:2px}
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .pill{padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted);font-size:13px}
+    .pill.pro{background:rgba(80,255,160,.10);color:rgba(160,255,210,.95)}
+    .pill.free{background:rgba(255,255,255,.04)}
+    .btn{
+      border:1px solid var(--border);background:var(--btn);color:var(--text);
+      padding:10px 12px;border-radius:12px;cursor:pointer;transition:.15s;background:var(--btn);
+      box-shadow:0 6px 18px rgba(0,0,0,.18);font-weight:700;
+    }
+    .btn:hover{background:var(--btn2)}
+    .btn.secondary{background:rgba(255,255,255,.06)}
+    .btn.danger{background:var(--danger)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .grid{display:grid;gap:14px}
+    @media(min-width:980px){.grid{grid-template-columns: 1.6fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+    h3{margin:0 0 10px 0;font-size:16px}
+    .mini{font-size:12px;color:var(--muted)}
+    textarea, input, select{
+      width:100%;border-radius:12px;border:1px solid var(--border);background:rgba(0,0,0,.18);
+      color:var(--text);padding:10px 12px;outline:none;
+    }
+    textarea{min-height:180px;resize:vertical;line-height:1.35}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0 0 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .paywall{margin-top:12px;padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.05)}
+    .paywall strong{display:block;margin-bottom:6px}
+    .ok{color:rgba(160,255,210,.95)}
+    .bad{color:rgba(255,170,170,.95)}
+    .modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+    .modal{width:min(480px,100%);background:rgba(15,22,45,.96);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+    .line{margin:10px 0;padding:10px 12px;border-radius:12px;border:1px solid var(--border);display:none}
+    .line.err{background:rgba(255,80,80,.12)}
+    .line.ok{background:rgba(80,255,160,.10)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
       <div class="brand">
         <div class="logo">📄</div>
         <div>
-          <div style="font-weight: 700;">briefe-einfach</div>
-          <div class="subtitle">Text rein → Erklärung + Fristenhilfe (MVP)</div>
+          <div class="title">Briefe einfach erklärt</div>
+          <div class="subtitle">Option B: Erklären + Antwortgenerator = PRO</div>
         </div>
       </div>
-
-      <div class="top-right">
-        <span id="userPill" class="pill">nicht eingeloggt</span>
-        <button id="loginBtn">Login / Registrieren</button>
-        <button id="logoutBtn" style="display:none;">Logout</button>
-      </div>
-    </header>
-
-    <main class="wrap">
-      <section class="card">
-        <h2>🧾 Originaltext</h2>
-        <div class="hint">Füge einen Brief/Behörden-Text ein → klicke „Erklären“. (MVP ohne KI-Backend)</div>
-        <textarea id="inputText" placeholder="Text hier einfügen..."></textarea>
-
-        <div class="actions">
-          <button class="primary" id="explainBtn">Erklären</button>
-          <button id="clearBtn">Leeren</button>
-          <button id="copyBtn" disabled>Ergebnis kopieren</button>
-          <button class="primary" id="subscribeBtn">Abo starten (6,99€/Monat)</button>
-        </div>
-
-        <div class="resultBox">
-          <div class="muted">Ergebnis</div>
-
-          <div class="resultItem">
-            <div style="font-weight:600;">Kurz erklärt</div>
-            <div id="shortResult" class="muted">Noch kein Ergebnis.</div>
-          </div>
-
-          <div class="resultItem">
-            <div style="font-weight:600;">Was du tun solltest</div>
-            <div id="todoResult" class="muted">—</div>
-          </div>
-        </div>
-      </section>
-
-      <aside class="card">
-        <h2>⏳ Fristenrechner (MVP)</h2>
-        <div class="hint">MVP: ohne Feiertage/Sonderregeln.</div>
-
-        <label class="muted">Eingangsdatum (Start)</label>
-        <input id="startDate" placeholder="tt.mm.jjjj" />
-
-        <div style="height:10px;"></div>
-
-        <label class="muted">Frist in Tagen</label>
-        <input id="days" type="number" value="14" />
-
-        <div style="height:10px;"></div>
-
-        <label class="muted">Zählweise</label>
-        <select id="countMode">
-          <option value="next">Start am nächsten Tag</option>
-          <option value="same">Start am gleichen Tag</option>
-        </select>
-
-        <div class="actions">
-          <button class="primary" id="calcBtn">Frist berechnen</button>
-          <button id="todayBtn">Heute einsetzen</button>
-        </div>
-
-        <div class="resultItem">
-          <div style="font-weight:600;">Ergebnis</div>
-          <div id="deadlineResult" class="muted">Noch nichts berechnet.</div>
-        </div>
-      </aside>
-    </main>
-
-    <!-- AUTH MODAL -->
-    <div id="authBackdrop" class="modalBackdrop">
-      <div class="modal">
-        <h3 id="authTitle">Registrieren</h3>
-
-        <label class="muted">E-Mail</label>
-        <input id="authEmail" type="email" placeholder="name@email.de" />
-
-        <div style="height:10px;"></div>
-
-        <label class="muted">Passwort</label>
-        <input id="authPass" type="password" placeholder="Passwort" />
-
-        <div id="authMsg" class="error" style="display:none;"></div>
-
-        <div class="actions" style="margin-top:12px;">
-          <button class="primary" id="registerDoBtn">Registrieren</button>
-          <button id="loginDoBtn">Login</button>
-          <button id="closeAuthBtn">Schließen</button>
-        </div>
+      <div class="right">
+        <div id="planPill" class="pill free">FREE</div>
+        <div id="userPill" class="pill">nicht eingeloggt</div>
+        <button id="authBtn" class="btn secondary">Login / Registrieren</button>
+        <button id="logoutBtn" class="btn danger" style="display:none;">Logout</button>
       </div>
     </div>
 
-    <script>
-      // ===== UTIL =====
-      const $ = (id) => document.getElementById(id);
+    <div class="grid">
+      <div class="card">
+        <h3>🧾 Text</h3>
+        <div class="mini">Text einfügen ist kostenlos. „Erklären“ & „Antwort“ sind PRO.</div>
+        <div style="height:10px"></div>
+        <textarea id="textInput" placeholder="Text hier einfügen..."></textarea>
 
-      function showAuth(open) {
-        $("authBackdrop").style.display = open ? "flex" : "none";
-        $("authMsg").style.display = "none";
-        $("authMsg").textContent = "";
+        <div style="height:10px"></div>
+        <div class="row">
+          <button id="explainBtn" class="btn">Erklären (PRO)</button>
+          <button id="replyBtn" class="btn secondary">Antwort erstellen (PRO)</button>
+          <button id="copyBtn" class="btn secondary">Kopieren</button>
+          <span style="flex:1"></span>
+          <button id="subscribeBtn" class="btn">Abo starten (6,99€/Monat)</button>
+        </div>
+
+        <div id="paywall" class="paywall" style="display:none;">
+          <strong>🔒 PRO erforderlich</strong>
+          <div class="mini">
+            In FREE kannst du Text einfügen und vorbereiten.  
+            Für „Erklären“ und „Antwortgenerator“ brauchst du PRO (6,99€/Monat).
+          </div>
+          <div style="height:10px"></div>
+          <div class="row">
+            <button id="paywallLoginBtn" class="btn secondary">Einloggen</button>
+            <button id="paywallSubBtn" class="btn">Abo starten</button>
+          </div>
+        </div>
+
+        <pre id="outBox">Noch kein Ergebnis.</pre>
+        <pre id="replyBox" style="display:none;"></pre>
+      </div>
+
+      <div class="card">
+        <h3>✅ Status</h3>
+        <div class="mini" id="statusLine">Lade Status…</div>
+
+        <div style="height:12px"></div>
+        <div class="mini">
+          Tipp: Nach Checkout-Erfolg zeigt Stripe „success“. Danach ggf. einmal neu laden.
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="row">
+          <button id="refreshBtn" class="btn secondary">Status aktualisieren</button>
+          <button id="makeProBtn" class="btn secondary" title="Nur MVP-Test">PRO testen</button>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="mini bad">
+          Hinweis: Dieses MVP speichert User/PRO in RAM. Für „richtig fertig“ kommt als nächstes DB (Postgres).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="authBackdrop" class="modalBackdrop">
+    <div class="modal">
+      <h3 id="authTitle">Login</h3>
+      <div class="mini">Du brauchst Login, damit Abo/PRO zugeordnet werden kann.</div>
+
+      <div style="height:10px"></div>
+      <label class="mini">E-Mail</label>
+      <input id="authEmail" placeholder="name@mail.de" />
+
+      <div style="height:10px"></div>
+      <label class="mini">Passwort</label>
+      <input id="authPass" type="password" placeholder="mind. 6 Zeichen" />
+
+      <div id="authErr" class="line err"></div>
+      <div id="authOk" class="line ok"></div>
+
+      <div style="height:10px"></div>
+      <div class="row">
+        <button id="doBtn" class="btn">Login</button>
+        <button id="switchBtn" class="btn secondary">Registrieren</button>
+        <span style="flex:1"></span>
+        <button id="closeAuthBtn" class="btn secondary">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id)=>document.getElementById(id);
+    let authMode = "login"; // login|register
+    let currentUser = null;
+    let currentPlan = "FREE";
+
+    function show(el){ el.style.display=""; }
+    function hide(el){ el.style.display="none"; }
+
+    function setPlan(plan){
+      currentPlan = plan;
+      const pill = $("planPill");
+      pill.textContent = plan;
+      pill.classList.toggle("pro", plan==="PRO");
+      pill.classList.toggle("free", plan!=="PRO");
+
+      // PRO-gated actions:
+      const pro = plan === "PRO";
+      $("explainBtn").disabled = !pro;
+      $("replyBtn").disabled = !pro;
+
+      $("paywall").style.display = pro ? "none" : "none";
+    }
+
+    async function api(path, opts={}){
+      const r = await fetch(path, {
+        ...opts,
+        headers: { "Content-Type":"application/json", ...(opts.headers||{}) },
+        credentials: "include"
+      });
+      let data = null;
+      try { data = await r.json(); } catch(e) {}
+      if(!r.ok){
+        const msg = data?.error || ("HTTP " + r.status);
+        throw new Error(msg);
       }
+      return data;
+    }
 
-      function setMsg(text, ok=false) {
-        const el = $("authMsg");
-        el.style.display = "block";
-        el.className = ok ? "ok" : "error";
-        el.textContent = text;
-      }
-
-      async function api(path, body) {
-        const res = await fetch(path, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(body || {})
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || "Fehler");
-        return data;
-      }
-
-      async function refreshMe() {
-        const res = await fetch("/auth/me", { credentials: "include" });
-        const me = await res.json();
-        if (me.loggedIn) {
-          $("userPill").textContent = me.email + (me.isPro ? " • PRO" : "");
-          $("loginBtn").style.display = "none";
-          $("logoutBtn").style.display = "inline-block";
+    async function refreshStatus(){
+      try{
+        const ent = await fetch("/api/entitlement", { credentials:"include" });
+        const data = await ent.json();
+        if(data.loggedIn){
+          currentUser = data.user;
+          $("userPill").textContent = data.user.email;
+          show($("logoutBtn"));
+          $("authBtn").textContent = "Account";
+          setPlan(data.plan);
+          $("statusLine").innerHTML = `Eingeloggt: <span class="ok">${data.user.email}</span><br>Plan: <span class="ok">${data.plan}</span>`;
         } else {
+          currentUser = null;
           $("userPill").textContent = "nicht eingeloggt";
-          $("loginBtn").style.display = "inline-block";
-          $("logoutBtn").style.display = "none";
+          hide($("logoutBtn"));
+          $("authBtn").textContent = "Login / Registrieren";
+          setPlan("FREE");
+          $("statusLine").innerHTML = `Nicht eingeloggt. Plan: <span class="bad">FREE</span>`;
         }
+      }catch(e){
+        currentUser = null;
+        setPlan("FREE");
+        $("statusLine").textContent = "Status konnte nicht geladen werden: " + e.message;
       }
+    }
 
-      // ===== AUTH UI =====
-      $("loginBtn").onclick = () => showAuth(true);
-      $("closeAuthBtn").onclick = () => showAuth(false);
+    function openAuth(){
+      $("authBackdrop").style.display="flex";
+      $("authErr").style.display="none";
+      $("authOk").style.display="none";
+      if(authMode==="login"){
+        $("authTitle").textContent="Login";
+        $("doBtn").textContent="Login";
+        $("switchBtn").textContent="Registrieren";
+      }else{
+        $("authTitle").textContent="Registrieren";
+        $("doBtn").textContent="Registrieren";
+        $("switchBtn").textContent="Login";
+      }
+    }
+    function closeAuth(){ $("authBackdrop").style.display="none"; }
 
-      $("registerDoBtn").onclick = async () => {
-        try {
-          const email = $("authEmail").value.trim();
-          const password = $("authPass").value;
-          await api("/auth/register", { email, password });
-          setMsg("Registriert & eingeloggt ✅", true);
-          await refreshMe();
-          setTimeout(() => showAuth(false), 500);
-        } catch (e) {
-          setMsg(e.message || "Fehler");
-        }
-      };
+    async function doAuth(){
+      const email = $("authEmail").value.trim();
+      const password = $("authPass").value;
+      if(!email || !password){
+        $("authErr").textContent="Bitte E-Mail und Passwort eingeben.";
+        $("authErr").style.display="block";
+        return;
+      }
+      try{
+        const path = authMode==="login" ? "/auth/login" : "/auth/register";
+        await api(path, { method:"POST", body: JSON.stringify({ email, password }) });
+        $("authOk").textContent = authMode==="login" ? "Eingeloggt ✅" : "Registriert ✅";
+        $("authOk").style.display="block";
+        $("authErr").style.display="none";
+        await refreshStatus();
+        setTimeout(closeAuth, 450);
+      }catch(e){
+        $("authErr").textContent = e.message;
+        $("authErr").style.display="block";
+        $("authOk").style.display="none";
+      }
+    }
 
-      $("loginDoBtn").onclick = async () => {
-        try {
-          const email = $("authEmail").value.trim();
-          const password = $("authPass").value;
-          await api("/auth/login", { email, password });
-          setMsg("Eingeloggt ✅", true);
-          await refreshMe();
-          setTimeout(() => showAuth(false), 500);
-        } catch (e) {
-          setMsg(e.message || "Fehler");
-        }
-      };
+    async function logout(){
+      try{ await api("/auth/logout", { method:"POST" }); }catch(e){}
+      await refreshStatus();
+    }
 
-      $("logoutBtn").onclick = async () => {
-        await api("/auth/logout", {});
-        await refreshMe();
-      };
+    async function startCheckout(){
+      // nur wenn eingeloggt
+      try{
+        await api("/auth/me");
+      }catch(e){
+        authMode="login";
+        openAuth();
+        return;
+      }
+      try{
+        const out = await api("/stripe/create-checkout-session", { method:"POST" });
+        window.location.href = out.url;
+      }catch(e){
+        alert("Checkout Fehler: " + e.message);
+      }
+    }
 
-      // ===== MVP "Erklären" =====
-      $("explainBtn").onclick = () => {
-        const t = $("inputText").value.trim();
-        if (!t) {
-          $("shortResult").textContent = "Bitte Text einfügen.";
-          $("todoResult").textContent = "—";
-          $("copyBtn").disabled = true;
-          return;
-        }
-        $("shortResult").textContent =
-          "MVP: Hier kommt später die KI-Erklärung. Aktuell: Text erkannt (" + t.length + " Zeichen).";
-        $("todoResult").textContent =
-          "MVP: Nächster Schritt → KI-Backend anbinden + Pro-Features per Abo freischalten.";
-        $("copyBtn").disabled = false;
-      };
+    function showPaywall(){
+      show($("paywall"));
+    }
 
-      $("clearBtn").onclick = () => {
-        $("inputText").value = "";
-        $("shortResult").textContent = "Noch kein Ergebnis.";
-        $("todoResult").textContent = "—";
-        $("copyBtn").disabled = true;
-      };
+    async function explainPro(){
+      // Option B: PRO only
+      if(currentPlan !== "PRO"){
+        showPaywall();
+        return;
+      }
+      const text = $("textInput").value.trim();
+      if(text.length < 15){
+        $("outBox").textContent = "Bitte mindestens 15 Zeichen einfügen.";
+        return;
+      }
+      $("outBox").textContent = "Erkläre...";
+      $("replyBox").style.display="none";
+      try{
+        const out = await api("/api/explain-text", { method:"POST", body: JSON.stringify({ text }) });
+        $("outBox").textContent = out.text || "—";
+      }catch(e){
+        $("outBox").textContent = "Fehler: " + e.message;
+      }
+    }
 
-      $("copyBtn").onclick = async () => {
-        const out =
-          "Kurz erklärt:\n" + $("shortResult").textContent +
-          "\n\nWas du tun solltest:\n" + $("todoResult").textContent;
-        await navigator.clipboard.writeText(out);
+    async function replyPro(){
+      if(currentPlan !== "PRO"){
+        showPaywall();
+        return;
+      }
+      const explanation = $("outBox").textContent.trim();
+      if(!explanation || explanation==="Noch kein Ergebnis." || explanation==="Erkläre..."){
+        $("replyBox").style.display="block";
+        $("replyBox").textContent = "Bitte zuerst „Erklären“ ausführen.";
+        return;
+      }
+      $("replyBox").style.display="block";
+      $("replyBox").textContent = "Erstelle Antwort...";
+      try{
+        const meta = {
+          sender: currentUser ? currentUser.email : "",
+          recipient: "",
+          subject: "Antwort auf Ihr Schreiben",
+          ref: "",
+          place: "",
+          dateStr: new Date().toLocaleDateString("de-DE")
+        };
+        const out = await api("/api/generate-reply", { method:"POST", body: JSON.stringify({ explanation, meta }) });
+        $("replyBox").textContent = out.text || "—";
+      }catch(e){
+        $("replyBox").textContent = "Fehler: " + e.message;
+      }
+    }
+
+    async function copyAll(){
+      const a = $("outBox").textContent.trim();
+      const b = $("replyBox").style.display==="none" ? "" : $("replyBox").textContent.trim();
+      const txt = b ? (a + "\n\n---\n\n" + b) : a;
+      try{
+        await navigator.clipboard.writeText(txt);
         alert("Kopiert ✅");
-      };
-
-      // ===== FRISTENRECHNER =====
-      function parseDEDate(s) {
-        const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s.trim());
-        if (!m) return null;
-        const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
-        return isNaN(d.getTime()) ? null : d;
+      }catch(e){
+        alert("Kopieren ging nicht.");
       }
-      function fmtDE(d) {
-        const dd = String(d.getDate()).padStart(2, "0");
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const yy = d.getFullYear();
-        return `${dd}.${mm}.${yy}`;
+    }
+
+    async function makeProTest(){
+      // MVP nur zum testen
+      try{
+        await api("/admin/make-pro", { method:"POST" });
+        await refreshStatus();
+        alert("PRO (MVP-Test) aktiviert ✅");
+      }catch(e){
+        alert("Geht nur wenn eingeloggt. Fehler: " + e.message);
       }
+    }
 
-      $("todayBtn").onclick = () => {
-        $("startDate").value = fmtDE(new Date());
-      };
+    // Wire UI
+    $("authBtn").addEventListener("click", ()=>{ authMode="login"; openAuth(); });
+    $("logoutBtn").addEventListener("click", logout);
+    $("closeAuthBtn").addEventListener("click", closeAuth);
+    $("doBtn").addEventListener("click", doAuth);
+    $("switchBtn").addEventListener("click", ()=>{
+      authMode = authMode==="login" ? "register" : "login";
+      openAuth();
+    });
+    $("subscribeBtn").addEventListener("click", startCheckout);
+    $("paywallSubBtn").addEventListener("click", startCheckout);
+    $("paywallLoginBtn").addEventListener("click", ()=>{ authMode="login"; openAuth(); });
 
-      $("calcBtn").onclick = () => {
-        const start = parseDEDate($("startDate").value);
-        const days = Number($("days").value || 0);
-        const mode = $("countMode").value;
+    $("explainBtn").addEventListener("click", explainPro);
+    $("replyBtn").addEventListener("click", replyPro);
+    $("copyBtn").addEventListener("click", copyAll);
+    $("refreshBtn").addEventListener("click", refreshStatus);
+    $("makeProBtn").addEventListener("click", makeProTest);
 
-        if (!start || !days) {
-          $("deadlineResult").textContent = "Bitte Datum (tt.mm.jjjj) und Tage eingeben.";
-          return;
-        }
+    $("authBackdrop").addEventListener("click", (e)=>{ if(e.target===$("authBackdrop")) closeAuth(); });
 
-        const d = new Date(start);
-        if (mode === "next") d.setDate(d.getDate() + 1);
-        d.setDate(d.getDate() + days - 1);
-
-        $("deadlineResult").textContent = "Frist endet am: " + fmtDE(d);
-      };
-
-      // ===== STRIPE SUBSCRIBE =====
-      $("subscribeBtn").onclick = async () => {
-        try {
-          const res = await fetch("/stripe/create-checkout-session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({})
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) {
-            alert(data.error || "Stripe Fehler");
-            return;
-          }
-          window.location.href = data.url;
-        } catch (e) {
-          alert("Fehler: " + (e.message || e));
-        }
-      };
-
-      // INIT
-      refreshMe();
-      if (new URLSearchParams(location.search).get("success")) {
-        alert("Zahlung erfolgreich ✅ (Webhook setzt später PRO automatisch)");
-      }
-      if (new URLSearchParams(location.search).get("canceled")) {
-        alert("Zahlung abgebrochen.");
-      }
-    </script>
-  </body>
+    // init
+    (async function init(){
+      await refreshStatus();
+      const p = new URLSearchParams(location.search);
+      const chk = p.get("checkout");
+      if(chk==="success") alert("✅ Checkout erfolgreich (Test). Bitte einmal Status aktualisieren.");
+      if(chk==="cancel") alert("❌ Checkout abgebrochen.");
+    })();
+  </script>
+</body>
 </html>

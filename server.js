@@ -1,210 +1,294 @@
 import express from "express";
-import helmet from "helmet";
-import cookieParser from "cookie-parser";
-import session from "express-session";
-import bcrypt from "bcryptjs";
-import Stripe from "stripe";
 import path from "path";
 import { fileURLToPath } from "url";
+import crypto from "crypto";
+import Stripe from "stripe";
 
 const app = express();
+app.set("trust proxy", 1);
+
+// ---------- ENV ----------
+const PORT = process.env.PORT || 3000;
+const SESSION_SECRET = process.env.SESSION_SECRET || "";
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || "";
+
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+
+// ---------- Paths ----------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ====== ENV ======
-const PORT = process.env.PORT || 3000;
-const SESSION_SECRET = process.env.SESSION_SECRET || "dev_secret_change_me";
-
-// Optional, aber empfohlen:
-const BASE_URL =
-  process.env.BASE_URL ||
-  (process.env.RAILWAY_STATIC_URL
-    ? `https://${process.env.RAILWAY_STATIC_URL}`
-    : "http://localhost:3000");
-
-// ====== MIDDLEWARE ======
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cookieParser());
+// ---------- Basic JSON ----------
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  session({
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: BASE_URL.startsWith("https://")
-    }
-  })
-);
+// ---------- Minimal cookie/session (no extra libs) ----------
+function parseCookies(req) {
+  const header = req.headers.cookie || "";
+  const out = {};
+  header.split(";").forEach((part) => {
+    const [k, ...v] = part.trim().split("=");
+    if (!k) return;
+    out[k] = decodeURIComponent(v.join("=") || "");
+  });
+  return out;
+}
+function setCookie(res, name, value, opts = {}) {
+  const parts = [`${name}=${encodeURIComponent(value)}`];
+  if (opts.httpOnly) parts.push("HttpOnly");
+  if (opts.secure) parts.push("Secure");
+  if (opts.sameSite) parts.push(`SameSite=${opts.sameSite}`);
+  if (opts.path) parts.push(`Path=${opts.path}`);
+  if (typeof opts.maxAge === "number") parts.push(`Max-Age=${opts.maxAge}`);
+  res.setHeader("Set-Cookie", parts.join("; "));
+}
+function clearCookie(res, name) {
+  res.setHeader("Set-Cookie", `${name}=; Path=/; Max-Age=0; SameSite=Lax`);
+}
 
-// Static Frontend
-app.use(express.static(path.join(__dirname, "public")));
+function getBaseUrl(req) {
+  const proto = req.headers["x-forwarded-proto"] || "http";
+  const host = req.headers.host;
+  return `${proto}://${host}`;
+}
 
-// ====== MINIMAL USER STORE (MVP) ======
-// ⚠️ Für MVP ok. In Produktion später DB nutzen.
-const users = new Map(); // email -> { email, passwordHash, isPro: boolean }
+function sha256(input) {
+  return crypto.createHash("sha256").update(input).digest("hex");
+}
+function randomId(prefix = "") {
+  return prefix + crypto.randomBytes(16).toString("hex");
+}
 
-// ====== HELPERS ======
+// ---------- In-memory stores (MVP) ----------
+/**
+ * usersByEmail: email -> { id, email, passHash, createdAt, isPro }
+ * sessions: sid -> { userId, email, createdAt }
+ *
+ * Hinweis: In Produktion später DB (Postgres) verwenden,
+ * weil In-Memory bei Redeploy verloren geht.
+ */
+const usersByEmail = new Map();
+const sessions = new Map();
+
+function authUser(req) {
+  const cookies = parseCookies(req);
+  const sid = cookies.sid || "";
+  if (!sid) return null;
+  const sess = sessions.get(sid);
+  if (!sess) return null;
+  const u = usersByEmail.get(sess.email);
+  if (!u) return null;
+  return { id: u.id, email: u.email, isPro: !!u.isPro };
+}
+
 function requireAuth(req, res, next) {
-  if (!req.session?.userEmail) {
-    return res.status(401).json({ ok: false, error: "Not logged in" });
-  }
+  const u = authUser(req);
+  if (!u) return res.status(401).json({ ok: false, error: "Not logged in" });
+  req.user = u;
   next();
 }
 
-function getCurrentUser(req) {
-  const email = req.session?.userEmail;
-  if (!email) return null;
-  return users.get(email) || null;
+function requirePro(req, res, next) {
+  const u = authUser(req);
+  if (!u) return res.status(401).json({ ok: false, error: "Not logged in" });
+  if (!u.isPro) return res.status(402).json({ ok: false, error: "PRO erforderlich (Abo)" });
+  req.user = u;
+  next();
 }
 
-function getStripeClient() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null;
-  // Stripe initialisieren nur wenn Key existiert → verhindert Crash-Loop
-  return new Stripe(key);
-}
+// ---------- Health ----------
+app.get("/health", (req, res) => res.json({ ok: true, status: "healthy" }));
 
-// ====== HEALTH ======
-app.get("/health", (req, res) => {
-  res.json({ ok: true, status: "healthy" });
+// ---------- Auth ----------
+app.get("/auth/me", (req, res) => {
+  const u = authUser(req);
+  if (!u) return res.status(401).json({ ok: false, error: "Not logged in" });
+  res.json({ ok: true, user: u });
 });
 
-// ====== AUTH ======
-app.post("/auth/register", async (req, res) => {
+app.post("/auth/register", (req, res) => {
   const { email, password } = req.body || {};
-  if (!email || !password) {
-    return res.status(400).json({ ok: false, error: "Email & Passwort nötig" });
+  const cleanEmail = String(email || "").trim().toLowerCase();
+  const cleanPass = String(password || "");
+
+  if (!SESSION_SECRET) {
+    return res.status(500).json({ ok: false, error: "Server config: SESSION_SECRET fehlt" });
   }
-  if (users.has(email)) {
-    return res.status(409).json({ ok: false, error: "User existiert schon" });
+  if (!cleanEmail || !cleanPass) {
+    return res.status(400).json({ ok: false, error: "Email und Passwort benötigt" });
   }
-  const passwordHash = await bcrypt.hash(String(password), 10);
-  users.set(email, { email, passwordHash, isPro: false });
-  req.session.userEmail = email;
-  res.json({ ok: true, email, isPro: false });
+  if (cleanPass.length < 6) {
+    return res.status(400).json({ ok: false, error: "Passwort min. 6 Zeichen" });
+  }
+  if (usersByEmail.has(cleanEmail)) {
+    return res.status(409).json({ ok: false, error: "E-Mail existiert bereits" });
+  }
+
+  const user = {
+    id: randomId("u_"),
+    email: cleanEmail,
+    passHash: sha256(SESSION_SECRET + "::" + cleanPass),
+    createdAt: new Date().toISOString(),
+    isPro: false
+  };
+  usersByEmail.set(cleanEmail, user);
+
+  // Auto login
+  const sid = randomId("s_");
+  sessions.set(sid, { userId: user.id, email: user.email, createdAt: new Date().toISOString() });
+
+  setCookie(res, "sid", sid, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30
+  });
+
+  res.json({ ok: true, user: { id: user.id, email: user.email, isPro: false } });
 });
 
-app.post("/auth/login", async (req, res) => {
+app.post("/auth/login", (req, res) => {
   const { email, password } = req.body || {};
-  const user = users.get(email);
-  if (!user) return res.status(401).json({ ok: false, error: "Login falsch" });
+  const cleanEmail = String(email || "").trim().toLowerCase();
+  const cleanPass = String(password || "");
 
-  const ok = await bcrypt.compare(String(password), user.passwordHash);
-  if (!ok) return res.status(401).json({ ok: false, error: "Login falsch" });
+  if (!SESSION_SECRET) {
+    return res.status(500).json({ ok: false, error: "Server config: SESSION_SECRET fehlt" });
+  }
+  if (!cleanEmail || !cleanPass) {
+    return res.status(400).json({ ok: false, error: "Email und Passwort benötigt" });
+  }
 
-  req.session.userEmail = email;
-  res.json({ ok: true, email, isPro: user.isPro });
+  const user = usersByEmail.get(cleanEmail);
+  if (!user) return res.status(401).json({ ok: false, error: "Login fehlgeschlagen" });
+
+  const passHash = sha256(SESSION_SECRET + "::" + cleanPass);
+  if (passHash !== user.passHash) {
+    return res.status(401).json({ ok: false, error: "Login fehlgeschlagen" });
+  }
+
+  const sid = randomId("s_");
+  sessions.set(sid, { userId: user.id, email: user.email, createdAt: new Date().toISOString() });
+
+  setCookie(res, "sid", sid, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30
+  });
+
+  res.json({ ok: true, user: { id: user.id, email: user.email, isPro: !!user.isPro } });
 });
 
 app.post("/auth/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.json({ ok: true });
-  });
+  const cookies = parseCookies(req);
+  const sid = cookies.sid;
+  if (sid) sessions.delete(sid);
+  clearCookie(res, "sid");
+  res.json({ ok: true });
 });
 
-app.get("/auth/me", (req, res) => {
-  const user = getCurrentUser(req);
-  if (!user) return res.json({ ok: true, loggedIn: false });
-  res.json({ ok: true, loggedIn: true, email: user.email, isPro: user.isPro });
+// ---------- Entitlement (FREE/PRO) ----------
+app.get("/api/entitlement", (req, res) => {
+  const u = authUser(req);
+  if (!u) return res.json({ ok: true, loggedIn: false, plan: "FREE" });
+  res.json({ ok: true, loggedIn: true, plan: u.isPro ? "PRO" : "FREE", user: u });
 });
 
-// ====== STRIPE: Checkout Session (Subscription) ======
+// ---------- Stripe Checkout (Subscription) ----------
 app.post("/stripe/create-checkout-session", requireAuth, async (req, res) => {
-  const stripe = getStripeClient();
-  if (!stripe) {
-    return res.status(500).json({
-      ok: false,
-      error:
-        "Stripe Secret Key fehlt (STRIPE_SECRET_KEY). Railway Variablen prüfen."
-    });
-  }
-
-  const priceId = process.env.STRIPE_PRICE_ID;
-  if (!priceId) {
-    return res.status(500).json({
-      ok: false,
-      error: "STRIPE_PRICE_ID fehlt. Railway Variablen prüfen."
-    });
-  }
-
-  const user = getCurrentUser(req);
-  const customerEmail = user.email;
+  if (!stripe) return res.status(500).json({ ok: false, error: "Stripe nicht konfiguriert (STRIPE_SECRET_KEY)" });
+  if (!STRIPE_PRICE_ID) return res.status(500).json({ ok: false, error: "STRIPE_PRICE_ID fehlt" });
 
   try {
+    const baseUrl = getBaseUrl(req);
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      customer_email: customerEmail,
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${BASE_URL}/?success=1`,
-      cancel_url: `${BASE_URL}/?canceled=1`,
-      // (optional) metadata:
-      metadata: { userEmail: customerEmail }
+      line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+      success_url: `${baseUrl}/?checkout=success`,
+      cancel_url: `${baseUrl}/?checkout=cancel`,
+      customer_email: req.user.email,
+      client_reference_id: req.user.id,
+      metadata: {
+        userId: req.user.id,
+        email: req.user.email
+      }
     });
 
-    return res.json({ ok: true, url: session.url });
+    res.json({ ok: true, url: session.url });
   } catch (e) {
-    console.error("Stripe checkout error:", e);
-    return res.status(500).json({ ok: false, error: "Stripe Fehler" });
+    console.error("Stripe error:", e);
+    res.status(500).json({ ok: false, error: e?.message || "Stripe error" });
   }
 });
 
-// ====== WEBHOOK (optional, aber empfohlen) ======
-// Damit du automatisch "isPro=true" setzt, sobald Zahlung durch ist.
-// In Stripe Dashboard Webhook anlegen → Endpoint: https://DEIN-RAILWAY-URL/stripe/webhook
-// Secret in STRIPE_WEBHOOK_SECRET speichern.
-app.post(
-  "/stripe/webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    const stripe = getStripeClient();
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!stripe || !webhookSecret) {
-      // Ohne Webhook Secret: nicht crashen, aber nicht verifizieren
-      return res.status(400).send("Webhook not configured");
-    }
-
-    const sig = req.headers["stripe-signature"];
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-    } catch (err) {
-      console.error("Webhook signature verify failed:", err?.message);
-      return res.status(400).send("Bad signature");
-    }
-
-    try {
-      // Du kannst hier später genauer prüfen, z.B. invoice.paid etc.
-      if (event.type === "checkout.session.completed") {
-        const sessionObj = event.data.object;
-        const email = sessionObj.customer_email || sessionObj.metadata?.userEmail;
-        if (email && users.has(email)) {
-          const u = users.get(email);
-          u.isPro = true;
-          users.set(email, u);
-          console.log("User upgraded to PRO:", email);
-        }
-      }
-
-      res.json({ received: true });
-    } catch (e) {
-      console.error("Webhook handler error:", e);
-      res.status(500).send("Webhook handler error");
-    }
-  }
-);
-
-// ====== Fallback: Frontend ======
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+/**
+ * OPTIONAL (später):
+ * Webhook damit PRO automatisch gesetzt wird, wenn Zahlung durch ist.
+ * Dafür brauchst du STRIPE_WEBHOOK_SECRET (whsec_...).
+ *
+ * Für MVP kannst du PRO auch manuell setzen (s.u. /admin/make-pro).
+ */
+app.post("/admin/make-pro", requireAuth, (req, res) => {
+  // MVP-Notfall: macht den eingeloggten User pro (für Tests)
+  const u = usersByEmail.get(req.user.email);
+  u.isPro = true;
+  usersByEmail.set(req.user.email, u);
+  res.json({ ok: true, user: { id: u.id, email: u.email, isPro: true } });
 });
+
+// ---------- PRO Endpoints (Option B) ----------
+app.post("/api/explain-text", requirePro, async (req, res) => {
+  const text = String(req.body?.text || "").trim();
+  if (text.length < 15) return res.status(400).json({ ok: false, error: "Text zu kurz" });
+
+  // MVP: Hier später OpenAI anbinden. Für jetzt liefern wir sauberes Ergebnis zurück.
+  // So ist die App "fertig" vom Ablauf her, ohne dass sie crasht.
+  const result =
+    "✅ Erklärung (PRO):\n\n" +
+    "Ich habe deinen Text erhalten.\n" +
+    "• Worum geht’s grob: (MVP Placeholder)\n" +
+    "• Was du tun solltest: (MVP Placeholder)\n\n" +
+    "Textlänge: " + text.length + " Zeichen.";
+
+  res.json({ ok: true, text: result });
+});
+
+app.post("/api/generate-reply", requirePro, async (req, res) => {
+  const base = String(req.body?.explanation || "").trim();
+  const meta = req.body?.meta || {};
+
+  const sender = String(meta.sender || "").trim();
+  const recipient = String(meta.recipient || "").trim();
+  const subject = String(meta.subject || "Antwort auf Ihr Schreiben").trim();
+  const ref = String(meta.ref || "").trim();
+  const place = String(meta.place || "").trim();
+  const dateStr = String(meta.dateStr || new Date().toLocaleDateString("de-DE")).trim();
+
+  const reply =
+    `${sender ? sender + "\n\n" : ""}` +
+    `${recipient ? recipient + "\n\n" : ""}` +
+    `${[place, dateStr].filter(Boolean).join(", ")}\n\n` +
+    `Betreff: ${subject}${ref ? " – " + ref : ""}\n\n` +
+    `Sehr geehrte Damen und Herren,\n\n` +
+    `vielen Dank für Ihr Schreiben.\n\n` +
+    `Nach Prüfung teile ich Folgendes mit:\n` +
+    `- (MVP Placeholder, basiert später auf Erklärung)\n\n` +
+    `Bitte bestätigen Sie mir den Eingang dieses Schreibens.\n\n` +
+    `Mit freundlichen Grüßen\n` +
+    `${sender ? sender.split("\n")[0] : "(Name)"}`;
+
+  res.json({ ok: true, text: reply, debug: { explanationChars: base.length } });
+});
+
+// ---------- Static Frontend ----------
+app.use(express.static(path.join(__dirname, "public")));
+app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 app.listen(PORT, () => {
-  console.log(`Server running on ${BASE_URL} (port ${PORT})`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
