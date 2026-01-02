@@ -6,125 +6,95 @@ import Stripe from "stripe";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-/* =======================
-   BASIC MIDDLEWARE
-======================= */
 app.use(express.json());
 
+// Railway läuft hinter Proxy/HTTPS
+app.set("trust proxy", 1);
+
+// CORS: erlaubt Cookies
 app.use(
   cors({
-    origin: "https://briefe-einfach-production.up.railway.app",
+    origin: true,
     credentials: true,
   })
 );
 
-/* =======================
-   SESSION (WICHTIG!)
-======================= */
-app.set("trust proxy", 1); // Railway / HTTPS
-
+// Session (Cookie muss SameSite=None + Secure haben, sonst wird’s geblockt)
 app.use(
   session({
-    name: "briefe-session",
+    name: "be.sid",
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
-      secure: true,          // HTTPS zwingend
       httpOnly: true,
-      sameSite: "none",      // WICHTIG für Railway
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 Tage
+      secure: true,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
 );
 
-/* =======================
-   STRIPE
-======================= */
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-/* =======================
-   HEALTH
-======================= */
-app.get("/health", (req, res) => {
-  res.json({ ok: true, status: "healthy" });
-});
+app.get("/health", (req, res) => res.json({ ok: true, status: "healthy" }));
 
-/* =======================
-   AUTH
-======================= */
+app.post("/auth/register", (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ ok: false, error: "missing email" });
 
-// LOGIN (Demo)
-app.post("/auth/login", (req, res) => {
-  const { email } = req.body;
+  req.session.user = { email, createdAt: Date.now() };
 
-  if (!email) {
-    return res.status(400).json({ ok: false });
-  }
-
-  req.session.user = {
-    email,
-    loggedInAt: Date.now(),
-  };
-
-  res.json({ ok: true });
-});
-
-// LOGOUT
-app.post("/auth/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie("briefe-session");
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ ok: false, error: "session save failed" });
     res.json({ ok: true });
   });
 });
 
-// CHECK LOGIN
-app.get("/auth/me", (req, res) => {
-  if (req.session.user) {
-    return res.json({
-      ok: true,
-      loggedIn: true,
-      user: req.session.user,
-    });
-  }
+app.post("/auth/login", (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ ok: false, error: "missing email" });
 
-  res.json({ ok: true, loggedIn: false });
+  req.session.user = { email, loggedInAt: Date.now() };
+
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ ok: false, error: "session save failed" });
+    res.json({ ok: true });
+  });
 });
 
-/* =======================
-   STRIPE CHECKOUT
-======================= */
+app.post("/auth/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie("be.sid", { sameSite: "none", secure: true });
+    res.json({ ok: true });
+  });
+});
+
+app.get("/auth/me", (req, res) => {
+  res.json({
+    ok: true,
+    loggedIn: !!req.session.user,
+    user: req.session.user || null,
+  });
+});
+
 app.post("/create-checkout-session", async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Not logged in" });
-  }
+  if (!req.session.user) return res.status(401).json({ error: "Not logged in" });
 
   try {
-    const session = await stripe.checkout.sessions.create({
+    const sessionObj = await stripe.checkout.sessions.create({
       mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: process.env.STRIPE_PRICE_ID,
-          quantity: 1,
-        },
-      ],
-      success_url:
-        "https://briefe-einfach-production.up.railway.app?success=1",
-      cancel_url:
-        "https://briefe-einfach-production.up.railway.app?canceled=1",
+      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      success_url: "https://briefe-einfach-production.up.railway.app?success=1",
+      cancel_url: "https://briefe-einfach-production.up.railway.app?canceled=1",
     });
 
-    res.json({ url: session.url });
-  } catch (err) {
-    console.error(err);
+    res.json({ url: sessionObj.url });
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: "Stripe error" });
   }
 });
 
-/* =======================
-   START
-======================= */
-app.listen(PORT, () => {
-  console.log("Server running on", PORT);
-});
+app.listen(PORT, () => console.log("Server running on", PORT));
