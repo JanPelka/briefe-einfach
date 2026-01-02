@@ -72,10 +72,15 @@ app.post("/auth/logout", (req, res) => {
     res.json({ ok: true });
   });
 });
+app.get("/auth/testlogin", (req, res) => {
+  // setzt Session ohne Passwort (nur Test)
+  const email = req.query.email || "test@demo.de";
+  req.session.user = { email };
 
-app.get("/auth/me", (req, res) => {
-  const loggedIn = !!(req.session && req.session.user);
-  res.json({ ok: true, loggedIn, user: loggedIn ? req.session.user : null });
+  // optional: Session speichern bevor redirect
+  req.session.save(() => {
+    res.redirect("/auth/me");
+  });
 });
 
 // Health
