@@ -5,29 +5,10 @@
   <title>briefe-einfach</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      margin: 0;
-      padding: 20px;
-    }
-    button {
-      padding: 10px 16px;
-      margin: 6px 0;
-      cursor: pointer;
-    }
-    input {
-      padding: 8px;
-      width: 100%;
-      margin: 6px 0;
-    }
-    .box {
-      background: #020617;
-      padding: 16px;
-      border-radius: 8px;
-      max-width: 500px;
-    }
+    body{font-family:Arial,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:20px}
+    button{padding:10px 16px;margin:6px 0;cursor:pointer}
+    input{padding:8px;width:100%;margin:6px 0}
+    .box{background:#020617;padding:16px;border-radius:8px;max-width:520px}
   </style>
 </head>
 <body>
@@ -37,6 +18,7 @@
 <div class="box">
   <h3>Login / Registrierung</h3>
   <input id="email" placeholder="E-Mail" />
+  <input id="password" placeholder="Passwort" type="password" />
   <button onclick="register()">Registrieren</button>
   <button onclick="login()">Login</button>
   <button onclick="logout()">Logout</button>
@@ -52,58 +34,54 @@
 </div>
 
 <script>
-const API = "https://briefe-einfach-production.up.railway.app";
-
 async function register() {
-  const email = document.getElementById("email").value;
-  const r = await fetch(API + "/auth/register", {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const r = await fetch("/auth/register", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {"Content-Type":"application/json"},
     credentials: "include",
-    body: JSON.stringify({ email })
+    body: JSON.stringify({ email, password })
   });
-  alert("Registriert");
+  const j = await r.json().catch(()=>({}));
+  alert(j.message || "Registriert (oder schon vorhanden)");
   check();
 }
 
 async function login() {
-  const email = document.getElementById("email").value;
-  const r = await fetch(API + "/auth/login", {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const r = await fetch("/auth/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {"Content-Type":"application/json"},
     credentials: "include",
-    body: JSON.stringify({ email })
+    body: JSON.stringify({ email, password })
   });
-  alert("Eingeloggt");
+  const j = await r.json().catch(()=>({}));
+  alert(j.message || "Login ok");
   check();
 }
 
 async function logout() {
-  await fetch(API + "/auth/logout", {
-    method: "POST",
-    credentials: "include"
-  });
+  await fetch("/auth/logout", { method:"POST", credentials:"include" });
   alert("Ausgeloggt");
   check();
 }
 
 async function check() {
-  const r = await fetch(API + "/auth/me", {
-    credentials: "include"
-  });
+  const r = await fetch("/auth/me", { credentials:"include" });
   const j = await r.json();
-  document.getElementById("status").textContent =
-    JSON.stringify(j, null, 2);
+  document.getElementById("status").textContent = JSON.stringify(j, null, 2);
 }
 
 async function subscribe() {
-  const r = await fetch(API + "/create-checkout-session", {
-    method: "POST",
-    credentials: "include"
+  const r = await fetch("/create-checkout-session", {
+    method:"POST",
+    credentials:"include"
   });
-  const j = await r.json();
-  if (j.url) window.location = j.url;
-  else alert("Nicht eingeloggt");
+  const j = await r.json().catch(()=>({}));
+  if (j.url) location.href = j.url;
+  else alert(j.message || "Not logged in");
 }
 
 check();
@@ -111,3 +89,4 @@ check();
 
 </body>
 </html>
+

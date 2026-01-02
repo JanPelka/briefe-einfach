@@ -1,100 +1,95 @@
-import express from "express";
-import session from "express-session";
-import cors from "cors";
-import Stripe from "stripe";
+const express = require("express");
+const session = require("express-session");
+const path = require("path");
+const Stripe = require("stripe");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-
-// Railway läuft hinter Proxy/HTTPS
+// ✅ Railway/Proxy: extrem wichtig, sonst werden Secure-Cookies nicht gesetzt
 app.set("trust proxy", 1);
 
-// CORS: erlaubt Cookies
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Session (Cookie muss SameSite=None + Secure haben, sonst wird’s geblockt)
-app.use(
-  session({
-    name: "be.sid",
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    proxy: true,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  })
-);
+// ✅ Session
+app.use(session({
+  name: "sid",
+  secret: process.env.SESSION_SECRET || "dev_secret_change_me",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: true,          // Railway läuft über HTTPS
+    sameSite: "lax",       // weil Frontend & Backend gleiche Domain
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
+}));
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// ✅ Static Frontend
+app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/health", (req, res) => res.json({ ok: true, status: "healthy" }));
+// ---- AUTH (Demo: sehr simpel) ----
+// In echt: User DB + Hashing. Für MVP reicht erstmal:
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.status(401).json({ ok:false, message:"Not logged in" });
+  next();
+}
 
 app.post("/auth/register", (req, res) => {
-  const { email } = req.body || {};
-  if (!email) return res.status(400).json({ ok: false, error: "missing email" });
+  const { email, password } = req.body || {};
+  if (!email || !password) return res.status(400).json({ ok:false, message:"Email + Passwort erforderlich" });
 
-  req.session.user = { email, createdAt: Date.now() };
-
-  req.session.save((err) => {
-    if (err) return res.status(500).json({ ok: false, error: "session save failed" });
-    res.json({ ok: true });
-  });
+  // MVP: wir “registrieren” direkt und loggen ein
+  req.session.user = { email };
+  return res.json({ ok:true, message:"Registriert & eingeloggt" });
 });
 
 app.post("/auth/login", (req, res) => {
-  const { email } = req.body || {};
-  if (!email) return res.status(400).json({ ok: false, error: "missing email" });
+  const { email, password } = req.body || {};
+  if (!email || !password) return res.status(400).json({ ok:false, message:"Email + Passwort erforderlich" });
 
-  req.session.user = { email, loggedInAt: Date.now() };
-
-  req.session.save((err) => {
-    if (err) return res.status(500).json({ ok: false, error: "session save failed" });
-    res.json({ ok: true });
-  });
+  // MVP: akzeptiert Login (später gegen DB prüfen)
+  req.session.user = { email };
+  return res.json({ ok:true, message:"Login ok" });
 });
 
 app.post("/auth/logout", (req, res) => {
   req.session.destroy(() => {
-    res.clearCookie("be.sid", { sameSite: "none", secure: true });
-    res.json({ ok: true });
+    res.clearCookie("sid");
+    res.json({ ok:true });
   });
 });
 
 app.get("/auth/me", (req, res) => {
-  res.json({
-    ok: true,
-    loggedIn: !!req.session.user,
-    user: req.session.user || null,
-  });
+  if (!req.session.user) return res.json({ ok:true, loggedIn:false });
+  res.json({ ok:true, loggedIn:true, user: req.session.user });
 });
 
-app.post("/create-checkout-session", async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ error: "Not logged in" });
-
+// ---- STRIPE ----
+app.post("/create-checkout-session", requireLogin, async (req, res) => {
   try {
-    const sessionObj = await stripe.checkout.sessions.create({
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const priceId = process.env.STRIPE_PRICE_ID;
+
+    if (!priceId) return res.status(500).json({ ok:false, message:"STRIPE_PRICE_ID fehlt" });
+
+    const sessionStripe = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
-      success_url: "https://briefe-einfach-production.up.railway.app?success=1",
-      cancel_url: "https://briefe-einfach-production.up.railway.app?canceled=1",
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${req.protocol}://${req.get("host")}/?success=1`,
+      cancel_url: `${req.protocol}://${req.get("host")}/?cancel=1`,
+      customer_email: req.session.user.email
     });
 
-    res.json({ url: sessionObj.url });
+    res.json({ url: sessionStripe.url });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: "Stripe error" });
+    res.status(500).json({ ok:false, message:"Stripe Fehler", error: String(e.message || e) });
   }
 });
 
+// Health
+app.get("/health", (req,res)=>res.json({ok:true,status:"healthy"}));
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on", PORT));
