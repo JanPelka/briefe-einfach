@@ -6,21 +6,19 @@ const Stripe = require("stripe");
 const app = express();
 
 // ✅ Railway/Proxy: extrem wichtig, sonst werden Secure-Cookies nicht gesetzt
-app.set("trust proxy", 1);
+// ✅ Railway/Proxy: MUSS so, sonst werden Secure-Cookies nicht gesetzt
+app.set("trust proxy", true);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// ✅ Session
 app.use(session({
   name: "sid",
   secret: process.env.SESSION_SECRET || "dev_secret_change_me",
   resave: false,
   saveUninitialized: false,
+  proxy: true,                 // ✅ wichtig bei Reverse Proxy
   cookie: {
     httpOnly: true,
-    secure: true,          // Railway läuft über HTTPS
-    sameSite: "lax",       // weil Frontend & Backend gleiche Domain
+    secure: "auto",            // ✅ automatisch je nach HTTPS
+    sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
 }));
