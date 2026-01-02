@@ -3,401 +3,518 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Briefe einfach erklärt</title>
+  <title>briefe-einfach</title>
   <style>
     :root{
-      --bg:#0b1020; --card:rgba(255,255,255,.06); --border:rgba(255,255,255,.12);
-      --text:#e9eefc; --muted:rgba(233,238,252,.7);
-      --btn:rgba(120,160,255,.22); --btn2:rgba(120,160,255,.33);
-      --danger:rgba(255,80,80,.25); --ok:rgba(80,255,160,.18);
-      --shadow:0 10px 30px rgba(0,0,0,.35); --r:18px;
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --border: rgba(255,255,255,.12);
+      --btn: rgba(255,255,255,.12);
+      --btn2: rgba(255,255,255,.18);
+      --danger: rgba(255,90,90,.18);
+      --ok: rgba(80,220,140,.18);
     }
     *{box-sizing:border-box}
     body{
-      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(120,160,255,.20), transparent 60%),
-        radial-gradient(800px 500px at 90% 10%, rgba(120,255,200,.15), transparent 55%),
+        radial-gradient(1200px 600px at 20% 0%, rgba(84,178,255,.18), transparent 60%),
+        radial-gradient(800px 500px at 90% 10%, rgba(255,80,200,.14), transparent 55%),
+        radial-gradient(900px 600px at 30% 90%, rgba(100,255,180,.10), transparent 55%),
         var(--bg);
-      min-height:100vh;
+      color: var(--text);
+      min-height: 100vh;
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:22px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg, rgba(120,160,255,.35), rgba(120,255,200,.22));
-      box-shadow:var(--shadow);display:grid;place-items:center;border:1px solid var(--border)
+    .wrap{max-width:1100px;margin:28px auto;padding:0 18px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border:1px solid var(--border);border-radius:16px;
+      background: rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
     }
-    .title{font-size:22px;font-weight:800}
-    .subtitle{color:var(--muted);font-size:13px;margin-top:2px}
-    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .pill{padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted);font-size:13px}
-    .pill.pro{background:rgba(80,255,160,.10);color:rgba(160,255,210,.95)}
-    .pill.free{background:rgba(255,255,255,.04)}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:34px;height:34px;border-radius:10px;
+      background: linear-gradient(135deg, rgba(84,178,255,.9), rgba(255,80,200,.85));
+      display:grid;place-items:center;font-weight:700;color:#061225;
+    }
+    .title{line-height:1.1}
+    .title b{display:block;font-size:16px}
+    .title span{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      padding:6px 10px;border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      border-radius:999px;font-size:12px;color:var(--muted);
+    }
     .btn{
-      border:1px solid var(--border);background:var(--btn);color:var(--text);
-      padding:10px 12px;border-radius:12px;cursor:pointer;transition:.15s;background:var(--btn);
-      box-shadow:0 6px 18px rgba(0,0,0,.18);font-weight:700;
+      border:1px solid var(--border);
+      background: var(--btn);
+      color: var(--text);
+      padding:9px 12px;border-radius:12px;
+      cursor:pointer;
+      transition:.15s;
+      font-weight:600;
     }
-    .btn:hover{background:var(--btn2)}
-    .btn.secondary{background:rgba(255,255,255,.06)}
-    .btn.danger{background:var(--danger)}
+    .btn:hover{background: var(--btn2)}
+    .btn.primary{background: rgba(84,178,255,.18)}
+    .btn.danger{background: rgba(255,90,90,.14)}
     .btn:disabled{opacity:.5;cursor:not-allowed}
-    .grid{display:grid;gap:14px}
-    @media(min-width:980px){.grid{grid-template-columns: 1.6fr 1fr}}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
-    h3{margin:0 0 10px 0;font-size:16px}
-    .mini{font-size:12px;color:var(--muted)}
-    textarea, input, select{
-      width:100%;border-radius:12px;border:1px solid var(--border);background:rgba(0,0,0,.18);
-      color:var(--text);padding:10px 12px;outline:none;
+    main{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 2fr 1fr;
+      gap:16px;
     }
-    textarea{min-height:180px;resize:vertical;line-height:1.35}
-    pre{white-space:pre-wrap;background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0 0 0}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .paywall{margin-top:12px;padding:12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.05)}
-    .paywall strong{display:block;margin-bottom:6px}
-    .ok{color:rgba(160,255,210,.95)}
-    .bad{color:rgba(255,170,170,.95)}
-    .modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
-    .modal{width:min(480px,100%);background:rgba(15,22,45,.96);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-    .line{margin:10px 0;padding:10px 12px;border-radius:12px;border:1px solid var(--border);display:none}
-    .line.err{background:rgba(255,80,80,.12)}
-    .line.ok{background:rgba(80,255,160,.10)}
+    @media (max-width: 920px){
+      main{grid-template-columns:1fr}
+    }
+    .card{
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
+      border-radius:16px;
+      padding:14px;
+    }
+    .card h3{
+      margin:0 0 8px;font-size:14px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .muted{color:var(--muted);font-size:12px}
+    textarea{
+      width:100%;
+      min-height:160px;
+      resize:vertical;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding:12px;border-radius:14px;
+      outline:none;
+    }
+    input, select{
+      width:100%;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding:10px 12px;border-radius:12px;
+      outline:none;
+    }
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row > *{flex:1}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .out{
+      margin-top:12px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px;
+    }
+    .out pre{
+      margin:0;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px;
+      color: rgba(255,255,255,.88);
+    }
+    .status{
+      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+      margin-top:10px;
+    }
+    .tag{
+      padding:6px 10px;border-radius:999px;
+      border:1px solid var(--border);
+      font-size:12px;
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+    }
+    .tag.ok{background: var(--ok); color: rgba(210,255,230,.95)}
+    .tag.bad{background: var(--danger); color: rgba(255,220,220,.95)}
+    /* Modal */
+    .modalBackdrop{
+      position:fixed;inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index: 10;
+    }
+    .modal{
+      width:min(520px, 100%);
+      border:1px solid var(--border);
+      background: rgba(10,14,30,.92);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.45);
+    }
+    .modal h3{margin:0 0 10px}
+    .modal .actions{justify-content:flex-end}
+    .linkish{color: rgba(84,178,255,.92); cursor:pointer; font-weight:700}
+    .sep{height:1px;background:var(--border);margin:10px 0}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="topbar">
+    <header>
       <div class="brand">
-        <div class="logo">📄</div>
-        <div>
-          <div class="title">Briefe einfach erklärt</div>
-          <div class="subtitle">Option B: Erklären + Antwortgenerator = PRO</div>
+        <div class="logo">B</div>
+        <div class="title">
+          <b>briefe-einfach</b>
+          <span>Text rein → Erklärung + Fristenhilfe (MVP)</span>
         </div>
       </div>
+
       <div class="right">
-        <div id="planPill" class="pill free">FREE</div>
         <div id="userPill" class="pill">nicht eingeloggt</div>
-        <button id="authBtn" class="btn secondary">Login / Registrieren</button>
-        <button id="logoutBtn" class="btn danger" style="display:none;">Logout</button>
+        <button id="btnAuth" class="btn primary">Login / Registrieren</button>
+        <button id="btnLogout" class="btn danger" style="display:none">Logout</button>
       </div>
-    </div>
+    </header>
 
-    <div class="grid">
-      <div class="card">
-        <h3>🧾 Text</h3>
-        <div class="mini">Text einfügen ist kostenlos. „Erklären“ & „Antwort“ sind PRO.</div>
+    <main>
+      <!-- LEFT -->
+      <section class="card">
+        <h3>📄 Originaltext</h3>
+        <div class="muted">Füge einen Brief/Behörden-Text ein → klicke <b>Erklären</b>. (Strg+Enter geht auch)</div>
+        <div style="margin-top:10px">
+          <textarea id="txtInput" placeholder="Text hier einfügen..."></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="btnExplain" class="btn primary">Erklären</button>
+          <button id="btnClear" class="btn">Leeren</button>
+          <button id="btnCopy" class="btn" disabled>Ergebnis kopieren</button>
+          <button id="btnSubscribe" class="btn primary">Abo starten (6,99€/Monat)</button>
+        </div>
+
+        <div class="status">
+          <span class="tag" id="tagLogin">Login: unbekannt</span>
+          <span class="tag" id="tagPro">Pro: unbekannt</span>
+        </div>
+
+        <div class="out">
+          <div class="muted" style="margin-bottom:6px">Ergebnis</div>
+          <pre id="outText">Noch kein Ergebnis.</pre>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="card">
+        <h3>⏳ Fristenrechner (MVP)</h3>
+        <div class="muted">MVP: ohne Feiertage/Sonderregeln.</div>
+        <div class="sep"></div>
+
+        <label class="muted">Eingangsdatum (Start)</label>
+        <input id="dateStart" placeholder="tt.mm.jjjj" />
+
         <div style="height:10px"></div>
-        <textarea id="textInput" placeholder="Text hier einfügen..."></textarea>
+
+        <label class="muted">Frist in Tagen</label>
+        <input id="days" type="number" value="14" min="1" />
 
         <div style="height:10px"></div>
-        <div class="row">
-          <button id="explainBtn" class="btn">Erklären (PRO)</button>
-          <button id="replyBtn" class="btn secondary">Antwort erstellen (PRO)</button>
-          <button id="copyBtn" class="btn secondary">Kopieren</button>
-          <span style="flex:1"></span>
-          <button id="subscribeBtn" class="btn">Abo starten (6,99€/Monat)</button>
+
+        <label class="muted">Zählweise</label>
+        <select id="mode">
+          <option value="nextday" selected>Start am nächsten Tag</option>
+          <option value="same">Start am selben Tag</option>
+        </select>
+
+        <div class="actions" style="margin-top:12px">
+          <button id="btnCalc" class="btn primary">Frist berechnen</button>
+          <button id="btnToday" class="btn">Heute einsetzen</button>
         </div>
 
-        <div id="paywall" class="paywall" style="display:none;">
-          <strong>🔒 PRO erforderlich</strong>
-          <div class="mini">
-            In FREE kannst du Text einfügen und vorbereiten.  
-            Für „Erklären“ und „Antwortgenerator“ brauchst du PRO (6,99€/Monat).
-          </div>
-          <div style="height:10px"></div>
-          <div class="row">
-            <button id="paywallLoginBtn" class="btn secondary">Einloggen</button>
-            <button id="paywallSubBtn" class="btn">Abo starten</button>
-          </div>
+        <div class="out">
+          <div class="muted" style="margin-bottom:6px">Ergebnis</div>
+          <pre id="outDeadline">Noch nichts berechnet.</pre>
         </div>
-
-        <pre id="outBox">Noch kein Ergebnis.</pre>
-        <pre id="replyBox" style="display:none;"></pre>
-      </div>
-
-      <div class="card">
-        <h3>✅ Status</h3>
-        <div class="mini" id="statusLine">Lade Status…</div>
-
-        <div style="height:12px"></div>
-        <div class="mini">
-          Tipp: Nach Checkout-Erfolg zeigt Stripe „success“. Danach ggf. einmal neu laden.
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="row">
-          <button id="refreshBtn" class="btn secondary">Status aktualisieren</button>
-          <button id="makeProBtn" class="btn secondary" title="Nur MVP-Test">PRO testen</button>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="mini bad">
-          Hinweis: Dieses MVP speichert User/PRO in RAM. Für „richtig fertig“ kommt als nächstes DB (Postgres).
-        </div>
-      </div>
-    </div>
+      </aside>
+    </main>
   </div>
 
-  <!-- Auth Modal -->
+  <!-- AUTH MODAL -->
   <div id="authBackdrop" class="modalBackdrop">
     <div class="modal">
-      <h3 id="authTitle">Login</h3>
-      <div class="mini">Du brauchst Login, damit Abo/PRO zugeordnet werden kann.</div>
+      <h3 id="authTitle">Registrieren</h3>
+
+      <label class="muted">E-Mail</label>
+      <input id="authEmail" autocomplete="email" />
 
       <div style="height:10px"></div>
-      <label class="mini">E-Mail</label>
-      <input id="authEmail" placeholder="name@mail.de" />
+
+      <label class="muted">Passwort</label>
+      <input id="authPass" type="password" autocomplete="current-password" />
 
       <div style="height:10px"></div>
-      <label class="mini">Passwort</label>
-      <input id="authPass" type="password" placeholder="mind. 6 Zeichen" />
 
-      <div id="authErr" class="line err"></div>
-      <div id="authOk" class="line ok"></div>
+      <div id="authError" class="tag bad" style="display:none">Fehler</div>
 
-      <div style="height:10px"></div>
-      <div class="row">
-        <button id="doBtn" class="btn">Login</button>
-        <button id="switchBtn" class="btn secondary">Registrieren</button>
-        <span style="flex:1"></span>
-        <button id="closeAuthBtn" class="btn secondary">Schließen</button>
+      <div class="actions">
+        <button id="btnAuthSubmit" class="btn primary">Registrieren</button>
+        <button id="btnAuthClose" class="btn">Schließen</button>
+      </div>
+
+      <div class="muted" style="margin-top:8px">
+        Schon ein Konto? <span id="toggleAuth" class="linkish">Login</span>
       </div>
     </div>
   </div>
 
   <script>
-    const $ = (id)=>document.getElementById(id);
-    let authMode = "login"; // login|register
-    let currentUser = null;
-    let currentPlan = "FREE";
+    // ========= Helpers =========
+    const $ = (id) => document.getElementById(id);
+    const setText = (el, text) => { el.textContent = text; };
+    const show = (el) => el.style.display = "";
+    const hide = (el) => el.style.display = "none";
 
-    function show(el){ el.style.display=""; }
-    function hide(el){ el.style.display="none"; }
-
-    function setPlan(plan){
-      currentPlan = plan;
-      const pill = $("planPill");
-      pill.textContent = plan;
-      pill.classList.toggle("pro", plan==="PRO");
-      pill.classList.toggle("free", plan!=="PRO");
-
-      // PRO-gated actions:
-      const pro = plan === "PRO";
-      $("explainBtn").disabled = !pro;
-      $("replyBtn").disabled = !pro;
-
-      $("paywall").style.display = pro ? "none" : "none";
+    function formatDate(d){
+      const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const yy = d.getFullYear();
+      return `${dd}.${mm}.${yy}`;
+    }
+    function parseGermanDate(s){
+      const m = (s||"").trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if(!m) return null;
+      const dd = +m[1], mm = +m[2], yy = +m[3];
+      const d = new Date(yy, mm-1, dd);
+      if(d.getFullYear()!==yy || d.getMonth()!==mm-1 || d.getDate()!==dd) return null;
+      return d;
     }
 
-    async function api(path, opts={}){
-      const r = await fetch(path, {
-        ...opts,
-        headers: { "Content-Type":"application/json", ...(opts.headers||{}) },
-        credentials: "include"
+    // ========= API calls (IMPORTANT: credentials include) =========
+    async function apiPost(url, body){
+      const r = await fetch(url, {
+        method: "POST",
+        headers: body ? {"Content-Type":"application/json"} : undefined,
+        credentials: "include",
+        body: body ? JSON.stringify(body) : undefined
       });
-      let data = null;
-      try { data = await r.json(); } catch(e) {}
+      const ct = r.headers.get("content-type") || "";
+      const data = ct.includes("application/json") ? await r.json() : await r.text();
       if(!r.ok){
-        const msg = data?.error || ("HTTP " + r.status);
+        const msg = (data && data.error) ? data.error : (typeof data === "string" ? data : "Request fehlgeschlagen");
         throw new Error(msg);
       }
       return data;
     }
 
-    async function refreshStatus(){
-      try{
-        const ent = await fetch("/api/entitlement", { credentials:"include" });
-        const data = await ent.json();
-        if(data.loggedIn){
-          currentUser = data.user;
-          $("userPill").textContent = data.user.email;
-          show($("logoutBtn"));
-          $("authBtn").textContent = "Account";
-          setPlan(data.plan);
-          $("statusLine").innerHTML = `Eingeloggt: <span class="ok">${data.user.email}</span><br>Plan: <span class="ok">${data.plan}</span>`;
-        } else {
-          currentUser = null;
-          $("userPill").textContent = "nicht eingeloggt";
-          hide($("logoutBtn"));
-          $("authBtn").textContent = "Login / Registrieren";
-          setPlan("FREE");
-          $("statusLine").innerHTML = `Nicht eingeloggt. Plan: <span class="bad">FREE</span>`;
-        }
-      }catch(e){
-        currentUser = null;
-        setPlan("FREE");
-        $("statusLine").textContent = "Status konnte nicht geladen werden: " + e.message;
+    async function apiGet(url){
+      const r = await fetch(url, { credentials: "include" });
+      const ct = r.headers.get("content-type") || "";
+      const data = ct.includes("application/json") ? await r.json() : await r.text();
+      if(!r.ok){
+        const msg = (data && data.error) ? data.error : (typeof data === "string" ? data : "Request fehlgeschlagen");
+        throw new Error(msg);
       }
+      return data;
     }
 
-    function openAuth(){
-      $("authBackdrop").style.display="flex";
-      $("authErr").style.display="none";
-      $("authOk").style.display="none";
-      if(authMode==="login"){
-        $("authTitle").textContent="Login";
-        $("doBtn").textContent="Login";
-        $("switchBtn").textContent="Registrieren";
+    // ========= Auth UI =========
+    let authMode = "register"; // "login" | "register"
+
+    function openAuth(mode){
+      authMode = mode || "register";
+      $("authBackdrop").style.display = "flex";
+      $("authError").style.display = "none";
+      if(authMode === "login"){
+        setText($("authTitle"), "Login");
+        setText($("btnAuthSubmit"), "Login");
+        setText($("toggleAuth"), "Registrieren");
       }else{
-        $("authTitle").textContent="Registrieren";
-        $("doBtn").textContent="Registrieren";
-        $("switchBtn").textContent="Login";
+        setText($("authTitle"), "Registrieren");
+        setText($("btnAuthSubmit"), "Registrieren");
+        setText($("toggleAuth"), "Login");
       }
     }
-    function closeAuth(){ $("authBackdrop").style.display="none"; }
+    function closeAuth(){
+      $("authBackdrop").style.display = "none";
+    }
+    function showAuthError(msg){
+      setText($("authError"), msg || "Fehler");
+      $("authError").style.display = "";
+    }
 
-    async function doAuth(){
-      const email = $("authEmail").value.trim();
-      const password = $("authPass").value;
-      if(!email || !password){
-        $("authErr").textContent="Bitte E-Mail und Passwort eingeben.";
-        $("authErr").style.display="block";
+    async function refreshMe(){
+      // Backend sollte /auth/me liefern. Wenn nicht vorhanden, fällt es auf "not logged in".
+      try{
+        const me = await apiGet("/auth/me");
+        // Erwartet: { ok:true, user:{email}, pro:true/false }
+        const email = me?.user?.email || "eingeloggt";
+        $("userPill").textContent = email;
+        hide($("btnAuth"));
+        show($("btnLogout"));
+
+        $("tagLogin").className = "tag ok";
+        $("tagLogin").textContent = "Login: ja";
+
+        const pro = !!me?.pro;
+        $("tagPro").className = pro ? "tag ok" : "tag";
+        $("tagPro").textContent = "Pro: " + (pro ? "ja" : "nein");
+        return { loggedIn:true, pro };
+      }catch(e){
+        $("userPill").textContent = "nicht eingeloggt";
+        show($("btnAuth"));
+        hide($("btnLogout"));
+
+        $("tagLogin").className = "tag bad";
+        $("tagLogin").textContent = "Login: nein";
+
+        $("tagPro").className = "tag";
+        $("tagPro").textContent = "Pro: unbekannt";
+        return { loggedIn:false, pro:false };
+      }
+    }
+
+    // ========= Features =========
+    async function doExplain(){
+      const text = $("txtInput").value.trim();
+      if(!text){
+        alert("Bitte Text einfügen.");
         return;
       }
+      // Dein Backend-Endpunkt kann anders heißen. Häufig: /api/explain
+      // Wenn du einen anderen Pfad hast, sag mir kurz den Namen (oder ich passe es im server.js an).
       try{
-        const path = authMode==="login" ? "/auth/login" : "/auth/register";
-        await api(path, { method:"POST", body: JSON.stringify({ email, password }) });
-        $("authOk").textContent = authMode==="login" ? "Eingeloggt ✅" : "Registriert ✅";
-        $("authOk").style.display="block";
-        $("authErr").style.display="none";
-        await refreshStatus();
-        setTimeout(closeAuth, 450);
+        setText($("outText"), "… arbeitet …");
+        $("btnCopy").disabled = true;
+
+        const data = await apiPost("/api/explain", { text });
+        // Erwartet z.B.: { short:"...", long:"...", todo:"..." }
+        const out =
+`Kurz erklärt:
+${data?.short ?? "-"}
+
+Ausführlich:
+${data?.long ?? "-"}
+
+Was du tun solltest:
+${data?.todo ?? "-"}
+`;
+        setText($("outText"), out);
+        $("btnCopy").disabled = false;
       }catch(e){
-        $("authErr").textContent = e.message;
-        $("authErr").style.display="block";
-        $("authOk").style.display="none";
+        setText($("outText"), "Fehler: " + e.message);
       }
     }
 
-    async function logout(){
-      try{ await api("/auth/logout", { method:"POST" }); }catch(e){}
-      await refreshStatus();
+    function doCopy(){
+      const t = $("outText").textContent || "";
+      navigator.clipboard.writeText(t).then(()=>{
+        alert("Kopiert ✅");
+      }).catch(()=>{
+        alert("Kopieren nicht möglich – bitte manuell markieren.");
+      });
     }
 
+    function doClear(){
+      $("txtInput").value = "";
+      setText($("outText"), "Noch kein Ergebnis.");
+      $("btnCopy").disabled = true;
+    }
+
+    function calcDeadline(){
+      const d = parseGermanDate($("dateStart").value);
+      if(!d){ setText($("outDeadline"), "Bitte Datum im Format tt.mm.jjjj eingeben."); return; }
+      const days = Math.max(1, parseInt($("days").value || "14", 10));
+      const mode = $("mode").value;
+
+      const start = new Date(d);
+      if(mode === "nextday") start.setDate(start.getDate() + 1);
+
+      const end = new Date(start);
+      end.setDate(end.getDate() + (days - 1));
+
+      setText($("outDeadline"),
+`Start: ${formatDate(start)}
+Tage: ${days}
+Ende (MVP): ${formatDate(end)}
+Hinweis: Feiertage/Wochenenden nicht berücksichtigt.`);
+    }
+
+    function setToday(){
+      const d = new Date();
+      $("dateStart").value = formatDate(d);
+    }
+
+    // ========= Billing =========
     async function startCheckout(){
-      // nur wenn eingeloggt
-      try{
-        await api("/auth/me");
-      }catch(e){
-        authMode="login";
-        openAuth();
+      const me = await refreshMe();
+      if(!me.loggedIn){
+        alert("Not logged in");
+        openAuth("login");
         return;
       }
       try{
-        const out = await api("/stripe/create-checkout-session", { method:"POST" });
-        window.location.href = out.url;
+        // Backend-Endpunkt: /billing/create-checkout-session
+        const data = await apiPost("/billing/create-checkout-session");
+        if(data?.url){
+          window.location.href = data.url;
+        }else{
+          alert(data?.error || "Checkout Fehler: keine URL");
+        }
       }catch(e){
         alert("Checkout Fehler: " + e.message);
       }
     }
 
-    function showPaywall(){
-      show($("paywall"));
-    }
+    // ========= Wire up =========
+    $("btnAuth").addEventListener("click", ()=> openAuth("register"));
+    $("btnAuthClose").addEventListener("click", closeAuth);
+    $("authBackdrop").addEventListener("click", (e)=>{ if(e.target.id==="authBackdrop") closeAuth(); });
 
-    async function explainPro(){
-      // Option B: PRO only
-      if(currentPlan !== "PRO"){
-        showPaywall();
-        return;
-      }
-      const text = $("textInput").value.trim();
-      if(text.length < 15){
-        $("outBox").textContent = "Bitte mindestens 15 Zeichen einfügen.";
-        return;
-      }
-      $("outBox").textContent = "Erkläre...";
-      $("replyBox").style.display="none";
-      try{
-        const out = await api("/api/explain-text", { method:"POST", body: JSON.stringify({ text }) });
-        $("outBox").textContent = out.text || "—";
-      }catch(e){
-        $("outBox").textContent = "Fehler: " + e.message;
-      }
-    }
-
-    async function replyPro(){
-      if(currentPlan !== "PRO"){
-        showPaywall();
-        return;
-      }
-      const explanation = $("outBox").textContent.trim();
-      if(!explanation || explanation==="Noch kein Ergebnis." || explanation==="Erkläre..."){
-        $("replyBox").style.display="block";
-        $("replyBox").textContent = "Bitte zuerst „Erklären“ ausführen.";
-        return;
-      }
-      $("replyBox").style.display="block";
-      $("replyBox").textContent = "Erstelle Antwort...";
-      try{
-        const meta = {
-          sender: currentUser ? currentUser.email : "",
-          recipient: "",
-          subject: "Antwort auf Ihr Schreiben",
-          ref: "",
-          place: "",
-          dateStr: new Date().toLocaleDateString("de-DE")
-        };
-        const out = await api("/api/generate-reply", { method:"POST", body: JSON.stringify({ explanation, meta }) });
-        $("replyBox").textContent = out.text || "—";
-      }catch(e){
-        $("replyBox").textContent = "Fehler: " + e.message;
-      }
-    }
-
-    async function copyAll(){
-      const a = $("outBox").textContent.trim();
-      const b = $("replyBox").style.display==="none" ? "" : $("replyBox").textContent.trim();
-      const txt = b ? (a + "\n\n---\n\n" + b) : a;
-      try{
-        await navigator.clipboard.writeText(txt);
-        alert("Kopiert ✅");
-      }catch(e){
-        alert("Kopieren ging nicht.");
-      }
-    }
-
-    async function makeProTest(){
-      // MVP nur zum testen
-      try{
-        await api("/admin/make-pro", { method:"POST" });
-        await refreshStatus();
-        alert("PRO (MVP-Test) aktiviert ✅");
-      }catch(e){
-        alert("Geht nur wenn eingeloggt. Fehler: " + e.message);
-      }
-    }
-
-    // Wire UI
-    $("authBtn").addEventListener("click", ()=>{ authMode="login"; openAuth(); });
-    $("logoutBtn").addEventListener("click", logout);
-    $("closeAuthBtn").addEventListener("click", closeAuth);
-    $("doBtn").addEventListener("click", doAuth);
-    $("switchBtn").addEventListener("click", ()=>{
-      authMode = authMode==="login" ? "register" : "login";
-      openAuth();
+    $("toggleAuth").addEventListener("click", ()=>{
+      openAuth(authMode === "login" ? "register" : "login");
     });
-    $("subscribeBtn").addEventListener("click", startCheckout);
-    $("paywallSubBtn").addEventListener("click", startCheckout);
-    $("paywallLoginBtn").addEventListener("click", ()=>{ authMode="login"; openAuth(); });
 
-    $("explainBtn").addEventListener("click", explainPro);
-    $("replyBtn").addEventListener("click", replyPro);
-    $("copyBtn").addEventListener("click", copyAll);
-    $("refreshBtn").addEventListener("click", refreshStatus);
-    $("makeProBtn").addEventListener("click", makeProTest);
+    $("btnAuthSubmit").addEventListener("click", async ()=>{
+      const email = $("authEmail").value.trim();
+      const password = $("authPass").value;
+      if(!email || !password) { showAuthError("Bitte E-Mail & Passwort eingeben."); return; }
 
-    $("authBackdrop").addEventListener("click", (e)=>{ if(e.target===$("authBackdrop")) closeAuth(); });
+      try{
+        $("authError").style.display = "none";
+        if(authMode === "login"){
+          await apiPost("/auth/login", { email, password });
+        }else{
+          await apiPost("/auth/register", { email, password });
+        }
+        closeAuth();
+        await refreshMe();
+      }catch(e){
+        showAuthError(e.message);
+      }
+    });
+
+    $("btnLogout").addEventListener("click", async ()=>{
+      try{
+        await apiPost("/auth/logout");
+      }catch(e){}
+      await refreshMe();
+    });
+
+    $("btnExplain").addEventListener("click", doExplain);
+    $("btnCopy").addEventListener("click", doCopy);
+    $("btnClear").addEventListener("click", doClear);
+    $("btnCalc").addEventListener("click", calcDeadline);
+    $("btnToday").addEventListener("click", setToday);
+    $("btnSubscribe").addEventListener("click", startCheckout);
+
+    document.addEventListener("keydown", (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        doExplain();
+      }
+    });
 
     // init
-    (async function init(){
-      await refreshStatus();
-      const p = new URLSearchParams(location.search);
-      const chk = p.get("checkout");
-      if(chk==="success") alert("✅ Checkout erfolgreich (Test). Bitte einmal Status aktualisieren.");
-      if(chk==="cancel") alert("❌ Checkout abgebrochen.");
-    })();
+    setToday();
+    refreshMe();
   </script>
 </body>
 </html>
