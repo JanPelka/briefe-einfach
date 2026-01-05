@@ -4,507 +4,347 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>briefe-einfach</title>
-
   <style>
     :root{
-      --bg:#0b1020;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.09);
-      --text:#eaf0ff;
-      --muted:#a9b4d6;
-      --border: rgba(255,255,255,.12);
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --radius:16px;
-      --accent:#7c5cff;
-      --accent2:#22c55e;
-      --danger:#ef4444;
-      --warn:#f59e0b;
-      --btn:#111a33;
-      --btn2:#0f1830;
-      --input:#0d1630;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --bg1:#071326;
+      --bg2:#0b2a57;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.06);
+      --border: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --accent:#2f6bff;
+      --accent2:#2dd4bf;
+      --danger:#ff4d4d;
+      --ok:#22c55e;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 18px;
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family:var(--sans);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
       background:
-        radial-gradient(1200px 700px at 20% 0%, rgba(124,92,255,.22), transparent 55%),
-        radial-gradient(900px 600px at 90% 10%, rgba(34,197,94,.18), transparent 55%),
-        radial-gradient(800px 600px at 50% 100%, rgba(59,130,246,.12), transparent 55%),
-        var(--bg);
-    }
-
-    .wrap{
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 28px 16px 60px;
-    }
-
-    header{
+        radial-gradient(1100px 600px at 18% 8%, rgba(47,107,255,.35), transparent 60%),
+        radial-gradient(900px 520px at 75% 20%, rgba(45,212,191,.22), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom: 18px;
+      justify-content:center;
+      padding:28px;
     }
 
+    .wrap{width:min(1050px, 100%);}
+    .top{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:16px;
+    }
     .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
+      display:flex; align-items:center; gap:12px;
     }
-
     .logo{
-      width:42px;height:42px;border-radius:14px;
-      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(34,197,94,.75));
-      box-shadow: var(--shadow);
-      position:relative;
-      overflow:hidden;
+      width:42px; height:42px; border-radius:14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 14px 40px rgba(47,107,255,.25);
     }
-    .logo:after{
-      content:"";
-      position:absolute; inset:-30%;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.55), transparent 55%);
-      transform: rotate(20deg);
+    .brand h1{
+      font-size:18px; margin:0; line-height:1.1;
     }
-
-    h1{
-      font-size: 18px;
-      line-height:1.2;
-      margin:0;
-      letter-spacing:.2px;
-    }
-    .subtitle{
+    .brand p{
       margin:2px 0 0;
-      color: var(--muted);
-      font-size: 13px;
+      font-size:12px;
+      color:var(--muted);
     }
 
     .pill{
-      display:inline-flex;
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color:var(--muted);
+      display:flex;
       align-items:center;
       gap:8px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--border);
-      border-radius: 999px;
-      font-size: 13px;
-      color: var(--muted);
-      white-space:nowrap;
     }
-    .dot{
-      width:10px;height:10px;border-radius:99px;
-      background: var(--warn);
-      box-shadow: 0 0 0 4px rgba(245,158,11,.12);
-    }
-    .dot.ok{
-      background: var(--accent2);
-      box-shadow: 0 0 0 4px rgba(34,197,94,.12);
-    }
+    .dot{width:8px;height:8px;border-radius:99px;background:var(--danger);}
+    .dot.ok{background:var(--ok);}
 
     .grid{
       display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 14px;
-      margin-top: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
     }
-
-    @media (max-width: 900px){
-      .grid{ grid-template-columns:1fr; }
-      header{ flex-direction:column; align-items:flex-start; }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
-      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow:hidden;
+      padding:18px;
+      backdrop-filter: blur(10px);
+      min-height: 210px;
     }
 
-    .card .head{
-      padding: 16px 16px 10px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-
-    .card .head h2{
-      margin:0;
-      font-size: 15px;
+    .card h2{
+      margin:0 0 10px;
+      font-size:14px;
+      color:rgba(255,255,255,.9);
       letter-spacing:.2px;
     }
-    .card .head p{
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .card .body{
-      padding: 16px;
+    .sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:-6px;
+      margin-bottom:14px;
+      line-height:1.4;
     }
 
     label{
       display:block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
+      font-size:12px;
+      color:var(--muted);
+      margin:10px 0 6px;
     }
 
-    .row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 520px){
-      .row{ grid-template-columns:1fr; }
-    }
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+    @media (max-width: 520px){ .row{grid-template-columns:1fr;} }
 
     input{
       width:100%;
-      padding: 12px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(13,22,48,.75);
-      color: var(--text);
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.20);
+      color:var(--text);
       outline:none;
-      transition: border .15s ease, transform .05s ease;
     }
     input:focus{
-      border-color: rgba(124,92,255,.65);
+      border-color: rgba(47,107,255,.55);
+      box-shadow: 0 0 0 4px rgba(47,107,255,.16);
     }
 
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top: 12px;
-    }
-
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
     button{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
       cursor:pointer;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(17,26,51,.9);
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 600;
-      font-size: 13px;
-      transition: transform .05s ease, background .15s ease, border .15s ease;
+      font-weight:600;
+      font-size:13px;
     }
-    button:hover{
-      background: rgba(17,26,51,1);
-      border-color: rgba(255,255,255,.18);
+    button:hover{background: rgba(255,255,255,.10);}
+    button.primary{
+      background: linear-gradient(180deg, rgba(47,107,255,.95), rgba(47,107,255,.70));
+      border-color: rgba(47,107,255,.30);
     }
-    button:active{ transform: translateY(1px); }
+    button.primary:hover{filter:brightness(1.06);}
+    button.danger{
+      background: rgba(255,77,77,.14);
+      border-color: rgba(255,77,77,.26);
+    }
+    button.wide{width:100%; justify-content:center;}
 
-    .primary{
-      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(124,92,255,.62));
-      border-color: rgba(124,92,255,.35);
-    }
-    .primary:hover{
-      border-color: rgba(124,92,255,.55);
-    }
-
-    .ghost{
-      background: rgba(255,255,255,.06);
-    }
-
-    .danger{
-      background: rgba(239,68,68,.15);
-      border-color: rgba(239,68,68,.35);
-    }
-/* Debug ausblenden (Produkt-Ansicht) */
-.hideDebug .statusBox,
-.hideDebug .small,
-.hideDebug #btnMe{
-  display:none !important;
-}
-
-    .statusBox{
-      margin-top: 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      padding: 12px 12px;
-    }
-
-    .statusTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .statusTitle{
-      font-size: 12px;
-      color: var(--muted);
-      margin:0;
-    }
-
-    pre{
-      margin:0;
-      padding: 12px;
-      border-radius: 12px;
+    .status{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,.14);
       background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.08);
-      overflow:auto;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: #dbe7ff;
-      min-height: 110px;
-    }
-
-    .small{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 10px;
-      line-height:1.45;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .divider{
-      height:1px;
-      background: rgba(255,255,255,.10);
-      margin: 14px 0;
-    }
-
-    .aboBtn{
-      width:100%;
-      justify-content:center;
-      padding: 12px 12px;
-      border-radius: 14px;
-    }
-
-    footer{
-      margin-top: 16px;
-      color: rgba(169,180,214,.75);
-      font-size: 12px;
-      text-align:center;
+      border-radius:12px;
+      padding:10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px;
+      color: rgba(255,255,255,.86);
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height:44px;
     }
 
     .hint{
-      color: rgba(169,180,214,.9);
-      font-size: 12px;
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .foot{
+      text-align:center;
+      margin-top:14px;
+      font-size:11px;
+      color: rgba(255,255,255,.55);
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <header>
+    <div class="top">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="logo"></div>
         <div>
           <h1>briefe-einfach</h1>
-          <div class="subtitle">Cookie-Session Login + Stripe Abo (MVP)</div>
+          <p>Cookie-Session Login + Stripe Abo (MVP)</p>
         </div>
       </div>
 
       <div class="pill" id="pill">
         <span class="dot" id="dot"></span>
-        <span id="pillText">Status wird geprüft…</span>
+        <span id="pillText">Status: prüfen…</span>
       </div>
-    </header>
-
-    <div class="grid">
-      <!-- LOGIN CARD -->
-      <section class="card">
-        <div class="head">
-          <div>
-            <h2>Login</h2>
-            <p>Mit Cookie-Session (funktioniert im Browser & Railway Proxy).</p>
-          </div>
-          <span class="badge" id="userBadge">Nicht eingeloggt</span>
-        </div>
-
-        <div class="body">
-          <div class="row">
-            <div>
-              <label for="email">E-Mail</label>
-              <input id="email" type="email" placeholder="name@domain.de" autocomplete="email" />
-            </div>
-            <div>
-              <label for="password">Passwort</label>
-              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
-            </div>
-          </div>
-
-          <div class="actions">
-            <button class="ghost" id="btnRegister">Registrieren</button>
-            <button class="primary" id="btnLogin">Login</button>
-            <button class="danger" id="btnLogout">Logout</button>
-            <button class="ghost" id="btnMe">/auth/me prüfen</button>
-          </div>
-
-          <div class="statusBox">
-            <div class="statusTop">
-              <p class="statusTitle">Antwort / Status</p>
-              <span class="hint" id="timeHint"></span>
-            </div>
-            <pre id="out">{ "info": "Bereit. Bitte Login drücken." }</pre>
-          </div>
-
-          <div class="small">
-            Tipp: Wenn du dich einloggst, muss <code>/auth/me</code> <b>loggedIn: true</b> zeigen.
-          </div>
-        </div>
-      </section>
-
-      <!-- ABO CARD -->
-      <section class="card">
-        <div class="head">
-          <div>
-            <h2>Abo</h2>
-            <p>Startet Stripe Checkout (monatlich). Danach schalten wir „Pro“ frei.</p>
-          </div>
-        </div>
-
-        <div class="body">
-          <button class="primary aboBtn" id="btnCheckout">Abo starten (Stripe)</button>
-
-          <div class="divider"></div>
-
-          <div class="small">
-            Wenn Checkout startet: perfekt ✅<br/>
-            Im nächsten Schritt bauen wir den „Pro-Gate“ (ohne Abo → gesperrt).
-          </div>
-        </div>
-      </section>
     </div>
 
-    <footer>
-      MVP • briefe-einfach • Railway + Cookie Sessions
-    </footer>
+    <div class="grid">
+      <div class="card">
+        <h2>Login</h2>
+        <div class="sub">Mit Cookie-Session (funktioniert im Browser & Railway Proxy).</div>
+
+        <div class="row">
+          <div>
+            <label for="email">E-Mail</label>
+            <input id="email" type="email" autocomplete="email" placeholder="name@mail.de" />
+          </div>
+          <div>
+            <label for="password">Passwort</label>
+            <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+          </div>
+        </div>
+
+        <div class="btns">
+          <button type="button" id="btnRegister">Registrieren</button>
+          <button type="button" class="primary" id="btnLogin">Login</button>
+          <button type="button" class="danger" id="btnLogout">Logout</button>
+          <button type="button" id="btnMe">/auth/me prüfen</button>
+        </div>
+
+        <div class="status" id="status">Bereit.</div>
+        <div class="hint">Tipp: Nach Login muss <b>loggedIn: true</b> erscheinen.</div>
+      </div>
+
+      <div class="card">
+        <h2>Abo</h2>
+        <div class="sub">Startet Stripe Checkout (monatlich). Danach schalten wir „Pro“ frei.</div>
+
+        <button type="button" class="primary wide" id="btnCheckout">Abo starten (Stripe)</button>
+
+        <div class="status" id="aboStatus">—</div>
+        <div class="hint">Wenn du nicht eingeloggt bist, sagen wir’s dir direkt.</div>
+      </div>
+    </div>
+
+    <div class="foot">MVP • briefe-einfach • Railway • Cookie Sessions</div>
   </div>
 
-  <script>
-    // === Helper ===
-    const $ = (id) => document.getElementById(id);
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
 
-    function nowTime(){
-      const d = new Date();
-      return d.toLocaleString();
+  const status = $("status");
+  const aboStatus = $("aboStatus");
+  const pillText = $("pillText");
+  const dot = $("dot");
+
+  function setPill(loggedIn, email){
+    if(loggedIn){
+      dot.classList.add("ok");
+      pillText.textContent = "Eingeloggt: " + (email || "");
+    } else {
+      dot.classList.remove("ok");
+      pillText.textContent = "Nicht eingeloggt";
     }
+  }
 
-    function setPill(ok, text){
-      const dot = $("dot");
-      const pillText = $("pillText");
-      dot.classList.toggle("ok", !!ok);
-      pillText.textContent = text;
-    }
+  function show(el, obj){
+    el.textContent = (typeof obj === "string") ? obj : JSON.stringify(obj, null, 2);
+  }
 
-    function setOut(obj){
-      $("timeHint").textContent = nowTime();
-      $("out").textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
-    }
-
-    async function api(path, opts = {}){
-      const res = await fetch(path, {
-        credentials: "include", // WICHTIG: Cookies mitschicken
-        headers: { "Content-Type": "application/json", ...(opts.headers||{}) },
-        ...opts
-      });
-
-      let data = null;
-      const ct = res.headers.get("content-type") || "";
-      if (ct.includes("application/json")) {
-        data = await res.json().catch(() => null);
-      } else {
-        data = await res.text().catch(() => null);
-      }
-      return { ok: res.ok, status: res.status, data };
-    }
-
-    async function refreshMe(){
-      const r = await api("/auth/me");
-      if (r.ok && r.data && r.data.loggedIn){
-        const email = r.data.user && r.data.user.email ? r.data.user.email : "eingeloggt";
-        $("userBadge").textContent = email;
-        setPill(true, "Eingeloggt");
-      } else {
-        $("userBadge").textContent = "Nicht eingeloggt";
-        setPill(false, "Nicht eingeloggt");
-      }
-      setOut({ http: r.status, ...((typeof r.data === "object") ? r.data : { body: r.data }) });
-      return r;
-    }
-
-    // === Actions ===
-    $("btnRegister").addEventListener("click", async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-
-      const r = await api("/auth/register", {
-        method: "POST",
-        body: JSON.stringify({ email, password })
-      });
-
-      setOut({ http: r.status, ...((typeof r.data === "object") ? r.data : { body: r.data }) });
-      await refreshMe();
+  async function api(path, options = {}){
+    const res = await fetch(path, {
+      method: options.method || "GET",
+      headers: { "Content-Type": "application/json", ...(options.headers||{}) },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      credentials: "include" // WICHTIG für Cookie-Session
     });
 
-    $("btnLogin").addEventListener("click", async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
+    let data = null;
+    try { data = await res.json(); } catch(e){ data = { ok:false, error:"Keine JSON Antwort", status: res.status }; }
+    return { res, data };
+  }
 
-      const r = await api("/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password })
-      });
+  async function refreshMe(){
+    const { data } = await api("/auth/me");
+    show(status, data);
+    if(data && data.loggedIn){
+      setPill(true, data.user?.email);
+    } else {
+      setPill(false);
+    }
+    return data;
+  }
 
-      setOut({ http: r.status, ...((typeof r.data === "object") ? r.data : { body: r.data }) });
-      await refreshMe();
-    });
+  async function register(){
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    if(!email || !password) return show(status, { ok:false, error:"Bitte E-Mail + Passwort eingeben" });
 
-    $("btnLogout").addEventListener("click", async () => {
-      const r = await api("/auth/logout", { method: "POST" });
-      setOut({ http: r.status, ...((typeof r.data === "object") ? r.data : { body: r.data }) });
-      await refreshMe();
-    });
+    const { data } = await api("/auth/register", { method:"POST", body:{ email, password } });
+    show(status, data);
+    await refreshMe();
+  }
 
-    $("btnMe").addEventListener("click", async () => {
-      await refreshMe();
-    });
+  async function login(){
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    if(!email || !password) return show(status, { ok:false, error:"Bitte E-Mail + Passwort eingeben" });
 
-    $("btnCheckout").addEventListener("click", async () => {
-      // Erwartet im Backend einen Endpoint, der eine Stripe Checkout URL zurückgibt.
-      // Entweder {url:"https://..."} oder direkt Redirect.
-      const r = await api("/create-checkout-session", { method: "POST" });
+    const { data } = await api("/auth/login", { method:"POST", body:{ email, password } });
+    show(status, data);
+    await refreshMe();
+  }
 
-      if (r.ok && r.data && typeof r.data === "object" && r.data.url) {
-        setOut({ info: "Redirect zu Stripe…", url: r.data.url });
-        window.location.href = r.data.url;
-        return;
-      }
+  async function logout(){
+    const { data } = await api("/auth/logout", { method:"POST" });
+    show(status, data);
+    await refreshMe();
+  }
 
-      // Falls Backend direkt redirectet oder Text zurückgibt:
-      setOut({ http: r.status, ...((typeof r.data === "object") ? r.data : { body: r.data }) });
-    });
+  async function checkout(){
+    aboStatus.textContent = "Starte Checkout…";
+    const me = await refreshMe();
+    if(!me?.loggedIn){
+      aboStatus.textContent = "❌ Du bist nicht eingeloggt. Bitte zuerst einloggen.";
+      return;
+    }
 
-    // Initial
-    (async () => {
-      setPill(false, "Status wird geprüft…");
-      await refreshMe();
-    })();
-  </script>
-<body class="hideDebug">
+    // Erwarteter Endpoint im Server:
+    // POST /stripe/create-checkout-session  -> { ok:true, url:"https://checkout.stripe.com/..." }
+    const { data } = await api("/stripe/create-checkout-session", { method:"POST" });
+
+    show(aboStatus, data);
+
+    if(data?.url){
+      window.location.href = data.url;
+    }
+  }
+
+  // Events (Buttons müssen reagieren)
+  $("btnRegister").addEventListener("click", register);
+  $("btnLogin").addEventListener("click", login);
+  $("btnLogout").addEventListener("click", logout);
+  $("btnMe").addEventListener("click", refreshMe);
+  $("btnCheckout").addEventListener("click", checkout);
+
+  // Start
+  refreshMe().catch(err => {
+    show(status, { ok:false, error:String(err) });
+    setPill(false);
+  });
+})();
+</script>
+</body>
 </html>
