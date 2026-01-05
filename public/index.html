@@ -1,140 +1,85 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>briefe-einfach (JWT)</title>
+  <meta charset="UTF-8" />
+  <title>briefe-einfach</title>
   <style>
-    body{font-family:Arial,sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:20px}
-    .box{background:#020617;padding:16px;border-radius:10px;max-width:640px;margin-bottom:14px}
-    input{padding:10px;width:100%;margin:8px 0;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#e5e7eb}
-    button{padding:10px 16px;border-radius:10px;border:1px solid #334155;background:#111827;color:#e5e7eb;cursor:pointer;margin-right:8px;margin-top:6px}
-    button.primary{background:#2563eb;border-color:#2563eb}
-    button.danger{background:#7f1d1d;border-color:#7f1d1d}
-    pre{white-space:pre-wrap;background:#0b1220;border:1px solid #334155;padding:12px;border-radius:10px}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .row > div{flex:1;min-width:220px}
-    .muted{color:#94a3b8;font-size:12px}
+    body { font-family: sans-serif; background:#111; color:#fff; padding:40px }
+    input, button { padding:8px; margin:5px }
+    button { cursor:pointer }
+    pre { background:#222; padding:10px }
   </style>
 </head>
 <body>
 
-<h2>briefe-einfach ✅ JWT Login (keine Cookies)</h2>
+<h2>briefe-einfach – Cookie Login</h2>
 
-<div class="box">
-  <div class="row">
-    <div>
-      <div class="muted">E-Mail</div>
-      <input id="email" placeholder="name@mail.de" />
-    </div>
-    <div>
-      <div class="muted">Passwort</div>
-      <input id="password" type="password" placeholder="mind. 4 Zeichen" />
-    </div>
-  </div>
+<input id="email" placeholder="E-Mail">
+<input id="password" type="password" placeholder="Passwort">
 
-  <button class="primary" onclick="register()">Registrieren</button>
-  <button class="primary" onclick="login()">Login</button>
-  <button class="danger" onclick="logout()">Logout</button>
-</div>
+<br>
+<button onclick="register()">Registrieren</button>
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
 
-<div class="box">
-  <div class="muted">Status</div>
-  <pre id="status">lade…</pre>
-  <button onclick="me()">/auth/me aktualisieren</button>
-</div>
+<h3>Status</h3>
+<pre id="status"></pre>
 
-<div class="box">
-  <div class="muted">Abo</div>
-  <button class="primary" onclick="subscribe()">Abo starten (Stripe)</button>
-</div>
+<button onclick="check()">/auth/me prüfen</button>
+
+<h3>Abo</h3>
+<button onclick="checkout()">Abo starten (Stripe)</button>
 
 <script>
-  const TOKEN_KEY = "be_token";
+async function register() {
+  const res = await fetch("/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+  status.textContent = await res.text();
+}
 
-  function getToken() {
-    return localStorage.getItem(TOKEN_KEY) || "";
-  }
-  function setToken(t) {
-    if (t) localStorage.setItem(TOKEN_KEY, t);
-  }
-  function clearToken() {
-    localStorage.removeItem(TOKEN_KEY);
-  }
+async function login() {
+  const res = await fetch("/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      email: email.value,
+      password: password.value
+    })
+  });
+  status.textContent = await res.text();
+}
 
-  async function api(url, opts = {}) {
-    const headers = Object.assign({}, opts.headers || {});
-    const token = getToken();
-    if (token) headers["Authorization"] = "Bearer " + token;
-    if (!headers["Content-Type"] && opts.body) headers["Content-Type"] = "application/json";
+async function logout() {
+  const res = await fetch("/auth/logout", {
+    method: "POST",
+    credentials: "include"
+  });
+  status.textContent = await res.text();
+}
 
-    const res = await fetch(url, {
-      method: opts.method || "GET",
-      headers,
-      body: opts.body ? JSON.stringify(opts.body) : undefined
-    });
+async function check() {
+  const res = await fetch("/auth/me", {
+    credentials: "include"
+  });
+  status.textContent = JSON.stringify(await res.json(), null, 2);
+}
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data?.error || "Request failed");
-    return data;
-  }
-
-  function show(obj) {
-    document.getElementById("status").textContent = JSON.stringify(obj, null, 2);
-  }
-
-  async function register() {
-    try {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const data = await api("/auth/register", { method: "POST", body: { email, password } });
-      setToken(data.token);
-      show(data);
-    } catch (e) {
-      show({ ok:false, error: e.message });
-    }
-  }
-
-  async function login() {
-    try {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const data = await api("/auth/login", { method: "POST", body: { email, password } });
-      setToken(data.token);
-      show(data);
-    } catch (e) {
-      show({ ok:false, error: e.message });
-    }
-  }
-
-  function logout() {
-    clearToken();
-    show({ ok:true, loggedOut:true });
-  }
-
-  async function me() {
-    try {
-      const data = await api("/auth/me");
-      // token refresh (damit pro-status aktuell ist)
-      if (data.token) setToken(data.token);
-      show(data);
-    } catch (e) {
-      show({ ok:false, error: e.message, hint:"Erst einloggen." });
-    }
-  }
-
-  async function subscribe() {
-    try {
-      const data = await api("/billing/create-checkout-session", { method: "POST" });
-      if (data.url) location.href = data.url;
-      else show({ ok:false, error:"Keine Checkout URL" });
-    } catch (e) {
-      show({ ok:false, error: e.message, hint:"Erst einloggen." });
-    }
-  }
-
-  // init
-  me();
+async function checkout() {
+  const res = await fetch("/create-checkout-session", {
+    method: "POST",
+    credentials: "include"
+  });
+  const data = await res.json();
+  if (data.url) window.location = data.url;
+  else status.textContent = JSON.stringify(data, null, 2);
+}
 </script>
 
 </body>
