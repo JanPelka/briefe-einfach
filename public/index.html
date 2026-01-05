@@ -221,6 +221,12 @@
       background: rgba(239,68,68,.15);
       border-color: rgba(239,68,68,.35);
     }
+/* Debug ausblenden (Produkt-Ansicht) */
+.hideDebug .statusBox,
+.hideDebug .small,
+.hideDebug #btnMe{
+  display:none !important;
+}
 
     .statusBox{
       margin-top: 14px;
@@ -500,5 +506,5 @@
       await refreshMe();
     })();
   </script>
-</body>
+<body class="hideDebug">
 </html>
