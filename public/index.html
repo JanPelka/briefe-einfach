@@ -217,7 +217,7 @@ function setText(id, obj){
 }
 
 async function refreshMe(){
-  const r = await fetch("/auth/me");
+  const r = await api("/auth/me");
   const d = await r.json();
   document.getElementById("serverStatus").textContent = "Status: ok";
   document.getElementById("loginChip").textContent = d.loggedIn ? "Eingeloggt" : "Nicht eingeloggt";
@@ -274,6 +274,19 @@ async function startCheckout(){
 
 refreshMe();
 </script>
+const API_BASE = "";
+
+async function api(path, options = {}) {
+  return fetch(path, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    ...options
+  });
+}
+
 
 </body>
 </html>
