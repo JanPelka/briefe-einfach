@@ -1,18 +1,19 @@
 {
   "name": "briefe-einfach",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cookie-session": "^2.1.0",
+    "cookie-session": "^2.0.0",
     "express": "^4.19.2",
     "stripe": "^16.12.0"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }
