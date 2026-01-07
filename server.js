@@ -1,150 +1,180 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
-import cookieSession from "cookie-session";
-import bcrypt from "bcryptjs";
-import Stripe from "stripe";
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>briefe-einfach</title>
+  <style>
+    body{margin:0;font-family:system-ui,Segoe UI,Arial;background:#0b1220;color:#e9eefc}
+    .wrap{max-width:1200px;margin:28px auto;padding:0 18px}
+    .title{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#2b6cff,#00d4ff)}
+    .sub{opacity:.8;font-size:14px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    button{border:0;border-radius:10px;padding:10px 14px;background:#2b6cff;color:white;cursor:pointer}
+    button.secondary{background:rgba(255,255,255,.10)}
+    button.danger{background:#ff3b3b}
+    input,textarea{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);color:#e9eefc;padding:12px}
+    textarea{min-height:220px;resize:vertical}
+    .badge{float:right;background:rgba(255,255,255,.10);padding:6px 10px;border-radius:999px;font-size:12px}
+    .statusbox{margin-top:10px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px;font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre-wrap}
+    .muted{opacity:.75;font-size:12px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">
+      <div class="logo"></div>
+      <div>
+        <div style="font-size:22px;font-weight:700">briefe-einfach</div>
+        <div class="sub">Briefe erklären & übersetzen (MVP) – stabiler Server, UI wieder „normal“.</div>
+      </div>
+    </div>
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+    <div class="grid">
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center">
+          <div class="row">
+            <button class="secondary" id="tabExplain">Brief erklären</button>
+            <button class="secondary" id="tabTranslate">Übersetzen</button>
+          </div>
+          <div class="muted">Text einfügen → „Erklären“ drücken.</div>
+        </div>
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+        <div style="margin-top:12px">
+          <label class="muted">Brieftext</label>
+          <textarea id="inputText" placeholder="Brief hier einfügen..."></textarea>
+        </div>
 
-const SESSION_SECRET = process.env.SESSION_SECRET || "dev_change_me";
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
-const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || "";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ""; // optional (später)
+        <div class="row" style="margin-top:12px">
+          <button id="btnRun">Erklären</button>
+          <button class="secondary" id="btnCopy">Ergebnis kopieren</button>
+          <button class="secondary" id="btnClear">Leeren</button>
+        </div>
 
-const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+        <div style="margin-top:12px">
+          <label class="muted">Ergebnis</label>
+          <div class="statusbox" id="resultBox">—</div>
+        </div>
+      </div>
 
-// ===== In-Memory User Store (MVP) =====
-// Wichtig: nach Neustart sind registrierte User weg. Für MVP ok.
-const users = new Map(); // email -> { hash }
+      <div class="card">
+        <div>
+          <div style="font-weight:700;font-size:18px">Login <span class="badge" id="loginBadge">Nicht eingeloggt</span></div>
+          <div style="margin-top:10px">
+            <label class="muted">E-Mail</label>
+            <input id="email" placeholder="name@mail.de" />
+          </div>
+          <div style="margin-top:10px">
+            <label class="muted">Passwort</label>
+            <input id="password" type="password" />
+          </div>
 
-app.use(express.json({ limit: "2mb" }));
-app.use(
-  cookieSession({
-    name: "session",
-    secret: SESSION_SECRET,
-    httpOnly: true,
-    sameSite: "lax",
-    secure: true
-  })
-);
+          <div class="row" style="margin-top:12px">
+            <button class="secondary" id="btnRegister">Registrieren</button>
+            <button id="btnLogin">Login</button>
+            <button class="secondary" id="btnLogout">Logout</button>
+          </div>
 
-app.use(express.static(path.join(__dirname, "public")));
+          <div class="muted" style="margin-top:10px">Status</div>
+          <div class="statusbox" id="authStatus">—</div>
 
-// ===== Helpers =====
-function requireLogin(req, res, next) {
-  if (!req.session?.user?.email) {
-    return res.status(401).json({ ok: false, error: "Not logged in" });
+          <div style="margin-top:14px;font-weight:700">Abo</div>
+          <div class="muted">Startet Stripe Checkout (monatlich). Danach schalten wir „Pro“ frei.</div>
+          <div class="row" style="margin-top:10px">
+            <button id="btnStripe" style="width:100%">Abo starten (Stripe)</button>
+          </div>
+          <div class="statusbox" id="stripeStatus" style="margin-top:10px">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="muted" style="text-align:center;margin-top:14px">MVP • Railway • Cookie Sessions • UI wieder produktiv</div>
+  </div>
+
+<script>
+  // ✅ WICHTIG: credentials: "include" muss bei ALLEN Requests rein
+  async function api(path, options = {}) {
+    const res = await fetch(path, {
+      credentials: "include",
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      ...options,
+    });
+    let data = null;
+    try { data = await res.json(); } catch (e) { data = { ok:false, error:"Keine JSON Antwort", status: res.status }; }
+    if (!res.ok && data && !data.status) data.status = res.status;
+    return data;
   }
-  next();
-}
 
-// ===== Auth =====
-app.post("/auth/register", async (req, res) => {
-  try {
-    const email = String(req.body.email || "").trim().toLowerCase();
-    const password = String(req.body.password || "");
+  const el = (id) => document.getElementById(id);
 
-    if (!email || !password) return res.json({ ok: false, error: "E-Mail & Passwort nötig" });
-    if (users.has(email)) return res.json({ ok: false, error: "E-Mail existiert schon" });
-
-    const hash = await bcrypt.hash(password, 10);
-    users.set(email, { hash });
-
-    req.session.user = { email };
-    res.json({ ok: true, loggedIn: true, user: { email } });
-  } catch (e) {
-    res.json({ ok: false, error: "Register fehlgeschlagen" });
+  async function refreshMe() {
+    const me = await api("/auth/me");
+    el("authStatus").textContent = JSON.stringify(me, null, 2);
+    el("loginBadge").textContent = me.loggedIn ? "Eingeloggt" : "Nicht eingeloggt";
+    return me;
   }
-});
 
-app.post("/auth/login", async (req, res) => {
-  try {
-    const email = String(req.body.email || "").trim().toLowerCase();
-    const password = String(req.body.password || "");
+  // Tabs (nur UI)
+  let mode = "explain";
+  el("tabExplain").onclick = () => { mode="explain"; el("btnRun").textContent="Erklären"; };
+  el("tabTranslate").onclick = () => { mode="translate"; el("btnRun").textContent="Übersetzen"; };
 
-    const u = users.get(email);
-    if (!u) return res.json({ ok: false, error: "Login fehlgeschlagen" });
+  el("btnRegister").onclick = async () => {
+    const data = await api("/auth/register", {
+      method:"POST",
+      body: JSON.stringify({ email: el("email").value, password: el("password").value })
+    });
+    el("authStatus").textContent = JSON.stringify(data, null, 2);
+    await refreshMe();
+  };
 
-    const ok = await bcrypt.compare(password, u.hash);
-    if (!ok) return res.json({ ok: false, error: "Login fehlgeschlagen" });
+  el("btnLogin").onclick = async () => {
+    const data = await api("/auth/login", {
+      method:"POST",
+      body: JSON.stringify({ email: el("email").value, password: el("password").value })
+    });
+    el("authStatus").textContent = JSON.stringify(data, null, 2);
+    await refreshMe();
+  };
 
-    req.session.user = { email };
-    res.json({ ok: true, loggedIn: true, user: { email } });
-  } catch (e) {
-    res.json({ ok: false, error: "Login fehlgeschlagen" });
-  }
-});
+  el("btnLogout").onclick = async () => {
+    const data = await api("/auth/logout", { method:"POST" });
+    el("authStatus").textContent = JSON.stringify(data, null, 2);
+    await refreshMe();
+  };
 
-app.post("/auth/logout", (req, res) => {
-  req.session = null;
-  res.json({ ok: true, loggedIn: false });
-});
+  el("btnStripe").onclick = async () => {
+    const data = await api("/stripe/create-checkout-session", { method:"POST" });
+    el("stripeStatus").textContent = JSON.stringify(data, null, 2);
+    if (data.ok && data.url) window.location.href = data.url;
+  };
 
-app.get("/auth/me", (req, res) => {
-  const email = req.session?.user?.email || null;
-  res.json({ ok: true, loggedIn: !!email, user: email ? { email } : null });
-});
-
-// ===== Stripe Checkout (MVP) =====
-app.post("/billing/checkout", requireLogin, async (req, res) => {
-  try {
-    if (!stripe || !STRIPE_PRICE_ID) {
-      return res.status(400).json({ ok: false, error: "Stripe nicht konfiguriert" });
+  el("btnRun").onclick = async () => {
+    // MVP: wir zeigen erstmal nur Login-Zustand sauber an
+    const me = await refreshMe();
+    if (!me.loggedIn) {
+      el("resultBox").textContent = "Not logged in";
+      return;
     }
+    const txt = el("inputText").value || "";
+    if (!txt.trim()) { el("resultBox").textContent = "Bitte Text einfügen."; return; }
+    el("resultBox").textContent = (mode==="translate")
+      ? "Übersetzen kommt als nächstes – Backend folgt."
+      : "Erklären kommt als nächstes – Backend folgt.";
+  };
 
-    const origin = req.headers.origin || `https://${req.headers.host}`;
+  el("btnCopy").onclick = async () => {
+    await navigator.clipboard.writeText(el("resultBox").textContent || "");
+  };
+  el("btnClear").onclick = () => {
+    el("inputText").value = "";
+    el("resultBox").textContent = "—";
+  };
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
-      success_url: `${origin}/?paid=1`,
-      cancel_url: `${origin}/?canceled=1`,
-      customer_email: req.session.user.email
-    });
-
-    res.json({ ok: true, url: session.url });
-  } catch (e) {
-    res.status(400).json({ ok: false, error: "Checkout fehlgeschlagen" });
-  }
-});
-
-// ===== KI Endpoints (Platzhalter erstmal) =====
-app.post("/api/explain", requireLogin, async (req, res) => {
-  const text = String(req.body.text || "");
-  if (!text.trim()) return res.json({ ok: false, error: "Kein Text" });
-
-  // MVP: ohne KI-Key liefern wir nur Dummy zurück (damit UI & Login stabil sind)
-  if (!OPENAI_API_KEY) {
-    return res.json({
-      ok: true,
-      result:
-        "✅ Server läuft & Login funktioniert.\n\n(Als nächstes schalten wir die echte KI frei – dafür brauchst du OPENAI_API_KEY in Railway.)\n\nDein Text war:\n" +
-        text.slice(0, 500)
-    });
-  }
-
-  // Später bauen wir echte OpenAI-Calls sauber ein – erst wenn alles stabil ist.
-  res.json({ ok: true, result: "OPENAI_API_KEY ist gesetzt – nächster Schritt: echte KI-Integration." });
-});
-
-app.post("/api/translate", requireLogin, async (req, res) => {
-  const text = String(req.body.text || "");
-  const target = String(req.body.target || "Deutsch");
-  if (!text.trim()) return res.json({ ok: false, error: "Kein Text" });
-
-  if (!OPENAI_API_KEY) {
-    return res.json({
-      ok: true,
-      result: `✅ Übersetzen (Dummy): Ziel=${target}\n\n` + text
-    });
-  }
-
-  res.json({ ok: true, result: "OPENAI_API_KEY ist gesetzt – nächster Schritt: echte Übersetzung." });
-});
-
-app.listen(PORT, () => console.log("Server läuft auf Port", PORT));
+  refreshMe();
+</script>
+</body>
+</html>
